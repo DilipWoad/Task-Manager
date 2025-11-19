@@ -1,0 +1,13 @@
+//it is just a function that takes a function as an input then returns a function as an output
+//More of a higher order function
+const AsyncHandler = (requestHandler) => {
+  //requestHandler is the input function
+  // |
+  // |
+  //--- below is the function is return in a transformed form
+  return (req, res, next) => {
+    Promise.resolve(requestHandler(req, res, next)).catch((error) =>
+      next(error)
+    );
+  };
+};
