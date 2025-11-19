@@ -1,6 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser"
-import { GlobalErrorHandler } from "./utils/GlobalErrorHandler";
+import { GlobalErrorHandler } from "./utils/GlobalErrorHandler.js";
 
 export const app = express();
 
