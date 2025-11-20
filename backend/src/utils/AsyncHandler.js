@@ -1,6 +1,6 @@
 //it is just a function that takes a function as an input then returns a function as an output
 //More of a higher order function
-const AsyncHandler = (requestHandler) => {
+export const AsyncHandler = (requestHandler) => {
   //requestHandler is the input function
   // |
   // |

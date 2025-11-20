@@ -13,9 +13,13 @@ app.use(express.static('/public'))
 
 app.use(cookieParser);
 
+app.get('/',(req,res)=>{
+    res.send("Hello IT WORKING//")
+})
 //Routes
 
-
+import authRoute from "./routes/auth.route.js"
+app.use('/api/v1/auths',authRoute);
 
 //Global Error Handles Last
 app.use(GlobalErrorHandler);
