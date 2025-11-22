@@ -21,5 +21,3 @@ connectDB()
 .catch((err)=>{
     console.error("Error while connecting to the Server :: ",err)
 })
-
-
