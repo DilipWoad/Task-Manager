@@ -1,15 +1,18 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { GlobalErrorHandler } from "./utils/GlobalErrorHandler.js";
-import cors from "cors"
+import cors from "cors";
 
 export const app = express();
 
 //configure express here]
+console.log(process.env.CROSS_ORIGIN)
 app.use(
   cors({
-    origin: "*",
-    credentials: true,
+    origin: process.env.CROSS_ORIGIN,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials:true
   })
 );
 

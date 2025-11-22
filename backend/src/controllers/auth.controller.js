@@ -78,7 +78,7 @@ const loginUser = AsyncHandler(async (req, res) => {
   });
   //if not exists throw error saying user does'nt exists
   if (!userExists) {
-    throw new ApiError(404, "User Dosn't Exists!!,pls sign In");
+    throw new ApiError(404, "User Dosn't Exists!!,pls sign up");
   }
 
   //check for valid password
