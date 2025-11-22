@@ -1,5 +1,6 @@
 import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
+import { AsyncHandler } from "../utils/AsyncHandler.js";
 
 const verifyAuthentication = AsyncHandler(async (req, res, next) => {
   //1)cookies can be from header and can be taken from cookies
@@ -18,7 +19,7 @@ const verifyAuthentication = AsyncHandler(async (req, res, next) => {
     accessToken,
     process.env.ACCESS_TOKEN_SECRET_KEY
   );
-
+  console.log("Access Token :: ",accessToken);
   if (!userPayload) {
     throw new ApiError(401, "Invalid Access Token");
   }
