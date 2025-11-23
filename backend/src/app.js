@@ -27,7 +27,10 @@ app.use(cookieParser());
 //Routes
 
 import authRoute from "./routes/auth.route.js";
+import taskRoute from "./routes/task.route.js";
+
 app.use("/api/v1/auths", authRoute);
+app.use("/api/v1/tasks",taskRoute);
 
 //Global Error Handles Last
 app.use(GlobalErrorHandler);
