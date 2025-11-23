@@ -35,38 +35,46 @@ const LoginComponent = () => {
   };
 
   const handleLoginUser = async (e) => {
-    
     e.preventDefault();
+    setLoginError(loginErrorStruct);
     const isValid = validateLoginForm(formLogin);
+    if (!isValid) {
+      //email validation fails
+      //then set the error here
+      setLoginError((prev) => ({
+        ...prev,
+        emailError: "Please enter a valid email address",
+      }));
 
-    if (isValid) {
-        setLoading(true);
-      try {
-        const res = await axios.post(`${BASE_URL}/auths/login`, formLogin, {
-          withCredentials: true,
-        });
-        console.log("Login response ::: ", res);
-        setLoginError(loginErrorStruct);
-        navigate("/");
-      } catch (error) {
-        console.log("Auth Error :: ",error)
-        const msg = error.response?.data?.message || "Login failed";
-        msg.includes("email")
-          ? setLoginError((prev) => ({ ...prev, emailError: msg }))
-          : setLoginError((prev) => ({ ...prev, passwordError: msg }));
-      }
-      //   const loginInfo = await loginUser(formLogin);
-      //   if (loginInfo.data) {
-      //     dispatch(addUser(loginInfo?.data?.user));
-      //     setLoginError({});
-      //     navigate("/");
-      //   } else {
-      //     setLoginError(loginInfo);
-      //   }
-    } else {
-      console.log("Invalid email format");
+      //and get out from here
+      return;
     }
-    setLoading(false);
+    setLoading(true);
+    try {
+      const res = await axios.post(`${BASE_URL}/auths/login`, formLogin, {
+        withCredentials: true,
+      });
+      console.log("Login response ::: ", res);
+      setLoginError(loginErrorStruct);
+      navigate("/");
+    } catch (error) {
+      console.log("Auth Error :: ", error);
+      const statusCode = error.response.status;
+      const msg = error.response?.data?.message || "Login failed";
+
+      let newError = { emailError: "", passwordError: "" };
+
+      if (statusCode === 404) {
+        newError.emailError = msg;
+      } else if (statusCode === 400) {
+        newError.passwordError = msg;
+      } else {
+        newError.passwordError = msg;
+      }
+      setLoginError(newError);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -86,7 +94,9 @@ const LoginComponent = () => {
               onChange={handleChange}
               className=" bg-slate-100 w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-            <p className="text-red-500">{loginError.emailError}</p>
+            <p className="text-red-500 sm:text-nowrap text-wrap">
+              {loginError.emailError}
+            </p>
           </div>
           <div className="mt-5 relative">
             <label className="block text-gray-600">Password</label>
