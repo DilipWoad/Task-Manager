@@ -16,10 +16,7 @@ const createTask = AsyncHandler(async (req, res) => {
   if (!mongoose.isValidObjectId(userId)) {
     throw new ApiError(401, "Invalid user Id.");
   }
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new ApiError(404, "User does not exists.");
-  }
+
   console.log(req.body);
   const taskSchema = z.object({
     title: z.string().min(1, "Title can't be empty."),
@@ -34,6 +31,11 @@ const createTask = AsyncHandler(async (req, res) => {
     const zodErrorMessage = result.error;
     // console.log("Zod Error Message :: ", zodErrorMessage.errors[0].message);
     throw new ApiError(401, "Invalid Credintials", zodErrorMessage.message);
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User does not exists.");
   }
   //5) now we have title,desc,dealine(date)(should be greater then or eq to current date),
   const { title, description, deadline } = result.data;
@@ -103,4 +105,137 @@ const getUserAssignTasksAdmin = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(200, tasks, "User tasks fetched successfully."));
 });
 
-export { createTask, getUserAssignTasks,getUserAssignTasksAdmin };
+//user update for task ->
+// //status(for ->in-progress and completed) and when status is set to complete
+// // //->ask for a completion note.
+const updateTaskStatus = AsyncHandler(async (req, res) => {
+  //1)verify the auth
+  //2)check the authorization(role as user)
+  const { taskId } = req.params;
+  //3)validated schema for req.body through zod
+  const taskSchema = z.object({
+    status:z.enum(["in-progress", "completed"]),
+    complete_note:z.string().min(1,"Note can't be empty.").optional()
+  });
+
+  const result = taskSchema.safeParse(req.body);
+  if (!result.success) {
+    throw new ApiError(401, "Invalid status.", result.error.message);
+  }
+
+  const { status } = result.data;
+  //3)check is valid task id
+  if (!mongoose.isValidObjectId(taskId)) {
+    throw new ApiError(401, "Invalid task id.");
+  }
+  //4)check is task exists
+  const task = await Task.findById(taskId);
+  if (!task) {
+    throw new ApiError(404, "Task does not exists");
+  }
+  //5)check the task->assigned_to ==req.user.id
+  if (!(task.assigned_to.toString() === req.user.id.toString())) {
+    throw new ApiError(403, "You don't have permission.");
+  }
+  //6)update the details
+  task.status = status;
+  task.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, task, "Task status updated successfully."));
+});
+
+//update for admin ->
+// // title,description,deadline,status,assigned_to
+const updateTaskDetails = AsyncHandler(async (req, res) => {
+  //1)verify the auth
+  //2)check the authorization(role as user)
+  const { taskId } = req.params;
+  //3)validated schema for req.body through zod
+  const taskSchema = z.object({
+    title: z.string().min(1, "Title can't be empty.").optional(),
+    description: z.string().min(1, "Description can't be empty.").optional(),
+    deadline: z.string().date().optional(),
+    status: z.enum(["in-progress", "completed"]).optional(),
+    assigned_to: z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          // 1. If value is undefined (optional), let it pass
+          if (!val) return true;
+
+          // 2. Otherwise, use Mongoose's native checker
+          return mongoose.isValidObjectId(val);
+        },
+        {
+          message: "Invalid MongoDB Object ID", // Custom error message
+        }
+      ),
+  });
+
+  const result = taskSchema.safeParse(req.body);
+  if (!result.success) {
+    throw new ApiError(401, "Invalid status.", result.error.message);
+  }
+
+  //3)check is valid task id
+  if (!mongoose.isValidObjectId(taskId)) {
+    throw new ApiError(401, "Invalid task id.");
+  }
+
+  //4)check is task exists and update the task in  one go
+  const updatedTask = await Task.findByIdAndUpdate(
+    taskId,
+    {
+      $set: req.body,
+    },
+    {
+      new: true,
+      runValidators: true, //  Runs Mongoose Schema validations again like have for enums for status
+    }
+  );
+
+  if (!updatedTask) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedTask, "Task details updated successfully.")
+    );
+});
+//delete a task only by the admin
+
+const deleteTask = AsyncHandler(async (req, res) => {
+  const { taskId } = req.params;
+
+  //3)check is valid task id
+  if (!mongoose.isValidObjectId(taskId)) {
+    throw new ApiError(401, "Invalid task id.");
+  }
+
+  //4)check is task exists and update the task in  one go
+  const deleteTask = await Task.findByIdAndDelete(taskId);
+
+  if (!deleteTask) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, [], "Task deleted successfully.")
+    );
+});
+
+export {
+  createTask,
+  getUserAssignTasks,
+  getUserAssignTasksAdmin,
+  updateTaskStatus,
+  updateTaskDetails,
+  deleteTask,
+};
