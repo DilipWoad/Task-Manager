@@ -18,8 +18,8 @@ const LoginComponent = () => {
   const [loading, setLoading] = useState(false);
 
   const loginFormStructure = {
-    email: "",
-    password: "",
+    email: "d@g.com",
+    password: "12345678",
   };
 
   const [formLogin, setFormLogin] = useState(loginFormStructure);
