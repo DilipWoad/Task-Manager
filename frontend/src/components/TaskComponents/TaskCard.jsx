@@ -50,7 +50,7 @@ const TaskCard = ({ task, setTasks }) => {
     }
   };
   return (
-    <div className="w-80 bg-white h-fit rounded-md p-2 flex flex-col font-mono gap-3">
+    <div className="min-w-72 bg-white h-fit rounded-md p-2 flex flex-col font-mono gap-3">
       <div className={` pt-2 px-2 rounded-md ${task.status==="completed" ? "line-through bg-slate-200 text-gray-500" :"bg-slate-300"}`}>
         <div className=" text-xl">{task.title}</div>
         <div className=" text-sm py-2 truncate  mr-6">{task.description}</div>
