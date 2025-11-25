@@ -3,6 +3,9 @@ import LoginComponent from "./components/AuthComponents/LoginComponent.jsx";
 import Body from "./components/Body.jsx";
 import SignupComponent from "./components/AuthComponents/SignupComponent.jsx";
 import TaskPage from "./components/TaskComponents/TaskPage.jsx";
+import MissingRoute from "./components/MissingRoute.jsx";
+import UnauthorizedPage from "./components/UnauthorizedPage.jsx";
+import RequireAuth from "./components/AuthComponents/RequireAuth.jsx";
 
 function App() {
   return (
@@ -10,9 +13,18 @@ function App() {
       <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<Body />}>
-            <Route index element={<TaskPage/>}/>
             <Route path="login" element={<LoginComponent />} />
             <Route path="signup" element={<SignupComponent />} />
+            <Route path="unauthorized" element={<UnauthorizedPage />} />
+
+            {/* protected routes */}
+
+            <Route
+              element={<RequireAuth allowedRoles={["user"]}></RequireAuth>}>
+              <Route path="/" element={<TaskPage />} />
+            </Route>
+            {/* any unmatched route */}
+            <Route path="*" element={<MissingRoute />} />
           </Route>
         </Routes>
       </BrowserRouter>

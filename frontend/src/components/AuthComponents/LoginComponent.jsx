@@ -6,9 +6,11 @@ import { validateLoginForm } from "../../utils/FormValidation/validateFormLogin.
 import { BASE_URL, CLOSE_EYE, OPEN_EYE } from "../../utils/constant.js";
 import LoadingScreen from "../LoadingScreen.jsx";
 import axios from "axios";
+import useAuth from "../../hooks/useAuth.js";
 const LoginComponent = () => {
   // const [email, setEmail] = useState("dilip@g.com");
   // const [password, setPassword] = useState("12345678");
+  const { setAuth } = useAuth();
   const loginErrorStruct = {
     emailError: "",
     passwordError: "",
@@ -56,6 +58,7 @@ const LoginComponent = () => {
       });
       console.log("Login response ::: ", res);
       setLoginError(loginErrorStruct);
+      setAuth(res.data.data);
       navigate("/");
     } catch (error) {
       console.log("Auth Error :: ", error);

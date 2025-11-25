@@ -95,7 +95,7 @@ const loginUser = AsyncHandler(async (req, res) => {
   // add refreshToken to the user document
   const loginUser = await User.findByIdAndUpdate(userExists._id, {
     refreshToken: refreshToken,
-  }).select("-password -refreshToken -role");
+  }).select("-password -refreshToken");
   //store this in the cookies
   console.log(loginUser);
   if (!loginUser) {

@@ -21,8 +21,8 @@ function TaskPage() {
   }, []);
   if (!tasks) return <div>Loading...</div>
   return(
-    <div>
-        {tasks.map((task)=><TaskCard task={task} setTasks={setTasks}/>)}
+    <div className="flex flex-wrap gap-3 justify-start">
+        {tasks.map((task)=><TaskCard key={task._id} task={task} setTasks={setTasks}/>)}
     </div>
   );
 }
