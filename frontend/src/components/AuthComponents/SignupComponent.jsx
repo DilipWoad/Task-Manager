@@ -77,7 +77,7 @@ const SignupComponent = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-screen px-2 ">
+    <div className="flex items-center justify-center h-full text-black shrink">
       {loading && <LoadingScreen />}
       <div className="bg-white w-full max-w-md rounded-lg p-8 shadow-lg">
         <label className="text-2xl font-semibold ">Sign up</label>

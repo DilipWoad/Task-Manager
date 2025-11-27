@@ -81,7 +81,7 @@ const LoginComponent = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-screen ">
+    <div className="flex items-center justify-center text-black shrink h-full ">
       {loading && <LoadingScreen />}
       <div className="bg-white w-full max-w-sm rounded-lg p-8 shadow-lg">
         <label className="text-2xl font-semibold ">Login</label>

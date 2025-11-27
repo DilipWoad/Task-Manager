@@ -95,7 +95,7 @@ const TaskCard = ({ task, setTasks }) => {
         </div>
       </div>
       {showSaveBtn && (
-        <div className="bg-gray-300 flex w-full z-50 rounded-md justify-end p-2 gap-3 text-sm font-mono">
+        <div className="bg-gray-300 flex w-full z-20 rounded-md justify-end p-2 gap-3 text-sm font-mono">
           <div
             onClick={handleCancelClick}
             className="bg-white text-gray-400 hover:bg-gray-200 hover:text-gray-500 hover:cursor-pointer px-4 py-1  rounded-md "

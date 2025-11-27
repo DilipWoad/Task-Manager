@@ -21,9 +21,8 @@ function TaskPage() {
   }, []);
   if (!tasks) return <div>Loading...</div>
   return(
-    <div className="flex flex-col justify-center bg-lime-500 min-w-screen">
-      <div>Header</div>
-      <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3">
+    <div className="flex flex-col justify-center bg-lime-500 h-full p-5 ">
+      <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
         {tasks.map((task)=><TaskCard key={task._id} task={task} setTasks={setTasks}/>)}
     </div>
     </div>
