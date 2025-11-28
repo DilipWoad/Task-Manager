@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  completedTasks,
   createTask,
   deleteTask,
   getUserAssignTasks,
@@ -26,5 +27,6 @@ router
   .patch(verifyRole(["user"]), updateTaskStatus)
   .delete(verifyRole(["admin"]), deleteTask);
 router.route("/:taskId/admin").patch(verifyRole(["admin"]), updateTaskDetails);
+router.route("/completed").get(verifyRole(["user"]),completedTasks);
 
 export default router;

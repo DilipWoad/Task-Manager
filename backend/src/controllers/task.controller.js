@@ -114,8 +114,8 @@ const updateTaskStatus = AsyncHandler(async (req, res) => {
   const { taskId } = req.params;
   //3)validated schema for req.body through zod
   const taskSchema = z.object({
-    status:z.enum(["in-progress", "completed"]),
-    complete_note:z.string().min(1,"Note can't be empty.").optional()
+    status: z.enum(["in-progress", "completed"]),
+    complete_note: z.string().min(1, "Note can't be empty.").optional(),
   });
 
   const result = taskSchema.safeParse(req.body);
@@ -226,8 +226,33 @@ const deleteTask = AsyncHandler(async (req, res) => {
 
   return res
     .status(200)
+    .json(new ApiResponse(200, [], "Task deleted successfully."));
+});
+
+const completedTasks = AsyncHandler(async (req, res) => {
+  const user = req.user;
+  console.log(user)
+  const tasks = await Task.find({
+    assigned_to: user.id,
+    status: "completed",
+  });
+
+  if (tasks.length == 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "User has 0 completed Task"));
+  }
+  if (!tasks) {
+    throw new ApiError(
+      500,
+      "Something went wrong while getting completed tasks."
+    );
+  }
+
+  return res
+    .status(200)
     .json(
-      new ApiResponse(200, [], "Task deleted successfully.")
+      new ApiResponse(200, tasks, "Successfully fetched User completed Task")
     );
 });
 
@@ -238,4 +263,5 @@ export {
   updateTaskStatus,
   updateTaskDetails,
   deleteTask,
+  completedTasks,
 };
