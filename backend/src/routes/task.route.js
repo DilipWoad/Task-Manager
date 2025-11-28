@@ -15,18 +15,21 @@ const router = Router();
 
 router.use(verifyAuthentication);
 
+
+router.route("/").get(verifyRole(["user"]), getUserAssignTasks);
+router.route("/completed").get(verifyRole(["user"]), completedTasks);
+
 router
   .route("/:userId")
   .post(verifyRole(["admin"]), createTask)
   .get(verifyRole(["admin"]), getUserAssignTasksAdmin);
 
-router.route("/").get(verifyRole(["user"]), getUserAssignTasks);
 
 router
   .route("/:taskId")
   .patch(verifyRole(["user"]), updateTaskStatus)
   .delete(verifyRole(["admin"]), deleteTask);
 router.route("/:taskId/admin").patch(verifyRole(["admin"]), updateTaskDetails);
-router.route("/completed").get(verifyRole(["user"]),completedTasks);
+
 
 export default router;
