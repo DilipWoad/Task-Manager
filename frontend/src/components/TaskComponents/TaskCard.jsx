@@ -7,6 +7,9 @@ const TaskCard = ({ task, setTasks }) => {
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
 
+
+  console.log("Task coming :: ",task)
+
   const statusOptions = ["pending", "in-progress", "completed"];
   const handleStatusChange = (e) => {
     console.log(e.target.value);
@@ -49,14 +52,15 @@ const TaskCard = ({ task, setTasks }) => {
       console.log("Error while updating Status", error);
     }
   };
+  if(!task) return <div>Loading....</div>
   return (
     <div className="min-w-72 bg-white h-fit rounded-md p-2 flex flex-col font-mono gap-3">
-      <div className={` pt-2 px-2 rounded-md ${task.status==="completed" ? "line-through bg-slate-200 text-gray-500" :"bg-slate-300"}`}>
+      <div className={` pt-2 px-2 rounded-md ${task?.status==="completed" ? "line-through bg-slate-200 text-gray-500" :"bg-slate-300"}`}>
         <div className=" text-xl">{task.title}</div>
         <div className=" text-sm py-2 truncate  mr-6">{task.description}</div>
         <div className="flex justify-between text-sm py-2 items-center">
           <div className="bg-slate-400 rounded-lg px-2">
-            Due : {task.deadline.slice(0, 10)}
+            Due : {task?.deadline?.slice(0, 10)}
           </div>
           <div className={`${task.status ==="completed" ? "cursor-not-allowed":"cursor-pointer outline-1 outline-offset-1 outline-solid"} rounded-md`}>
             {editingStatusId === task._id ? (
