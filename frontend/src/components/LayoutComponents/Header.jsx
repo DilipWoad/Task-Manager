@@ -1,6 +1,31 @@
 import { UserCircle, Menu } from "lucide-react";
-
+import useAuth from "../../hooks/useAuth.js";
+import { Link, useLocation, useNavigate } from "react-router";
+import {useState} from "react";
+import axios from "axios"
+import {BASE_URL} from "../../utils/constant.js"
 const Header = ({ menuClick, setMenuClick }) => {
+  const { auth,setAuth } = useAuth();
+  const location = useLocation();
+  const [showLogout,setShowLogout] = useState(false);
+  const handleUserIconClick = ()=>{
+    setShowLogout(!showLogout);
+  }
+
+  const navigate = useNavigate()
+
+  const handleLogoutClick =async()=>{
+    try{
+      const res = await axios.post(`${BASE_URL}/auths/logout`,{},{withCredentials:true});
+      
+      setAuth({})
+      setShowLogout(false)
+      navigate("/login")
+    }catch(err){
+      console.log("Error while logout :: ",err);
+    }
+  }
+
   return (
     <div className="flex justify-between p-2 rounded-md items-center bg-gray-600 m-2">
       <div
@@ -9,14 +34,24 @@ const Header = ({ menuClick, setMenuClick }) => {
       >
         <Menu className="w-6 h-6 text-black" />
       </div>
-      <div className="bg-yellow-500 flex justify-between gap-3 items-center p-1 rounded">
-        <p className="bg-pink-500 px-2">Welcome, Dilip</p>
-
-        <UserCircle className="w-10 h-10 text-black" strokeWidth={1.5} />
-
-        <button className="bg-blue-700 text-white rounded-lg px-5 py-1">
-          Login
-        </button>
+      <div className="bg-yellow-500 flex justify-between gap-3 items-center p-1 rounded relative">
+        {auth?.fullName && (
+          <>
+            <p className="bg-pink-500 px-2">Welcome, Dilip</p>            
+            <UserCircle onClick={handleUserIconClick} className={`w-8 h-8 text-black hover:cursor-pointer hover:bg-slate-200 ${showLogout ? "bg-slate-200":""}  rounded-full`} strokeWidth={1.5} />
+            {showLogout && <div onClick={handleLogoutClick} className=" bg-blue-700 absolute top-10 -right-1 px-5 py-2 text-sm rounded-lg hover:bg-blue-600 hover:cursor-pointer">
+                              <p className="">Logout</p>
+                          </div>}
+          </>
+        )}
+        {!auth && (
+          <Link
+            to={location.pathname !== "/login" ? "/login" : "/signup"}
+            className="bg-blue-700 text-white rounded-lg px-5 py-1"
+          >
+            {location.pathname !== "/login" ? "Login" : "Sign Up"}
+          </Link>
+        )}
       </div>
     </div>
   );

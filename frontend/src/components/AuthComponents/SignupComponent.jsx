@@ -137,7 +137,7 @@ const SignupComponent = () => {
             type="submit"
             className="py-2 bg-blue-500 mt-6 w-full rounded-lg text-lg text-white hover:bg-blue-600 transition"
           >
-            Signup
+            Sign Up
           </button>
         </form>
         <p className="text-center mt-3 text-sm">
