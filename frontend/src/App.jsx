@@ -23,7 +23,7 @@ function App() {
             <Route
               element={<RequireAuth allowedRoles={["user"]}></RequireAuth>}>
               <Route path="/" element={<TaskPage />} />
-              <Route path="/completed" element={<CompletedTask />} />
+              <Route path="completed" element={<CompletedTask />} />
             </Route>
             {/* any unmatched route */}
             <Route path="*" element={<MissingRoute />} />
