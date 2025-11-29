@@ -1,0 +1,35 @@
+import axios from "axios";
+import { useState,useEffect } from "react";
+import { BASE_URL } from "../../utils/constant";
+import TaskCard from "./TaskCard";
+
+const UpcomingTask = () => {
+  const [upcomingTasks, setUpcomingTasks] = useState([]);
+  const getUserUpcomingTask = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/tasks/upcoming`, {
+        withCredentials: true,
+      });
+      console.log(res.data.data);
+      setUpcomingTasks(res.data.data);
+    } catch (error) {
+      console.log("Error fetching tasks :: ", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserUpcomingTask();
+  }, []);
+  if (!upcomingTasks) return <div>Loading...</div>;
+  return (
+    <div className="flex flex-col justify-center bg-lime-500 h-full p-5 ">
+      <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
+        {upcomingTasks.map((task) => (
+          <TaskCard key={task._id} task={task} setTasks={setUpcomingTasks} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default UpcomingTask;

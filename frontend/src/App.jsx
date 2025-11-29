@@ -7,6 +7,8 @@ import MissingRoute from "./components/MissingRoute.jsx";
 import UnauthorizedPage from "./components/UnauthorizedPage.jsx";
 import RequireAuth from "./components/AuthComponents/RequireAuth.jsx";
 import CompletedTask from "./components/TaskComponents/CompletedTask.jsx";
+import TodayTask from "./components/TaskComponents/TodayTask.jsx";
+import UpcomingTask from "./components/TaskComponents/UpcomingTask.jsx";
 
 function App() {
   return (
@@ -21,10 +23,13 @@ function App() {
             {/* protected routes */}
 
             <Route
-              element={<RequireAuth allowedRoles={["user"]}></RequireAuth>}>
+              element={<RequireAuth allowedRoles={["user"]}></RequireAuth>}
+            >
               <Route path="/" element={<TaskPage />} />
               <Route path="all-tasks" element={<TaskPage />} />
               <Route path="completed" element={<CompletedTask />} />
+              <Route path="today" element={<TodayTask />} />
+              <Route path="upcoming" element={<UpcomingTask />} />
             </Route>
             {/* any unmatched route */}
             <Route path="*" element={<MissingRoute />} />
