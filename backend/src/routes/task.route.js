@@ -7,7 +7,8 @@ import {
   getUserAssignTasksAdmin,
   updateTaskDetails,
   updateTaskStatus,
-  todaysTasks
+  todaysUserTasks,
+  upcomingUserTasks
 } from "../controllers/task.controller.js";
 import { verifyAuthentication } from "../middlewares/auth.middleware.js";
 import { verifyRole } from "../middlewares/role.middleware.js";
@@ -19,7 +20,8 @@ router.use(verifyAuthentication);
 
 router.route("/").get(verifyRole(["user"]), getUserAssignTasks);
 router.route("/completed").get(verifyRole(["user"]), completedTasks);
-router.route("/today").get(verifyRole(["user"]),todaysTasks)
+router.route("/today").get(verifyRole(["user"]),todaysUserTasks)
+router.route("/upcoming").get(verifyRole(["user"]),upcomingUserTasks)
 
 router
   .route("/:userId")
