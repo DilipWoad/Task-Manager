@@ -9,7 +9,7 @@ const SidebarIcons = ({ children, tag, pathname, menuClick }) => {
       >
         {children}
         {menuClick && (
-          <span className="transition-all duration-300  flex-1">{tag}</span>
+          <span className="transition-all duration-300  flex-1 text-nowrap">{tag}</span>
         )}
       </Link>
       {

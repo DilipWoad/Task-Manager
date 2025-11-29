@@ -231,7 +231,7 @@ const deleteTask = AsyncHandler(async (req, res) => {
 
 const completedTasks = AsyncHandler(async (req, res) => {
   const user = req.user;
-  console.log(user)
+  console.log(user);
   const tasks = await Task.find({
     assigned_to: user.id,
     status: "completed",
@@ -256,6 +256,43 @@ const completedTasks = AsyncHandler(async (req, res) => {
     );
 });
 
+const todaysTasks = AsyncHandler(async (req, res) => {
+  //
+  //get todays date
+
+  let startTodayDay = new Date();
+  // console.log(todaysDay.toLocaleDateString());
+  startTodayDay.setHours(0, 0, 0, 0);
+  console.log(startTodayDay);
+
+  let endTodayDay = new Date();
+  // console.log(todaysDay.toLocaleDateString());
+  endTodayDay.setHours(23, 59, 59, 999);
+  console.log(endTodayDay);
+
+  console.log("Searching between:", startTodayDay, "and", endTodayDay);
+
+  const todaysTasks = await Task.find({
+    assigned_to: req.user.id,
+    deadline: {
+      $gte: startTodayDay, 
+      $lte: endTodayDay,
+    },
+  });
+
+  console.log(todaysTasks);
+  if (todaysTasks.length == 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "There is no task for today."));
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, todaysTasks, "Successfully fetched today's task.")
+    );
+});
+
 export {
   createTask,
   getUserAssignTasks,
@@ -264,4 +301,5 @@ export {
   updateTaskDetails,
   deleteTask,
   completedTasks,
+  todaysTasks,
 };

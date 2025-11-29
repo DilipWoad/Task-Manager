@@ -59,7 +59,7 @@ const LoginComponent = () => {
       console.log("Login response ::: ", res);
       setLoginError(loginErrorStruct);
       setAuth(res.data.data);
-      navigate("/");
+      navigate("/all-tasks");
     } catch (error) {
       console.log("Auth Error :: ", error);
       const statusCode = error.response.status;
