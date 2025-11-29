@@ -7,7 +7,7 @@ import Sidebar from "./LayoutComponents/Sidebar";
 const Body = () => {
   const [menuClick,setMenuClick] = useState(false);
   return (
-    <div className="flex flex-col h-screen w-full bg-gray-950 text-white font-sans selection:bg-gray-700">
+    <div className="flex flex-col sm:h-screen w-full bg-gray-950 text-white font-sans selection:bg-gray-700">
       {/* Left Column: Sidebar */}
       <Header menuClick={menuClick} setMenuClick={setMenuClick}/>
       {/* Right Column: Header + Main Content */}

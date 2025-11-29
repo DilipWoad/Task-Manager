@@ -39,7 +39,7 @@ const Header = ({ menuClick, setMenuClick }) => {
           <>
             <p className="bg-pink-500 px-2">Welcome, Dilip</p>            
             <UserCircle onClick={handleUserIconClick} className={`w-8 h-8 text-black hover:cursor-pointer hover:bg-slate-200 ${showLogout ? "bg-slate-200":""}  rounded-full`} strokeWidth={1.5} />
-            {showLogout && <div onClick={handleLogoutClick} className=" bg-blue-700 absolute top-10 -right-1 px-5 py-2 text-sm rounded-lg hover:bg-blue-600 hover:cursor-pointer">
+            {showLogout && <div onClick={handleLogoutClick} className=" bg-blue-700 absolute z-50 top-10 -right-1 px-5 py-2 text-sm rounded-lg hover:bg-blue-600 hover:cursor-pointer">
                               <p className="">Logout</p>
                           </div>}
           </>

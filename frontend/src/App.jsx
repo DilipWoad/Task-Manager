@@ -31,6 +31,7 @@ function App() {
               <Route path="today" element={<TodayTask />} />
               <Route path="upcoming" element={<UpcomingTask />} />
             </Route>
+            
             {/* any unmatched route */}
             <Route path="*" element={<MissingRoute />} />
           </Route>
