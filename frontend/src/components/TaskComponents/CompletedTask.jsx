@@ -20,7 +20,7 @@ function CompletedTask() {
   }, []);
   if (!completedTasks) return <div>Loading...</div>
   return(
-    <div className="flex flex-col justify-center bg-lime-500 h-full p-5 ">
+    <div className="flex flex-col  bg-lime-500 h-full p-5 ">
       <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
         {completedTasks.map((task)=><TaskCard key={task._id} task={task} setTasks={setCompletedTasks} />)}
     </div>

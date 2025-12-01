@@ -3,6 +3,7 @@ import { BASE_URL } from "../../utils/constant.js";
 import { useEffect } from "react";
 import { useState } from "react";
 import TaskCard from "./TaskCard";
+import Heading from "./Heading.jsx";
 
 function TaskPage() {
     const [tasks,setTasks] = useState([]);
@@ -21,7 +22,7 @@ function TaskPage() {
   }, []);
   if (!tasks) return <div>Loading...</div>
   return(
-    <div className="flex flex-col justify-center bg-lime-500 h-screen overflow-y-scroll sm:h-full p-5 ">
+    <div className="flex flex-col  bg-lime-500 h-screen overflow-y-scroll sm:h-full p-5 ">
       <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
         {tasks.map((task)=><TaskCard key={task._id} task={task} setTasks={setTasks}/>)}
     </div>
