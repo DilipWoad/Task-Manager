@@ -1,16 +1,23 @@
 import { NavLink } from "react-router";
 
-const SidebarIcons = ({ children, tag, pathname, menuClick }) => {
-  const baseStyle="rounded-lg transition-colors  flex justify-center items-center w-full duration-300"
+const SidebarIcons = ({
+  children,
+  tag,
+  pathname,
+  menuClick,
+  setMenuClick,
+  isMobile,
+}) => {
+  const baseStyle =
+    "rounded-lg transition-colors  flex justify-center items-center w-full duration-300";
   return (
     <div className="group p-2 transition-all duration-400  relative">
       <NavLink
         to={`/${pathname}`}
-        //       className={`${ ({ isActive }) => ({
-        //   color: isActive ? "bg-gray-800" : "bg-red-400",
-        //   fontWeight: isActive ? "bold" : "normal"
-        // }) }  `}
-        className={({ isActive }) => (isActive ? `${baseStyle} bg-gray-800` : `${baseStyle} bg-red-400`)}
+        onClick={() => isMobile  && setMenuClick(!menuClick)}
+        className={({ isActive }) =>
+          isActive ? `${baseStyle} bg-gray-800` : `${baseStyle} bg-red-400`
+        }
       >
         {children}
         {menuClick && (

@@ -6,11 +6,11 @@ import {
 } from "lucide-react";
 import SidebarIcons from "../../utils/ReusebleComponents/SidebarIcons";
 import useIsMobileScreen from "../../hooks/useIsMobileScreen.js";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const Sidebar = ({ menuClick, setMenuClick }) => {
   const isMobile = useIsMobileScreen();
-  const [isOpen, setIsOpen] = useState(true);
+
   useEffect(() => {
     if (isMobile) {
       setMenuClick(false);
@@ -43,11 +43,20 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
           tag={"All Tasks"}
           pathname={"all-tasks"}
           menuClick={menuClick}
+          setMenuClick={setMenuClick}
+          isMobile={isMobile}
         >
           <LayoutGrid className="h-5 w-5 m-2 text-gray-300  " />
         </SidebarIcons>
 
-        <SidebarIcons tag={"Today"} pathname={"today"} menuClick={menuClick}>
+        <SidebarIcons
+          tag={"Today"}
+          pathname={"today"}
+          menuClick={menuClick}
+          setMenuClick={setMenuClick}
+          isMobile={isMobile}
+
+        >
           <Calendar className="h-5 w-5 m-2 text-gray-300  " />
         </SidebarIcons>
 
@@ -55,6 +64,9 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
           tag={"Upcoming"}
           pathname={"upcoming"}
           menuClick={menuClick}
+          setMenuClick={setMenuClick}
+          isMobile={isMobile}
+
         >
           <CalendarDays className="h-5 w-5 m-2 text-gray-300" />
         </SidebarIcons>
@@ -63,6 +75,9 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
           tag={"Completed"}
           pathname={"completed"}
           menuClick={menuClick}
+          setMenuClick={setMenuClick}
+          isMobile={isMobile}
+
         >
           <CircleCheckBig className="h-5 w-5 m-2 text-gray-300" />
         </SidebarIcons>
