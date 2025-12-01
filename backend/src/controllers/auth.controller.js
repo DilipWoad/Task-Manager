@@ -192,4 +192,22 @@ const refreshTokens = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(201, {}, "User Tokens Refreshed Successfully!"));
 });
 
-export { registerUser, loginUser, logoutUser, refreshTokens };
+const userAuthenticated = AsyncHandler(async(req,res)=>{
+  //if user access token is there that mean user data is there in req.user
+  const user = req.user;
+  if(!user){
+    throw new ApiError(404,"User info not found")
+  }
+
+  const authUser = await User.findOne({
+    _id:user.id
+  }).select("-password -refreshToken -__v")
+
+  if(!authUser){
+    throw new ApiError(404,"User not found")
+  }
+
+  return res.status(200).json(new ApiResponse(200,authUser,"User is Authenticated."))
+})
+
+export { registerUser, loginUser, logoutUser, refreshTokens,userAuthenticated };
