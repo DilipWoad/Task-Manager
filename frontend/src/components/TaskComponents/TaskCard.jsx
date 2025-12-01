@@ -1,14 +1,14 @@
 import axios from "axios";
 import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
+import { Calendar } from "lucide-react";
 
-const TaskCard = ({ task, setTasks }) => {
+const TaskCard = ({ task, setTasks, dueDateCss }) => {
   const [editingStatusId, setEditingStatusId] = useState(null);
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
 
-
-  console.log("Task coming :: ",task)
+  console.log("Task coming :: ", task);
 
   const statusOptions = ["pending", "in-progress", "completed"];
   const handleStatusChange = (e) => {
@@ -52,24 +52,39 @@ const TaskCard = ({ task, setTasks }) => {
       console.log("Error while updating Status", error);
     }
   };
-  if(!task) return <div>Loading....</div>
+  if (!task) return <div>Loading....</div>;
   return (
-    <div className="min-w-72 bg-white h-fit rounded-md p-2 flex flex-col font-mono gap-3">
-      <div className={` pt-2 px-2 rounded-md ${task?.status==="completed" ? "line-through bg-slate-200 text-gray-500" :"bg-slate-300"}`}>
+    <div className="min-w-0 sm:bg-yellow-400 md:bg-orange-400 bg-white h-fit rounded-md p-2 flex flex-col font-mono gap-3">
+      <div
+        className={` pt-2 px-2 rounded-md ${
+          task?.status === "completed"
+            ? "line-through bg-slate-200 text-gray-500"
+            : "bg-slate-300"
+        }`}
+      >
         <div className=" text-xl">{task?.title}</div>
         <div className=" text-sm py-2 truncate  mr-6">{task.description}</div>
-        <div className="flex justify-between text-sm py-2 items-center">
-          <div className="bg-slate-400 rounded-lg px-2">
-            Due : {task?.deadline?.slice(0, 10)}
+        <div className="flex justify-between text-sm py-2 items-center ">
+          <div
+            className={`bg-slate-400 rounded-lg px-2 py-0.5 ${dueDateCss} flex items-center shrink-0 justify-between`}
+          >
+            <Calendar className="w-3 h-3" />
+            <span>{task?.deadline?.slice(0, 10)}</span>
           </div>
-          <div className={`${task.status ==="completed" ? "cursor-not-allowed":"cursor-pointer outline-1 outline-offset-1 outline-solid"} rounded-md`}>
+          <div
+            className={`${
+              task.status === "completed"
+                ? "cursor-not-allowed"
+                : "cursor-pointer outline-1 outline-offset-1 outline-solid"
+            } rounded-md shrink`}
+          >
             {editingStatusId === task._id ? (
               <select
                 name="status"
                 defaultValue={task.status}
                 id="select-status"
                 onChange={handleStatusChange}
-                className="text-[15px]  bg-slate-200 rounded-md"
+                className="text-[15px]  bg-slate-200 rounded-md w-20"
               >
                 {/* <option disabled>Select Status</option> */}
                 {statusOptions.map((status) => (
@@ -89,7 +104,9 @@ const TaskCard = ({ task, setTasks }) => {
                 className={`${
                   task.status === "in-progress" ? "bg-yellow-300" : ""
                 } ${
-                  task.status === "completed" ? "bg-green-400 pointer-events-none cursor:not-allowed" : "bg-slate-400"
+                  task.status === "completed"
+                    ? "bg-green-400 pointer-events-none cursor:not-allowed"
+                    : "bg-slate-400"
                 }  hover:text-white   italic text-[15px] px-2 rounded-md`}
               >
                 {task.status}

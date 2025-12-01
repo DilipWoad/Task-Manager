@@ -9,6 +9,7 @@ import RequireAuth from "./components/AuthComponents/RequireAuth.jsx";
 import CompletedTask from "./components/TaskComponents/CompletedTask.jsx";
 import TodayTask from "./components/TaskComponents/TodayTask.jsx";
 import UpcomingTask from "./components/TaskComponents/UpcomingTask.jsx";
+import PastDue from "./components/TaskComponents/PastDue.jsx";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
               <Route path="completed" element={<CompletedTask />} />
               <Route path="today" element={<TodayTask />} />
               <Route path="upcoming" element={<UpcomingTask />} />
+              <Route path="past-due" element={<PastDue />} />
             </Route>
             
             {/* any unmatched route */}

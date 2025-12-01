@@ -1,6 +1,7 @@
 import {
   Calendar,
   CalendarDays,
+  CircleAlert,
   CircleCheckBig,
   LayoutGrid,
 } from "lucide-react";
@@ -80,6 +81,17 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
 
         >
           <CircleCheckBig className="h-5 w-5 m-2 text-gray-300" />
+        </SidebarIcons>
+
+        <SidebarIcons
+          tag={"Past Due"}
+          pathname={"past-due"}
+          menuClick={menuClick}
+          setMenuClick={setMenuClick}
+          isMobile={isMobile}
+          tagCss={"text-red-700"}
+        >
+          <CircleAlert className="h-5 w-5 m-2 text-red-700" />
         </SidebarIcons>
       </div>
     </>

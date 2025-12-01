@@ -16,7 +16,7 @@ const Body = () => {
       {/* Right Column: Header + Main Content */}
       <div className="w-screen flex h-screen  px-2">
         <Sidebar menuClick={menuClick} setMenuClick={setMenuClick} />
-        <div className="w-full h-full  sm:px-2 overflow-y-auto flex flex-col">
+        <div className="w-full h-full bg-yellow-400 sm:px-2 overflow-y-auto flex flex-col">
           {auth && <Heading />}
           <MainBody />
         </div>
