@@ -275,7 +275,7 @@ const todaysUserTasks = AsyncHandler(async (req, res) => {
   const todaysTasks = await Task.find({
     assigned_to: req.user.id,
     deadline: {
-      $gte: startTodayDay, 
+      $gte: startTodayDay,
       $lte: endTodayDay,
     },
   });
@@ -329,6 +329,41 @@ const upcomingUserTasks = AsyncHandler(async (req, res) => {
     );
 });
 
+const pastDueTasks = AsyncHandler(async (req, res) => {
+  //
+  //get todays date
+
+  let todayDay = new Date();
+  // console.log(todaysDay.toLocaleDateString());
+  todayDay.setHours(0, 0, 0, 0);
+  console.log(todayDay);
+
+  // let endTodayDay = new Date();
+  // // console.log(todaysDay.toLocaleDateString());
+  // endTodayDay.setHours(23, 59, 59, 999);
+  // console.log(endTodayDay);
+
+  console.log("Searching before:", todayDay);
+
+  const pastDue = await Task.find({
+    assigned_to: req.user.id,
+    deadline: {
+      $lt: todayDay,
+    },
+    status: { $ne: "completed" },
+  });
+
+  console.log(pastDue);
+  if (pastDue.length == 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "There is no due task."));
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, pastDue, "Successfully fetched due tasks."));
+});
+
 export {
   createTask,
   getUserAssignTasks,
@@ -338,5 +373,6 @@ export {
   deleteTask,
   completedTasks,
   todaysUserTasks,
-  upcomingUserTasks
+  upcomingUserTasks,
+  pastDueTasks,
 };
