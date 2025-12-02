@@ -27,7 +27,7 @@ function App() {
               element={<RequireAuth allowedRoles={["user"]}></RequireAuth>}
             >
               <Route path="/" element={<TaskPage />} />
-              <Route path="all-tasks" element={<TaskPage />} />
+              <Route path="all-tasks" element={<TaskPage  />} />
               <Route path="completed" element={<CompletedTask />} />
               <Route path="today" element={<TodayTask />} />
               <Route path="upcoming" element={<UpcomingTask />} />

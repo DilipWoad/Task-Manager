@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BASE_URL } from "../../utils/constant";
 import { Calendar } from "lucide-react";
 
@@ -7,6 +7,7 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
   const [editingStatusId, setEditingStatusId] = useState(null);
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   console.log("Task coming :: ", task);
 
@@ -52,21 +53,45 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
       console.log("Error while updating Status", error);
     }
   };
+
+  // useEffect(() => {
+  //   const findMousePosition = (event) => {
+  //     setMousePosition({ x: event.clientX, y: event.clientY });
+  //   };
+
+  //   window.addEventListener("mousemove", findMousePosition);
+
+  //   return () => window.removeEventListener("mousemove", findMousePosition);
+  // }, []);
   if (!task) return <div>Loading....</div>;
   return (
-    <div className="min-w-0 sm:bg-yellow-400 md:bg-orange-400 bg-white h-fit rounded-md p-2 flex flex-col font-mono gap-3">
+    <div className="relative hover:cursor-pointer group min-w-0 sm:bg-yellow-400 md:bg-orange-400 bg-white h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
+      {/* <div>
+        <h1>Mouse Position:</h1>
+        <p>X: {mousePosition.x}</p>
+        <p>Y: {mousePosition.y}</p>
+      </div> */}
       <div
-        className={` pt-2 px-2 rounded-md ${
+        className={`flex flex-col justify-between grow pt-2 px-2 rounded-md ${
           task?.status === "completed"
             ? "line-through bg-slate-200 text-gray-500"
             : "bg-slate-300"
         }`}
       >
-        <div className=" text-xl">{task?.title}</div>
-        <div className=" text-sm py-2 truncate  mr-6">{task.description}</div>
-        <div className="flex justify-between text-sm py-2 items-center ">
+        <div className=" text-xl font-bold wrap-break-word whitespace-normal leading-tight mb-2">
+          {task?.title}
+        </div>
+        <div className=" text-sm py-2 wrap-break-word whitespace-normal text-gray-800">
+          {task.description}
+        </div>
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
+          <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg backdrop-blur-sm">
+            {task?.title}
+          </div>
+        </div>
+        <div className="flex justify-between text-sm py-3 items-center mt-auto">
           <div
-            className={`bg-slate-400 rounded-lg px-2 py-0.5 ${dueDateCss} flex items-center shrink-0 justify-between`}
+            className={`bg-slate-400 rounded-lg px-2 py-1 ${dueDateCss} flex items-center shrink-0 gap-1`}
           >
             <Calendar className="w-3 h-3" />
             <span>{task?.deadline?.slice(0, 10)}</span>
@@ -75,8 +100,8 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
             className={`${
               task.status === "completed"
                 ? "cursor-not-allowed"
-                : "cursor-pointer outline-1 outline-offset-1 outline-solid"
-            } rounded-md shrink`}
+                : "cursor-pointer "
+            } rounded-md shrink-0`}
           >
             {editingStatusId === task._id ? (
               <select
@@ -84,15 +109,11 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
                 defaultValue={task.status}
                 id="select-status"
                 onChange={handleStatusChange}
-                className="text-[15px]  bg-slate-200 rounded-md w-20"
+                className="text-[13px]  bg-slate-200 rounded-md py-1 px-1 cursor-pointer outline-none border border-gray-400"
               >
                 {/* <option disabled>Select Status</option> */}
                 {statusOptions.map((status) => (
-                  <option
-                    className="bg-green-400 rounded-lg"
-                    key={status}
-                    value={status}
-                  >
+                  <option className="" key={status} value={status}>
                     {status}
                   </option>
                 ))}
@@ -105,9 +126,9 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
                   task.status === "in-progress" ? "bg-yellow-300" : ""
                 } ${
                   task.status === "completed"
-                    ? "bg-green-400 pointer-events-none cursor:not-allowed"
+                    ? "bg-green-400 pointer-events-none "
                     : "bg-slate-400"
-                }  hover:text-white   italic text-[15px] px-2 rounded-md`}
+                }  hover:opacity-80 transition-opacity  italic text-[13px] px-3 py-1 rounded-md capitalize`}
               >
                 {task.status}
               </div>
@@ -116,16 +137,16 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
         </div>
       </div>
       {showSaveBtn && (
-        <div className="bg-gray-300 flex w-full z-20 rounded-md justify-end p-2 gap-3 text-sm font-mono">
+        <div className="bg-gray-300 flex w-full z-20 rounded-md justify-end p-2 gap-2 text-xs animate-in fade-in slide-in-from-top-2 font-mono">
           <div
             onClick={handleCancelClick}
-            className="bg-white text-gray-400 hover:bg-gray-200 hover:text-gray-500 hover:cursor-pointer px-4 py-1  rounded-md "
+            className="bg-white text-gray-600 border border-gray-300 hover:bg-gray-100 px-3 py-1 rounded-md transition-colors"
           >
             Cancel
           </div>
           <div
             onClick={updateStatus}
-            className="bg-[#0866ff] text-white hover:bg-blue-500 hover:cursor-pointer px-4 py-1 rounded-md"
+            className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 rounded-md transition-colors"
           >
             Save
           </div>
