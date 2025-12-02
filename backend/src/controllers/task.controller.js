@@ -364,6 +364,62 @@ const pastDueTasks = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(200, pastDue, "Successfully fetched due tasks."));
 });
 
+//admin related routes
+const taskStats = AsyncHandler(async (req, res) => {
+  //so here will be doing aggregation or pipeline
+  const taskDetails = await Task.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalTasks: { $sum: 1 },
+        completed: {
+          $sum: {
+            $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
+          },
+        },
+        inProgress: {
+          $sum: {
+            $cond: [{ $eq: ["$status", "in-progress"] }, 1, 0],
+          },
+        },
+        pastDue: {
+          $sum: {
+            $cond: [
+              {
+                $and: [
+                  { $lt: ["$deadline", "$$NOW"] },
+                  { $ne: ["$status", "completed"] },
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalTasks: 1,
+        completed: 1,
+        inProgress: 1,
+        pastDue: 1,
+      },
+    },
+  ]);
+
+  if (taskDetails.length == 0) {
+    return res.status(200).json(new ApiResponse(200, [], "No task created."));
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, taskDetails, "Task deatils fetched successfully.")
+    );
+});
+
 export {
   createTask,
   getUserAssignTasks,
@@ -375,4 +431,5 @@ export {
   todaysUserTasks,
   upcomingUserTasks,
   pastDueTasks,
+  taskStats,
 };
