@@ -28,9 +28,11 @@ app.use(cookieParser());
 
 import authRoute from "./routes/auth.route.js";
 import taskRoute from "./routes/task.route.js";
+import groupRoute from "./routes/group.route.js";
 
 app.use("/api/v1/auths", authRoute);
 app.use("/api/v1/tasks",taskRoute);
+app.use("/api/v1/groups",groupRoute);
 
 //Global Error Handles Last
 app.use(GlobalErrorHandler);
