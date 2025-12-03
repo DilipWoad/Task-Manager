@@ -416,7 +416,7 @@ const taskStats = AsyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, taskDetails, "Task deatils fetched successfully.")
+      new ApiResponse(200, taskDetails[0], "Task deatils fetched successfully.")
     );
 });
 

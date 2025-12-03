@@ -10,6 +10,8 @@ import CompletedTask from "./components/TaskComponents/CompletedTask.jsx";
 import TodayTask from "./components/TaskComponents/TodayTask.jsx";
 import UpcomingTask from "./components/TaskComponents/UpcomingTask.jsx";
 import PastDue from "./components/TaskComponents/PastDue.jsx";
+import TaskDetailCard from "./components/TaskComponents/TaskDetailCard.jsx";
+import AdminPage from "./components/TaskComponents/AdminPage.jsx";
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
             <Route path="login" element={<LoginComponent />} />
             <Route path="signup" element={<SignupComponent />} />
             <Route path="unauthorized" element={<UnauthorizedPage />} />
+            {/* <Route path="yo" element={<TaskDetailCard />} /> */}
 
             {/* protected routes */}
 
@@ -27,13 +30,17 @@ function App() {
               element={<RequireAuth allowedRoles={["user"]}></RequireAuth>}
             >
               <Route path="/" element={<TaskPage />} />
-              <Route path="all-tasks" element={<TaskPage  />} />
+              <Route path="all-tasks" element={<TaskPage />} />
               <Route path="completed" element={<CompletedTask />} />
               <Route path="today" element={<TodayTask />} />
               <Route path="upcoming" element={<UpcomingTask />} />
               <Route path="past-due" element={<PastDue />} />
             </Route>
-            
+
+            <Route element={<RequireAuth allowedRoles={["admin"]} />}>
+              <Route path="/admin" element={<AdminPage />} />
+            </Route>
+
             {/* any unmatched route */}
             <Route path="*" element={<MissingRoute />} />
           </Route>
