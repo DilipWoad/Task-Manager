@@ -21,7 +21,7 @@ const createGroup = AsyncHandler(async (req, res) => {
   const group = await Group.create({
     groupName,
     groupAdmin: req.user.id,
-  });
+  }).populate({ path: "groupAdmin", select: "fullName email _id" });
 
   if (!group) {
     throw new ApiError(500, "Something went wrong while creating a group.");
@@ -36,7 +36,10 @@ const getAdminGroups = AsyncHandler(async (req, res) => {
   //
   const allGroups = await Group.find({
     groupAdmin: req.user.id,
-  });
+  }).populate([
+    { path: "groupAdmin", select: "fullName email _id" },
+    { path: "groupMembers", select: "fullName email _id" },
+  ]);
 
   if (allGroups.length == 0) {
     return res.status(200).json(new ApiResponse(200, [], "No group Created"));
@@ -96,7 +99,10 @@ const editGroupName = AsyncHandler(async (req, res) => {
     {
       returnDocument: "after",
     }
-  );
+  ).populate([
+    { path: "groupAdmin", select: "fullName email _id" },
+    { path: "groupMembers", select: "fullName email _id" },
+  ]);
 
   if (!updatedGroup) {
     throw new ApiError(
@@ -140,8 +146,11 @@ const addUserToGroup = AsyncHandler(async (req, res) => {
   }
   //add the user to the group
   group.groupMembers.push(userId);
+  group.populate([
+    { path: "groupAdmin", select: "fullName email _id" },
+    { path: "groupMembers", select: "fullName email _id" },
+  ]);
   await group.save();
-
   return res
     .status(200)
     .json(new ApiResponse(200, group, "User added to the group successfully."));
@@ -182,14 +191,59 @@ const removeUserFromGroup = AsyncHandler(async (req, res) => {
   );
 
   group.groupMembers = updatedMembersList;
-  await group.save();
+  group.populate([
+    { path: "groupAdmin", select: "fullName email _id" },
+    { path: "groupMembers", select: "fullName email _id" },
+  ]);
 
+  await group.save();
   return res
     .status(200)
     .json(
       new ApiResponse(200, group, "User removed from the group successfully.")
     );
 });
+
+const getAllUserFromGroup = AsyncHandler(async (req, res) => {
+  //verify jwt
+  //access by admin
+  //get groupId and adminId(from req.user)
+  const { groupId } = req.params;
+  //validate the groupId
+  if (!mongoose.isValidObjectId(groupId)) {
+    throw new ApiError(403, "Invalid group Id");
+  }
+  //findOne where groupId and goupAdmin is req.user
+  const group = await Group.findOne({
+    _id: groupId,
+    groupAdmin: req.user.id,
+  }).populate([
+    { path: "groupAdmin", select: "fullName email _id" },
+    { path: "groupMembers", select: "fullName email _id" },
+  ]);
+  if (!group) {
+    throw new ApiError(404, "Group does not Exists");
+  }
+
+  //   console.log(popu);
+  //res with the array of userID
+  if (group?.groupMembers?.length == 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "No user in the group"));
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        group.groupMembers,
+        "Group members fetch successfully."
+      )
+    );
+});
+
 
 export {
   createGroup,
@@ -198,4 +252,5 @@ export {
   editGroupName,
   addUserToGroup,
   removeUserFromGroup,
+  getAllUserFromGroup,
 };

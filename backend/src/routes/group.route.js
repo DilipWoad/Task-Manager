@@ -6,6 +6,7 @@ import {
   deleteGroup,
   editGroupName,
   getAdminGroups,
+  getAllUserFromGroup,
   removeUserFromGroup,
 } from "../controllers/group.controller.js";
 import { verifyRole } from "../middlewares/role.middleware.js";
@@ -22,7 +23,8 @@ router
 router
   .route("/:groupId")
   .delete(verifyRole(["admin"]), deleteGroup)
-  .patch(verifyRole(["admin"]), editGroupName);
+  .patch(verifyRole(["admin"]), editGroupName)
+  .get(verifyRole(["admin"]),getAllUserFromGroup)
 
 router.route("/:groupId/add/:userId").patch(verifyRole(["admin"]), addUserToGroup);
 router.route("/:groupId/remove/:userId").patch(verifyRole(["admin"]), removeUserFromGroup);
