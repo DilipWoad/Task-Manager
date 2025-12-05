@@ -1,9 +1,13 @@
+import useAuth from "../../hooks/useAuth.js";
+
 import {
   Calendar,
   CalendarDays,
   CircleAlert,
   CircleCheckBig,
   LayoutGrid,
+  Group,
+  Home,
 } from "lucide-react";
 import SidebarIcons from "../../utils/ReusebleComponents/SidebarIcons";
 import useIsMobileScreen from "../../hooks/useIsMobileScreen.js";
@@ -11,6 +15,7 @@ import { useState, useEffect } from "react";
 
 const Sidebar = ({ menuClick, setMenuClick }) => {
   const isMobile = useIsMobileScreen();
+  const { auth } = useAuth();
 
   useEffect(() => {
     if (isMobile) {
@@ -39,60 +44,81 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
           ${menuClick ? "md:w-36" : "md:w-16"}
           `}
       >
-        {/* Sidebar Navigation */}
-        <SidebarIcons
-          tag={"All Tasks"}
-          pathname={"all-tasks"}
-          menuClick={menuClick}
-          setMenuClick={setMenuClick}
-          isMobile={isMobile}
-        >
-          <LayoutGrid className="h-5 w-5 m-2 text-gray-300  " />
-        </SidebarIcons>
+        {auth?.role === "admin" ? (
+          <>
+            <SidebarIcons
+              tag={"Home"}
+              pathname={"/admin"}
+              menuClick={menuClick}
+              setMenuClick={setMenuClick}
+              isMobile={isMobile}
+            >
+              <Home className="h-5 w-5 m-2 text-gray-300  " />
+            </SidebarIcons>
+            <SidebarIcons
+              tag={"Group"}
+              pathname={"groups"}
+              menuClick={menuClick}
+              setMenuClick={setMenuClick}
+              isMobile={isMobile}
+            >
+              <Group className="h-5 w-5 m-2 text-gray-300  " />
+            </SidebarIcons>
+          </>
+        ) : (
+          <>
+            <SidebarIcons
+              tag={"All Tasks"}
+              pathname={"all-tasks"}
+              menuClick={menuClick}
+              setMenuClick={setMenuClick}
+              isMobile={isMobile}
+            >
+              <LayoutGrid className="h-5 w-5 m-2 text-gray-300  " />
+            </SidebarIcons>
 
-        <SidebarIcons
-          tag={"Today"}
-          pathname={"today"}
-          menuClick={menuClick}
-          setMenuClick={setMenuClick}
-          isMobile={isMobile}
+            <SidebarIcons
+              tag={"Today"}
+              pathname={"today"}
+              menuClick={menuClick}
+              setMenuClick={setMenuClick}
+              isMobile={isMobile}
+            >
+              <Calendar className="h-5 w-5 m-2 text-gray-300  " />
+            </SidebarIcons>
 
-        >
-          <Calendar className="h-5 w-5 m-2 text-gray-300  " />
-        </SidebarIcons>
+            <SidebarIcons
+              tag={"Upcoming"}
+              pathname={"upcoming"}
+              menuClick={menuClick}
+              setMenuClick={setMenuClick}
+              isMobile={isMobile}
+            >
+              <CalendarDays className="h-5 w-5 m-2 text-gray-300" />
+            </SidebarIcons>
 
-        <SidebarIcons
-          tag={"Upcoming"}
-          pathname={"upcoming"}
-          menuClick={menuClick}
-          setMenuClick={setMenuClick}
-          isMobile={isMobile}
+            <SidebarIcons
+              tag={"Completed"}
+              pathname={"completed"}
+              menuClick={menuClick}
+              setMenuClick={setMenuClick}
+              isMobile={isMobile}
+            >
+              <CircleCheckBig className="h-5 w-5 m-2 text-gray-300" />
+            </SidebarIcons>
 
-        >
-          <CalendarDays className="h-5 w-5 m-2 text-gray-300" />
-        </SidebarIcons>
-
-        <SidebarIcons
-          tag={"Completed"}
-          pathname={"completed"}
-          menuClick={menuClick}
-          setMenuClick={setMenuClick}
-          isMobile={isMobile}
-
-        >
-          <CircleCheckBig className="h-5 w-5 m-2 text-gray-300" />
-        </SidebarIcons>
-
-        <SidebarIcons
-          tag={"Past Due"}
-          pathname={"past-due"}
-          menuClick={menuClick}
-          setMenuClick={setMenuClick}
-          isMobile={isMobile}
-          tagCss={"text-red-700"}
-        >
-          <CircleAlert className="h-5 w-5 m-2 text-red-700" />
-        </SidebarIcons>
+            <SidebarIcons
+              tag={"Past Due"}
+              pathname={"past-due"}
+              menuClick={menuClick}
+              setMenuClick={setMenuClick}
+              isMobile={isMobile}
+              tagCss={"text-red-700"}
+            >
+              <CircleAlert className="h-5 w-5 m-2 text-red-700" />
+            </SidebarIcons>
+          </>
+        )}
       </div>
     </>
   );
