@@ -12,6 +12,7 @@ import UpcomingTask from "./components/TaskComponents/UpcomingTask.jsx";
 import PastDue from "./components/TaskComponents/PastDue.jsx";
 import TaskDetailCard from "./components/TaskComponents/TaskDetailCard.jsx";
 import AdminPage from "./components/TaskComponents/AdminPage.jsx";
+import Group from "./components/GroupComponents/Group.jsx";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
 
             <Route element={<RequireAuth allowedRoles={["admin"]} />}>
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/groups" element={<Group />} />
             </Route>
 
             {/* any unmatched route */}

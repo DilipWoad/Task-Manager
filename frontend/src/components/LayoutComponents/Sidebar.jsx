@@ -48,7 +48,7 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
           <>
             <SidebarIcons
               tag={"Home"}
-              pathname={"/admin"}
+              pathname={"admin"}
               menuClick={menuClick}
               setMenuClick={setMenuClick}
               isMobile={isMobile}

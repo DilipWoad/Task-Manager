@@ -17,7 +17,7 @@ const Body = () => {
       <div className="w-full flex flex-1 px-2 overflow-hidden ">
         <Sidebar menuClick={menuClick} setMenuClick={setMenuClick} />
         <div className="w-full h-full bg-yellow-400 sm:px-2 overflow-y-auto flex flex-col relative rounded-md">
-          {auth && <Heading />}
+          {auth?.role=='user' && <Heading />}
           <MainBody />
         </div>
       </div>
