@@ -4,8 +4,10 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 
 const verifyAuthentication = AsyncHandler(async (req, res, next) => {
   //1)cookies can be from header and can be taken from cookies
+  console.log("Access Token from cookies ::",req.cookies.accessToken)
+  console.log("Access Token from header ::",req.header("Authorization"))
   let accessToken = req.cookies.accessToken || req.header("Authorization");
-  console.log(accessToken);
+  console.log("Does not working accessToken ::",accessToken);
 
   if (!accessToken) {
     throw new ApiError(404, "Access token does not exists");
