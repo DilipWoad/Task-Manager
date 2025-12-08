@@ -1,10 +1,52 @@
 import { Outlet } from "react-router";
+import { useEffect } from "react";
+import useToastCard from "../../hooks/useToastCard.js";
+import ToastCard from "../../utils/ToastCard.jsx";
 
 const MainBody = () => {
+  const {
+    showToastCard,
+    animation,
+    setAnimation,
+    setToastCardMessage,
+    toastCardMessage,
+    setShowToastCard,
+  } = useToastCard();
+  console.log("show toast ::", showToastCard);
+  console.log("show toast msg::", toastCardMessage);
+  console.log("show toast animation::", animation);
+
+  useEffect(() => {
+    console.log("Outer");
+    if (showToastCard) {
+      console.log("Inside");
+      setAnimation(false); // Reset animation state
+      const hideTimer = setTimeout(() => {
+        setAnimation(true); // Start slide-out animation
+        const resetTimer = setTimeout(() => {
+          setShowToastCard(false);
+          setAnimation(false); // Reset animation for next time
+        }, 1000);
+         // Allow animation to complete (e.g., 1000ms for slide-out)
+        return () => clearTimeout(resetTimer);
+      }, 3000); // Toast visible duration before slide-out starts (e.g., 1500ms)
+
+      return () => clearTimeout(hideTimer);
+    }
+  }, [showToastCard]);
   return (
-    <main className="flex-1  bg-purple-400 rounded-r-md">
-      <Outlet />
-    </main>
+    <>
+      <main className="flex-1  bg-purple-400 rounded-r-md ">
+        <Outlet />
+        {showToastCard && (
+          <ToastCard
+            animation={animation}
+            toastCardMessage={toastCardMessage}
+          />
+        )}
+        
+      </main>
+    </>
   );
 };
 

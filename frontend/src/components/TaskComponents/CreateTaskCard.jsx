@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import LoadingScreen from "../LoadingScreen";
 
-const CreateTaskCard = ({ groupId, setShowCreateTask }) => {
+const CreateTaskCard = ({ groupId, setShowCreateTask}) => {
   const [groupUsers, setGroupUsers] = useState(null);
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [loading, setLoading] = useState(false);
+
+  
   const taskDetailStruct = {
     title: "",
     description: "",
@@ -67,6 +69,7 @@ const CreateTaskCard = ({ groupId, setShowCreateTask }) => {
   useEffect(() => {
     getGroupUser();
   }, []);
+  
   return (
     <div className="fixed flex flex-col justify-center items-center inset-0 bg-black/50 z-40 gap-4">
       {loading && <LoadingScreen/>}
@@ -134,6 +137,7 @@ const CreateTaskCard = ({ groupId, setShowCreateTask }) => {
           Add
         </button>
       </div>
+      
     </div>
   );
 };

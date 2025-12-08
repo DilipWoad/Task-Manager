@@ -1,3 +1,4 @@
+import useToastCard from "../../hooks/useToastCard";
 import { BASE_URL } from "../../utils/constant";
 import CreateTaskCard from "./CreateTaskCard";
 import TaskDetailCard from "./TaskDetailCard";
@@ -8,6 +9,10 @@ const AdminPage = () => {
   const [taskStats, setTaskStats] = useState(null);
   const [groupId, setGroupId] = useState(null);
   const [showCreateTask, setShowCreateTask] = useState(false);
+  const [responseMessage, setResponseMessage] = useState("");
+
+  const { setShowToastCard, setToastCardMessage } = useToastCard();
+
   const getTaskStats = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/tasks/stats`, {
@@ -57,6 +62,10 @@ const AdminPage = () => {
     if (d == "object") {
       setGroupId(res[0]._id);
       setShowCreateTask(true);
+    } else {
+      // setResponseMessage(res);
+      setShowToastCard(true);
+      setToastCardMessage(res);
     }
   };
   //   const taskStats = {
@@ -70,7 +79,12 @@ const AdminPage = () => {
   }, []);
   return (
     <div className="bg-amber-700 h-full">
-      {showCreateTask && <CreateTaskCard groupId={groupId} setShowCreateTask={setShowCreateTask} />}
+      {showCreateTask && (
+        <CreateTaskCard
+          groupId={groupId}
+          setShowCreateTask={setShowCreateTask}
+        />
+      )}
       <div className="bg-red-400 flex flex-col">
         <p>Hello Admin,</p> <span>Dilip Woad</span>
       </div>

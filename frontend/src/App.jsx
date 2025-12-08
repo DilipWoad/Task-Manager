@@ -23,6 +23,8 @@ function App() {
             <Route path="login" element={<LoginComponent />} />
             <Route path="signup" element={<SignupComponent />} />
             <Route path="unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/groups" element={<Group />} />
+
             {/* <Route path="yo" element={<TaskDetailCard />} /> */}
 
             {/* protected routes */}
@@ -40,7 +42,6 @@ function App() {
 
             <Route element={<RequireAuth allowedRoles={["admin"]} />}>
               <Route path="/admin" element={<AdminPage />} />
-              <Route path="/groups" element={<Group />} />
             </Route>
 
             {/* any unmatched route */}
