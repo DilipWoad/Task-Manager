@@ -8,6 +8,7 @@ import {
   getAdminGroups,
   getAllUserFromGroup,
   removeUserFromGroup,
+  getAllUsers,
 } from "../controllers/group.controller.js";
 import { verifyRole } from "../middlewares/role.middleware.js";
 
@@ -19,13 +20,19 @@ router
   .route("/")
   .post(verifyRole(["admin"]), createGroup)
   .get(verifyRole(["admin"]), getAdminGroups);
-
+router
+  .route("/all-users")
+  .get(verifyRole(["admin"]), getAllUsers);
 router
   .route("/:groupId")
   .delete(verifyRole(["admin"]), deleteGroup)
   .patch(verifyRole(["admin"]), editGroupName)
-  .get(verifyRole(["admin"]),getAllUserFromGroup)
+  .get(verifyRole(["admin"]), getAllUserFromGroup);
 
-router.route("/:groupId/add/:userId").patch(verifyRole(["admin"]), addUserToGroup);
-router.route("/:groupId/remove/:userId").patch(verifyRole(["admin"]), removeUserFromGroup);
+router
+  .route("/:groupId/add/:userId")
+  .patch(verifyRole(["admin"]), addUserToGroup);
+router
+  .route("/:groupId/remove/:userId")
+  .patch(verifyRole(["admin"]), removeUserFromGroup);
 export default router;

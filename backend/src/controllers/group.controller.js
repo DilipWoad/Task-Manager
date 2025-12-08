@@ -245,6 +245,19 @@ const getAllUserFromGroup = AsyncHandler(async (req, res) => {
 });
 
 
+
+const getAllUsers = AsyncHandler(async (req, res) => {
+  const allUsers = await User.find();
+  if (allUsers.length == 0) {
+    return res.status(200).json(new ApiResponse(200, [], "No user Present."));
+  }
+  
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allUsers, "All user fetched successfully."));
+});
+
+
 export {
   createGroup,
   getAdminGroups,
@@ -253,4 +266,5 @@ export {
   addUserToGroup,
   removeUserFromGroup,
   getAllUserFromGroup,
+  getAllUsers
 };
