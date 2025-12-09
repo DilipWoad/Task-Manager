@@ -12,16 +12,19 @@ const createGroup = AsyncHandler(async (req, res) => {
     throw new ApiError(401, "You aren't admin dwag.");
   }
   const { groupName } = req.body;
+
+  console.log(groupName)
   if (groupName.trim() === "") {
     throw new ApiError(400, "Group name can't be empty.");
   }
 
   //just create a grp
 
-  const group = await Group.create({
+  let group = await Group.create({
     groupName,
     groupAdmin: req.user.id,
-  }).populate({ path: "groupAdmin", select: "fullName email _id" });
+  })
+  group = await group.populate({ path: "groupAdmin", select: "fullName email _id" });
 
   if (!group) {
     throw new ApiError(500, "Something went wrong while creating a group.");

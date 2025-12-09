@@ -4,16 +4,18 @@ const GroupOperationsIcons = ({
   tagCss,
   divCss,
   handleClick,
-  tag
+  tag,
+  isDisable
 }) => {
   //based on the group show options as disable/abled
   //if no group make Delete and Add user disabled , Create group as Abled
   //if one group is present make Delete and add user Abled and make create group disabled
 
   return (
-    <div
+    <button
+        disabled={isDisable}
       onClick={() => handleClick()}
-      className={`${divCss} group px-4 py-2 rounded-md hover:cursor-pointer transition-colors duration-300 relative `}
+      className={`${divCss}  group px-4 py-2 rounded-md ${isDisable ? "" :"cursor-pointer"}  transition-colors duration-300 relative `}
     >
       {/* //this is icon from lucide-react */}
       <div className="flex text-[16px] gap-2 ">
@@ -21,7 +23,7 @@ const GroupOperationsIcons = ({
         <span className="">{tag}</span>
       </div>
 
-      <p
+      {!isDisable && <p
         className={`${tagCss} text-nowrap absolute right-1.5 px-2 py-1 rounded-md text-xs text-white font-semibold bg-black/70
         top-10
 
@@ -33,8 +35,8 @@ const GroupOperationsIcons = ({
         `}
       >
         {tagName}
-      </p>
-    </div>
+      </p>}
+    </button>
   );
 };
 
