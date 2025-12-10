@@ -26,6 +26,7 @@ const MainBody = () => {
         const resetTimer = setTimeout(() => {
           setShowToastCard(false);
           setAnimation(false); // Reset animation for next time
+          setToastCardMessage("");
         }, 1000);
          // Allow animation to complete (e.g., 1000ms for slide-out)
         return () => clearTimeout(resetTimer);
