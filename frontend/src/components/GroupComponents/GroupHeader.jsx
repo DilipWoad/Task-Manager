@@ -5,23 +5,23 @@ import { BASE_URL } from "../../utils/constant";
 import { useState, useEffect } from "react";
 import useToastCard from "../../hooks/useToastCard";
 const GroupHeader = ({ group, setGroup }) => {
-  const [allUsers, setAllUsers] = useState([]);
+  // const [allUsers, setAllUsers] = useState([]);
   const [showCreateGroupCard, setShowCreateGroupCard] = useState(false);
   const [groupName, setGroupName] = useState("");
 
   const { setShowToastCard, setToastCardMessage } = useToastCard();
 
-  const getUsers = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/groups/all-users`, {
-        withCredentials: true,
-      });
-      console.log(res.data.data);
-      setAllUsers(res.data.data);
-    } catch (err) {
-      console.log("Error while getting all user details.", err);
-    }
-  };
+  // const getUsers = async () => {
+  //   try {
+  //     const res = await axios.get(`${BASE_URL}/groups/all-users`, {
+  //       withCredentials: true,
+  //     });
+  //     console.log(res.data.data);
+  //     setAllUsers(res.data.data);
+  //   } catch (err) {
+  //     console.log("Error while getting all user details.", err);
+  //   }
+  // };
   //   if (!group) return <div>Loading...</div>;
   const handleDeleteClick = () => {
     console.log("Delete clicked");
@@ -57,9 +57,9 @@ const GroupHeader = ({ group, setGroup }) => {
     }
   };
 
-  useEffect(() => {
-    allUsers.length == 0 && getUsers();
-  }, []);
+  // useEffect(() => {
+  //   allUsers.length == 0 && getUsers();
+  // }, []);
   return (
     <>
       {showCreateGroupCard && (

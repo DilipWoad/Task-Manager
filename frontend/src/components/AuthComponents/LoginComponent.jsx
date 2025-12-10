@@ -87,7 +87,7 @@ const LoginComponent = () => {
   return (
     <div className="flex items-center justify-center text-black shrink h-full ">
       {loading && <LoadingScreen />}
-      <div className="bg-white w-full max-w-sm rounded-lg p-8 shadow-lg">
+      <div className="bg-white w-full max-w-sm rounded-lg p-8 shadow-lg mx-2">
         <label className="text-2xl font-semibold ">Login</label>
         <form className="mt-6" onSubmit={handleLoginUser}>
           <div>

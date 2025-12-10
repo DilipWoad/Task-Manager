@@ -250,6 +250,8 @@ const getAllUserFromGroup = AsyncHandler(async (req, res) => {
 
 
 const getAllUsers = AsyncHandler(async (req, res) => {
+  //allUsers but not present in the group 
+  //as we don't need the user which are already present in a group
   const allUsers = await User.find({
     role:"user"
   }).select("-password -refreshToken -role -__v");
