@@ -26,7 +26,7 @@ const Group = () => {
       <GroupHeader group={group} setGroup={setGroup} />
       {/* //groupBody here */}
       <div className="bg-neutral-700 py-2 flex gap-5">
-        {group && group.map((grp) => <GroupCard key={grp?._id} group={grp} setGroup={setGroup}/>)}
+        {group && group?.map((grp) => <GroupCard key={grp?._id} group={grp} setGroup={setGroup}/>)}
       </div>
     </div>
   );

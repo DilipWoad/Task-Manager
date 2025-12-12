@@ -58,13 +58,20 @@ const GroupCard = ({ group, setGroup }) => {
   };
 
   const handleUserListCancelClick = () => {
-    setShowUserList(false);
+    console.log("Reached here");
     setSelectedUser([]);
+    setShowUserList(false);
   };
 
   const handleAddUser = async () => {
     setLoading(true);
     try {
+      //we have [userList] and [selectedUser]
+      //what we want to do -> get the info of the selected user from userList
+      // so we can filter out from the userList by seeing if they includes or not if includes return that doc
+      
+      let newUser = allUsers.filter((user)=> selectedUser.includes(user._id));
+      console.log(newUser);
       const addUsers = selectedUser.map(
         async (userId) =>
           await axios.patch(
@@ -78,16 +85,32 @@ const GroupCard = ({ group, setGroup }) => {
       console.log(res);
       setToastCardMessage("Users added to the group successfully.");
       setShowToastCard(true);
+      //add in the array of users;
+
+      // console.log(newUser);
+
+      setGroup([{...group,groupMembers:[...newUser,...group.groupMembers]}])
     } catch (error) {
       console.log("Error while adding users :: ", error);
+      setToastCardMessage(error?.response?.data?.message);
+      setShowToastCard(true);
     } finally {
       setLoading(false);
+      setSelectedUser([]);
     }
+  };
+
+  const handleGroupCardCancelClick = () => {
+    setSelectedUser([]);
+    setShowGroup(false);
   };
 
   const handleRemoveUser = async () => {
     setLoading(true);
     try {
+      let removedUser = group.groupMembers.filter((user)=> !selectedUser.includes(user._id));
+      console.log(removedUser);
+      // console.log("Selected user :: ",selectedUser)
       const removeUsers = selectedUser.map(
         async (userId) =>
           await axios.patch(
@@ -97,16 +120,21 @@ const GroupCard = ({ group, setGroup }) => {
           )
       );
       const res = await Promise.all(removeUsers);
-      setShowGroup(false);
+      // setShowGroup(false);
       console.log(res);
       setToastCardMessage("Users removed from the group successfully.");
       setShowToastCard(true);
+      
     } catch (error) {
       console.log("Error while removing users :: ", error);
+      setToastCardMessage(error?.response?.data?.message);
+      setShowToastCard(true);
     } finally {
       setLoading(false);
+      setSelectedUser([]);
     }
   };
+
 
   return (
     <>
@@ -165,18 +193,18 @@ const GroupCard = ({ group, setGroup }) => {
               </div>
               <div className="bg-yellow-500 wrap-break-word p-1 mt-4  rounded-lg">
                 <div className="bg-pink-500 rounded-t-lg text-center p-2 text-lg">
-                  {group?.groupName}{" "}
+                  {group?.groupName}
                 </div>
                 <div className="flex flex-col  items-center h-40 overflow-auto mt-1 bg-gray-600 py-2 px-1 rounded-b-lg">
                   {group.groupMembers.length == 0 ? (
                     <p className="text-lg text-center">No user added.</p>
                   ) : (
-                    group.groupMembers.map((memeber) => (
+                    group.groupMembers.map((member) => (
                       <UserCard
-                        key={memeber.email}
+                        key={member.email}
                         selectedUser={selectedUser}
                         setSelectedUser={setSelectedUser}
-                        user={memeber}
+                        user={member}
                       />
                     ))
                   )}
@@ -184,7 +212,7 @@ const GroupCard = ({ group, setGroup }) => {
               </div>
               <div className="text-end mt-4">
                 <button
-                  onClick={() => setShowGroup(false)}
+                  onClick={handleGroupCardCancelClick}
                   className="px-5 py-2  bg-blue-700 text-xs sm:text-sm rounded-md"
                 >
                   Cancel

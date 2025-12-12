@@ -154,6 +154,8 @@ const addUserToGroup = AsyncHandler(async (req, res) => {
     { path: "groupMembers", select: "fullName email _id" },
   ]);
   await group.save();
+
+  console.log(group)
   return res
     .status(200)
     .json(new ApiResponse(200, group, "User added to the group successfully."));
