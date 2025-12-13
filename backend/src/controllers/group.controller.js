@@ -13,7 +13,7 @@ const createGroup = AsyncHandler(async (req, res) => {
   }
   const { groupName } = req.body;
 
-  console.log(groupName)
+  console.log(groupName);
   if (groupName.trim() === "") {
     throw new ApiError(400, "Group name can't be empty.");
   }
@@ -23,8 +23,11 @@ const createGroup = AsyncHandler(async (req, res) => {
   let group = await Group.create({
     groupName,
     groupAdmin: req.user.id,
-  })
-  group = await group.populate({ path: "groupAdmin", select: "fullName email _id" });
+  });
+  group = await group.populate({
+    path: "groupAdmin",
+    select: "fullName email _id",
+  });
 
   if (!group) {
     throw new ApiError(500, "Something went wrong while creating a group.");
@@ -133,29 +136,31 @@ const addUserToGroup = AsyncHandler(async (req, res) => {
   if (!mongoose.isValidObjectId(userId)) {
     throw new ApiError(403, "Invalid user id.");
   }
-  //check if group exists
-  const group = await Group.findById(groupId);
-  if (!group) {
-    throw new ApiError(404, "Group does not exists.");
-  }
+ 
   //check if user exists
   const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User does not exists.");
   }
   //check if the user is already exists in it or not
-  if (group.groupMembers.includes(userId)) {
-    throw new ApiError(403, "User already exists in the group.");
-  }
-  //add the user to the group
-  group.groupMembers.push(userId);
-  group.populate([
+  const group = await Group.findByIdAndUpdate(
+    groupId,
+    {
+      $addToSet: { groupMembers: userId },
+    },
+    {
+      new: true, // Return the updated document
+    }
+  ).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
   ]);
-  await group.save();
 
-  console.log(group)
+  if (!group) {
+    throw new ApiError(404, "Group does not exists.");
+  }
+
+  console.log(group);
   return res
     .status(200)
     .json(new ApiResponse(200, group, "User added to the group successfully."));
@@ -173,35 +178,28 @@ const removeUserFromGroup = AsyncHandler(async (req, res) => {
   if (!mongoose.isValidObjectId(userId)) {
     throw new ApiError(403, "Invalid user id.");
   }
+  
+  
   //check if group exists
-  const group = await Group.findById(groupId);
-  if (!group) {
-    throw new ApiError(404, "Group does not exists.");
-  }
   //check if user exists
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new ApiError(404, "User does not exists.");
-  }
   //check if the user is already exists in it or not
-  if (!group.groupMembers.includes(userId)) {
-    throw new ApiError(403, "User dose not exists in the group.");
-  }
-  //add the user to the group
-  //   group.groupMembers.pop(userId);
-  //   await group.save();
-
-  const updatedMembersList = group.groupMembers.filter(
-    (user) => user.toString() !== userId
-  );
-
-  group.groupMembers = updatedMembersList;
-  group.populate([
+  const group = await Group.findByIdAndUpdate(
+    groupId,
+    {
+      $pull: { groupMembers: userId }, // Removes userId from the array
+    },
+    {
+      new: true, // Return the updated document after the change
+    }
+  ).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
   ]);
 
-  await group.save();
+  if (!group) {
+    throw new ApiError(404, "Group not found.");
+  }
+
   return res
     .status(200)
     .json(
@@ -249,13 +247,11 @@ const getAllUserFromGroup = AsyncHandler(async (req, res) => {
     );
 });
 
-
-
 const getAllUsers = AsyncHandler(async (req, res) => {
-  //allUsers but not present in the group 
+  //allUsers but not present in the group
   //as we don't need the user which are already present in a group
   const allUsers = await User.find({
-    role:"user"
+    role: "user",
   }).select("-password -refreshToken -role -__v");
   if (allUsers.length == 0) {
     return res.status(200).json(new ApiResponse(200, [], "No user Present."));
@@ -266,7 +262,6 @@ const getAllUsers = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(200, allUsers, "All user fetched successfully."));
 });
 
-
 export {
   createGroup,
   getAdminGroups,
@@ -275,5 +270,5 @@ export {
   addUserToGroup,
   removeUserFromGroup,
   getAllUserFromGroup,
-  getAllUsers
+  getAllUsers,
 };

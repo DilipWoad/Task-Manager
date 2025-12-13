@@ -1,6 +1,8 @@
 import { useState } from "react";
-
-const UserListCard = ({ user, setSelectedUser, selectedUser }) => {
+//if groupMembers id includes in the userList then ------ cross it
+//  with italic and bg-gray with not-allowed 
+// on input too
+const UserListCard = ({ user, setSelectedUser, selectedUser,groupMembers }) => {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCheckBoxClick = () => {
@@ -12,13 +14,15 @@ const UserListCard = ({ user, setSelectedUser, selectedUser }) => {
       setSelectedUser(unselected);
     }
   };
+const gg = groupMembers.map((grp)=> grp._id);
+
   return (
     <div className="flex justify-between gap-4 my-1 bg-yellow-400 px-4 py-2 rounded-md">
-      <p className="text-lg">
-        {user?.fullName}{" "}
+      <p className={`text-lg ${gg.includes(user._id) ? "line-through italic text-gray-500 cursor-not-allowed" : ""} `}>
+        {user?.fullName}
         <span className="text-base font-semibold italic">{`(${user?.email})`}</span>
       </p>
-      <input type="checkbox" value={user._id} onChange={handleCheckBoxClick} />
+      <input disabled={gg.includes(user._id)} type="checkbox" value={user._id} onChange={handleCheckBoxClick} />
     </div>
   );
 };
