@@ -78,7 +78,7 @@ const ComfirmationBox = ({
             onClick={handleDeleteGroup}
             className={`cursor-pointer bg-red-600 hover:bg-red-500 py-1 sm:py-2 px-5   sm:text-sm rounded-md transition-colors duration-300 `}
           >
-            {comfirmationButtonLabel}
+            Yes {comfirmationButtonLabel}
           </button>
           <button
             onClick={handleCancelClick}
