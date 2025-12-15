@@ -6,6 +6,7 @@ import useToastCard from "../../hooks/useToastCard";
 import UserCard from "../../utils/ReusebleComponents/UserCard";
 import UserListCard from "../../utils/ReusebleComponents/UserListCard";
 import LoadingScreen from "../LoadingScreen";
+import ComfirmationBox from "../../utils/ReusebleComponents/ComfirmationBox";
 
 const GroupCard = ({ group, setGroup }) => {
   const [showGroupOptions, setShowGroupOptions] = useState(false);
@@ -16,26 +17,11 @@ const GroupCard = ({ group, setGroup }) => {
   const [showEditCard, setShowEditCard] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
   const [selectedUser, setSelectedUser] = useState([]);
-
-  console.log("Selected user :: ", selectedUser);
-
   const [allUsers, setAllUsers] = useState([]);
+  const [showComfirmationBox, setShowComfirmationBox] = useState(false);
 
-  const handleDelete = async () => {
-    console.log("jbdbgbdgb");
-    try {
-      const res = await axios.delete(`${BASE_URL}/groups/${group._id}`, {
-        withCredentials: true,
-      });
-      console.log(res.data.data);
-      setGroup([]);
-      setToastCardMessage("Group deleted Successfully.");
-      setShowToastCard(true);
-    } catch (err) {
-      console.log("Error while deleting the group.", err);
-      setToastCardMessage(err.message);
-      setShowToastCard(true);
-    }
+  const handleDeleteGroupClick = () => {
+    setShowComfirmationBox(true);
   };
 
   const getUsers = async () => {
@@ -181,17 +167,17 @@ const GroupCard = ({ group, setGroup }) => {
           className="fixed inset-0 z-40"
         ></div>
       )}
-      <div className="bg-pink-400 flex p-2 rounded-lg w-full sm:w-1/3 mx-1 ">
+      <div className="bg-pink-400 flex p-2 rounded-lg w-full sm:w-1/3 mx-1 items-center">
         <div className="bg-yellow-500 h-20 w-20 rounded-full flex items-center justify-center">
           <Users width={40} height={40} />
         </div>
         <div
           onClick={() => setShowGroup(true)}
-          className="bg-lime-500 flex-1 ml-2 p-2 rounded-l-lg text-lg wrap-break-word  hover:cursor-pointer"
+          className="bg-lime-500 flex h-full items-center flex-1 ml-2 p-2 rounded-l-lg text-lg wrap-break-word  hover:cursor-pointer"
         >
-          {group?.groupName}
+          <p>{group?.groupName}</p>
         </div>
-        <div className="bg-sky-500 relative p-2 rounded-r-lg z-50 ">
+        <div className="relative p-2 rounded-r-lg z-50 h-full">
           <EllipsisVertical
             width={25}
             height={25}
@@ -199,8 +185,8 @@ const GroupCard = ({ group, setGroup }) => {
             onClick={() => setShowGroupOptions(!showGroupOptions)}
           />
           {showGroupOptions && (
-            <div className="bg-red-500 absolute top-9 left-5 w-20 rounded-md text-sm font-semibold hover:cursor-pointer hover:bg-red-600 text-center">
-              <p onClick={handleDelete} className="px-2 py-1 ">
+            <div className="bg-red-500 absolute -left-20 rounded-md text-sm font-semibold hover:cursor-pointer hover:bg-red-600 text-center">
+              <p onClick={handleDeleteGroupClick} className="px-7 py-2 ">
                 Delete
               </p>
             </div>
@@ -259,7 +245,7 @@ const GroupCard = ({ group, setGroup }) => {
               <div className="text-end mt-4">
                 <button
                   onClick={handleGroupCardCancelClick}
-                  className="px-5 py-2  bg-blue-700 text-xs sm:text-sm rounded-md"
+                  className="px-5 py-2  bg-blue-700 text-xs sm:text-sm rounded-md hover:cursor-pointer hover:bg-blue-600 hover:text-gray-300"
                 >
                   Cancel
                 </button>
@@ -285,16 +271,16 @@ const GroupCard = ({ group, setGroup }) => {
                     />
                   ))}
               </div>
-              <div className="flex justify-evenly">
+              <div className="flex justify-evenly font-semibold">
                 <button
                   onClick={handleUserListCancelClick}
-                  className="px-5 py-2  bg-white text-gray-500 text-xs sm:text-sm rounded-md"
+                  className="px-5 py-2  bg-white hover:bg-slate-200 hover:text-gray-600 text-gray-500 text-xs sm:text-sm rounded-md hover:cursor-pointer transition-colors duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddUser}
-                  className="px-5 py-2  bg-blue-700 text-xs sm:text-sm rounded-md"
+                  className="px-5 py-2  bg-blue-700 hover:bg-blue-600 hover:text-gray-300 text-xs sm:text-sm rounded-md hover:cursor-pointer transition-colors duration-300"
                 >
                   Add
                 </button>
@@ -336,8 +322,20 @@ const GroupCard = ({ group, setGroup }) => {
             </div>
           </div>
         )}
+
         {loading && <LoadingScreen />}
       </div>
+      {showComfirmationBox && (
+        <ComfirmationBox
+          setShowComfirmationBox={setShowComfirmationBox}
+          setLoading={setLoading}
+          groupId={group._id}
+          setGroup={setGroup}
+          setToastCardMessage={setToastCardMessage}
+          setShowToastCard={setShowToastCard}
+          setShowGroupOptions={setShowGroupOptions}
+        />
+      )}
     </>
   );
 };
