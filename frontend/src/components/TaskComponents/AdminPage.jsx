@@ -9,7 +9,6 @@ const AdminPage = () => {
   const [taskStats, setTaskStats] = useState(null);
   const [groupId, setGroupId] = useState(null);
   const [showCreateTask, setShowCreateTask] = useState(false);
-  const [responseMessage, setResponseMessage] = useState("");
 
   const { setShowToastCard, setToastCardMessage } = useToastCard();
 
@@ -63,19 +62,13 @@ const AdminPage = () => {
       setGroupId(res[0]._id);
       setShowCreateTask(true);
     } else {
-      // setResponseMessage(res);
       setShowToastCard(true);
       setToastCardMessage(res);
     }
   };
-  //   const taskStats = {
-  //     totalTasks: 8,
-  //     completed: 2,
-  //     inProgress: 4,
-  //     pastDue: 2,
-  //   };
+
   useEffect(() => {
-    getTaskStats();
+    !taskStats && getTaskStats();
   }, []);
   return (
     <div className="bg-amber-700 h-full">

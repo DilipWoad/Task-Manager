@@ -14,6 +14,8 @@ const UserCard = ({ user, setSelectedUser, selectedUser }) => {
       setSelectedUser(unselected);
     }
   };
+
+
   return (
     <div className="bg-purple-600 flex items-center gap-1 my-1 p-1 rounded-lg w-full">
       <p className="w-15 h-15 rounded-full bg-sky-500 flex items-center justify-center text-lg">
@@ -21,7 +23,7 @@ const UserCard = ({ user, setSelectedUser, selectedUser }) => {
       </p>
       <div className="flex flex-1 text-lg  justify-between px-2">
         <p className="">{fullName}</p>
-        <input onChange={handleInputChange} value={_id} type="checkbox" />
+        <input onChange={handleInputChange} checked={selectedUser.includes(_id)} value={_id} type="checkbox" />
       </div>
     </div>
   );

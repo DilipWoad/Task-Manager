@@ -8,7 +8,9 @@ export const getFirstLastNameLetters=(fullName)=>{
     const d = fullName.split(" ");
     
     const fi = d[0].charAt(0).toUpperCase();
-    const se = !d[d.length-1] ?"": d[d.length-1]?.charAt(0)?.toUpperCase();
-
+    if(d.length==1){
+        return fi
+    }
+    const se = d[d.length-1]?.charAt(0)?.toUpperCase();
     return `${fi}${se}`
 }

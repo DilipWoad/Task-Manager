@@ -8,6 +8,7 @@ const Group = () => {
   const [group, setGroup] = useState([]);
 
   const getAdminGroup = async () => {
+    console.log("Is it getting call everytime.")
     try {
       const res = await axios.get(`${BASE_URL}/groups`, {
         withCredentials: true,
@@ -19,7 +20,7 @@ const Group = () => {
     }
   };
   useEffect(() => {
-    group.length == 0 && getAdminGroup();
+    getAdminGroup();
   }, []);
   return (
     <div className="flex flex-col">

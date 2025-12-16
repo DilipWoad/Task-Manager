@@ -74,6 +74,8 @@ const GroupCard = ({ group, setGroup }) => {
           setToastCardMessage={setToastCardMessage}
           setShowToastCard={setShowToastCard}
           setShowGroupOptions={setShowGroupOptions}
+          comfirmationBoxLabel={"Do you want to delete the group?"}
+          comfirmationButtonLabel={"Delete"}
         />
       )}
     </>

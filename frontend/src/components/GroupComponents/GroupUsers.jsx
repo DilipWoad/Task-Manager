@@ -5,6 +5,7 @@ import LoadingScreen from "../LoadingScreen";
 import UserCard from "../../utils/ReusebleComponents/UserCard";
 import EditGroupName from "./EditGroupName";
 import ListsOfUser from "./ListsOfUsers";
+import ComfirmationBox from "../../utils/ReusebleComponents/ComfirmationBox";
 
 const GroupUsers = ({
   selectedUser,
@@ -19,35 +20,10 @@ const GroupUsers = ({
   const [showEditCard, setShowEditCard] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
   const [showUserList, setShowUserList] = useState(false);
+  const [showComfirmationBox, setShowComfirmationBox] = useState(false);
 
-  const handleRemoveUser = async () => {
-    setLoading(true);
-    try {
-      let remainingUser = group.groupMembers.filter(
-        (user) => !selectedUser.includes(user._id)
-      );
-      // console.log("Selected user :: ",selectedUser)
-      const removeUsers = selectedUser.map(
-        async (userId) =>
-          await axios.patch(
-            `${BASE_URL}/groups/${group._id}/remove/${userId}`,
-            {},
-            { withCredentials: true }
-          )
-      );
-      await Promise.all(removeUsers);
-
-      setToastCardMessage("Users removed from the group successfully.");
-      setShowToastCard(true);
-      setGroup([{ ...group, groupMembers: remainingUser }]);
-    } catch (error) {
-      console.log("Error while removing users :: ", error);
-      setToastCardMessage(error?.response?.data?.message);
-      setShowToastCard(true);
-    } finally {
-      setLoading(false);
-      setSelectedUser([]);
-    }
+  const handleRemoveUserClick = async () => {
+    setShowComfirmationBox(true);
   };
 
   const handleEditClick = () => {
@@ -90,7 +66,7 @@ const GroupUsers = ({
         <div className=" flex px-1  py-2 justify-between font-semibold">
           <button
             disabled={selectedUser.length < 1}
-            onClick={handleRemoveUser}
+            onClick={handleRemoveUserClick}
             className={`${
               selectedUser.length < 1
                 ? "cursor-not-allowed bg-red-300 hover:bg-red-400 text-slate-200"
@@ -168,6 +144,23 @@ const GroupUsers = ({
           setToastCardMessage={setToastCardMessage}
           setShowToastCard={setShowToastCard}
           setLoading={setLoading}
+        />
+      )}
+      {showComfirmationBox && (
+        <ComfirmationBox
+          setShowComfirmationBox={setShowComfirmationBox}
+          setLoading={setLoading}
+          groupId={group._id}
+          setGroup={setGroup}
+          setToastCardMessage={setToastCardMessage}
+          setShowToastCard={setShowToastCard}
+          comfirmationBoxLabel={`Do you want to remove the selected ${
+            selectedUser.length > 1 ? "users" : "user"
+          } from the group?`}
+          comfirmationButtonLabel={"Remove"}
+          setSelectedUser={setSelectedUser}
+          selectedUser={selectedUser}
+          group={group}
         />
       )}
     </div>

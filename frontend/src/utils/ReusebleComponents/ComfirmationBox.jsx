@@ -2,8 +2,8 @@ import axios from "axios";
 import { BASE_URL } from "../constant";
 
 const ComfirmationBox = ({
-    comfirmationBoxLabel,
-    comfirmationButtonLabel,
+  comfirmationBoxLabel,
+  comfirmationButtonLabel,
   setShowComfirmationBox,
   setLoading,
   groupId,
@@ -11,7 +11,12 @@ const ComfirmationBox = ({
   setToastCardMessage,
   setShowToastCard,
   setShowGroupOptions,
+  setSelectedUser,
+  selectedUser,
+  group
 }) => {
+  const label = comfirmationButtonLabel.toLowerCase().trim();
+
   const handleDeleteGroup = async () => {
     setLoading(true);
     try {
@@ -42,7 +47,7 @@ const ComfirmationBox = ({
       const removeUsers = selectedUser.map(
         async (userId) =>
           await axios.patch(
-            `${BASE_URL}/groups/${group._id}/remove/${userId}`,
+            `${BASE_URL}/groups/${groupId}/remove/${userId}`,
             {},
             { withCredentials: true }
           )
@@ -63,22 +68,35 @@ const ComfirmationBox = ({
     }
   };
 
+  console.log("Labels on the Comfirmation Box :: ",label)
+
+
+  const handleComfirmedClick = () => {
+    if ( label === "delete") {
+      handleDeleteGroup();
+    } else if (label === "remove") {
+      handleRemoveUser();
+    }
+    setShowComfirmationBox(false);
+  };
+
   const handleCancelClick = () => {
-    setShowGroupOptions(false);
+    label === "delete" && setShowGroupOptions(false);
+    label === "remove" && setSelectedUser([])
     setShowComfirmationBox(false);
   };
   return (
     <div className="bg-black/50 fixed inset-0 flex justify-center items-center z-50">
       <div className="flex flex-col items-center bg-black/80 rounded-lg  py-6 gap-10 sm:gap-15 w-full sm:w-80 mx-10">
         <div className="wrap-break-word text-center sm:text-lg">
-          Do you want to delete the group?{comfirmationBoxLabel}
+          {comfirmationBoxLabel}
         </div>
         <div className="flex gap-10">
           <button
-            onClick={handleDeleteGroup}
+            onClick={handleComfirmedClick}
             className={`cursor-pointer bg-red-600 hover:bg-red-500 py-1 sm:py-2 px-5   sm:text-sm rounded-md transition-colors duration-300 `}
           >
-            Yes {comfirmationButtonLabel}
+            {comfirmationButtonLabel}
           </button>
           <button
             onClick={handleCancelClick}

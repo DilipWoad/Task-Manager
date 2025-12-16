@@ -10,28 +10,7 @@ const GroupHeader = ({ group, setGroup }) => {
   const [groupName, setGroupName] = useState("");
 
   const { setShowToastCard, setToastCardMessage } = useToastCard();
-
-  // const getUsers = async () => {
-  //   try {
-  //     const res = await axios.get(`${BASE_URL}/groups/all-users`, {
-  //       withCredentials: true,
-  //     });
-  //     console.log(res.data.data);
-  //     setAllUsers(res.data.data);
-  //   } catch (err) {
-  //     console.log("Error while getting all user details.", err);
-  //   }
-  // };
-  //   if (!group) return <div>Loading...</div>;
-  const handleDeleteClick = () => {
-    console.log("Delete clicked");
-  };
-
-  const handleAddUserClick = async () => {
-    //for user id we need top get all the user in the system register.
-    const allUser = allUsers;
-    console.log("Add User clicked", allUser);
-  };
+  
   const handleCreateGroupClick = () => {
     setShowCreateGroupCard(true);
   };
