@@ -9,6 +9,7 @@ import {
   getAllUserFromGroup,
   removeUserFromGroup,
   getAllUsers,
+  userTaskStatistic,
 } from "../controllers/group.controller.js";
 import { verifyRole } from "../middlewares/role.middleware.js";
 
@@ -20,9 +21,7 @@ router
   .route("/")
   .post(verifyRole(["admin"]), createGroup)
   .get(verifyRole(["admin"]), getAdminGroups);
-router
-  .route("/all-users")
-  .get(verifyRole(["admin"]), getAllUsers);
+router.route("/all-users").get(verifyRole(["admin"]), getAllUsers);
 router
   .route("/:groupId")
   .delete(verifyRole(["admin"]), deleteGroup)
@@ -35,4 +34,8 @@ router
 router
   .route("/:groupId/remove/:userId")
   .patch(verifyRole(["admin"]), removeUserFromGroup);
+
+router
+  .route("/:groupId/user/:userId")
+  .get(verifyRole(["admin"]), userTaskStatistic);
 export default router;

@@ -13,6 +13,7 @@ import PastDue from "./components/TaskComponents/PastDue.jsx";
 import TaskDetailCard from "./components/TaskComponents/TaskDetailCard.jsx";
 import AdminPage from "./components/TaskComponents/AdminPage.jsx";
 import Group from "./components/GroupComponents/Group.jsx";
+import UserPage from "./components/UserComponents/UserPage.jsx";
 
 function App() {
   return (
@@ -23,7 +24,6 @@ function App() {
             <Route path="login" element={<LoginComponent />} />
             <Route path="signup" element={<SignupComponent />} />
             <Route path="unauthorized" element={<UnauthorizedPage />} />
-            <Route path="/groups" element={<Group />} />
 
             {/* <Route path="yo" element={<TaskDetailCard />} /> */}
 
@@ -43,6 +43,8 @@ function App() {
             <Route element={<RequireAuth allowedRoles={["admin"]} />}>
               <Route path="/admin" element={<AdminPage />} />
             </Route>
+            <Route path="/groups" element={<Group />} />
+            <Route path="/group/user/:userId" element={<UserPage />} />
 
             {/* any unmatched route */}
             <Route path="*" element={<MissingRoute />} />

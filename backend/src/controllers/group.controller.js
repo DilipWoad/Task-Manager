@@ -4,6 +4,7 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { User } from "../models/users.model.js";
 import { Group } from "../models/groups.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Task } from "../models/tasks.model.js";
 
 const createGroup = AsyncHandler(async (req, res) => {
   //verify jwt
@@ -136,7 +137,7 @@ const addUserToGroup = AsyncHandler(async (req, res) => {
   if (!mongoose.isValidObjectId(userId)) {
     throw new ApiError(403, "Invalid user id.");
   }
- 
+
   //check if user exists
   const user = await User.findById(userId);
   if (!user) {
@@ -178,8 +179,7 @@ const removeUserFromGroup = AsyncHandler(async (req, res) => {
   if (!mongoose.isValidObjectId(userId)) {
     throw new ApiError(403, "Invalid user id.");
   }
-  
-  
+
   //check if group exists
   //check if user exists
   //check if the user is already exists in it or not
@@ -262,6 +262,82 @@ const getAllUsers = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(200, allUsers, "All user fetched successfully."));
 });
 
+const userTaskStatistic = AsyncHandler(async (req, res) => {
+  //1)verify jwt
+  //2)access by as of now only admin
+  //3)get userId from params
+  //4)validated id
+  //5)check if user exists(can skip if don't want multiple databases calls)
+  //6) aggregate 1)match all the task document with assigned_to as userid
+  //then sum up the task assign to it ,the completed task by the user etc
+  const { userId } = req.params;
+  if (!mongoose.isValidObjectId(userId)) {
+    throw new ApiError(401, "Invalid user Id.");
+  }
+
+  const userTaskStats = await Task.aggregate([
+    {
+      $match: {
+        assigned_to: new mongoose.Types.ObjectId(userId),
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalTaskAssigned: { $sum: 1 },
+        completedTasks: {
+          $sum: {
+            $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
+          },
+        },
+        inProgressTasks: {
+          $sum: {
+            $cond: [{ $eq: ["$status", "in-progress"] }, 1, 0],
+          },
+        },
+        pastDueTasks: {
+          $sum: {
+            $cond: [
+              {
+                $and: [
+                  { $lt: ["$deadline", "$$NOW"] },
+                  { $ne: ["$status", "completed"] },
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalTaskAssigned: 1,
+        completedTasks: 1,
+        inProgressTasks: 1,
+        pastDueTasks: 1,
+      },
+    },
+  ]);
+  if (userTaskStats.length == 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "No task assigned to the user."));
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        userTaskStats[0],
+        "User Task deatils fetched successfully."
+      )
+    );
+});
+
 export {
   createGroup,
   getAdminGroups,
@@ -271,4 +347,5 @@ export {
   removeUserFromGroup,
   getAllUserFromGroup,
   getAllUsers,
+  userTaskStatistic
 };
