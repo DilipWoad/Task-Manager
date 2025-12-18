@@ -49,7 +49,7 @@ const CreateTaskCard = ({ groupId, setShowCreateTask}) => {
         deadline:selectedDate,
       };
       const res = await axios.post(
-        `${BASE_URL}/tasks/${selectedUser}`,
+        `${BASE_URL}/tasks/user/${selectedUser}`,
         taskData,
         { withCredentials: true }
       );
