@@ -275,6 +275,16 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid user Id.");
   }
 
+  let startTodayDay = new Date();
+  // console.log(todaysDay.toLocaleDateString());
+  startTodayDay.setHours(0, 0, 0, 0);
+  console.log(startTodayDay);
+
+  let endTodayDay = new Date();
+  // console.log(todaysDay.toLocaleDateString());
+  endTodayDay.setHours(23, 59, 59, 999);
+  console.log(endTodayDay);
+
   const userTaskStats = await Task.aggregate([
     {
       $match: {
@@ -288,6 +298,20 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
         completedTasks: {
           $sum: {
             $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
+          },
+        },
+        todayTasks: {
+          $sum: {
+            $cond: [
+              {
+                $and: [
+                  { $gte: ["$deadline", startTodayDay] },
+                  { $lte: ["$deadline", endTodayDay] },
+                ],
+              },
+              1,
+              0,
+            ],
           },
         },
         inProgressTasks: {
@@ -318,6 +342,7 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
         completedTasks: 1,
         inProgressTasks: 1,
         pastDueTasks: 1,
+        todayTasks: 1,
       },
     },
   ]);
@@ -347,5 +372,5 @@ export {
   removeUserFromGroup,
   getAllUserFromGroup,
   getAllUsers,
-  userTaskStatistic
+  userTaskStatistic,
 };

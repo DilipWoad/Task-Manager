@@ -27,7 +27,7 @@ router.route("/past-due").get(verifyRole(["user"]), pastDueTasks);
 router.route("/stats").get(verifyRole(["admin"]),taskStats)
 
 router
-  .route("/:userId")
+  .route("/user/:userId")
   .post(verifyRole(["admin"]), createTask)
   .get(verifyRole(["admin"]), getUserAssignTasksAdmin);
 

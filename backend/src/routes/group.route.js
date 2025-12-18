@@ -34,8 +34,7 @@ router
 router
   .route("/:groupId/remove/:userId")
   .patch(verifyRole(["admin"]), removeUserFromGroup);
-
 router
-  .route("/:groupId/user/:userId")
+  .route("/user/:userId")
   .get(verifyRole(["admin"]), userTaskStatistic);
 export default router;

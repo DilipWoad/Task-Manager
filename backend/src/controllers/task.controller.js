@@ -93,7 +93,7 @@ const getUserAssignTasksAdmin = AsyncHandler(async (req, res) => {
   //get all the document in task where userId matched with current loginUser id
   const tasks = await Task.find({
     assigned_to: user._id,
-  });
+  }).populate({path:"assigned_to",select :"fullName email _id"});
 
   console.log("Tasks :: ", tasks);
   if (!tasks) {
@@ -421,9 +421,9 @@ const taskStats = AsyncHandler(async (req, res) => {
 });
 
 
-const getUsersTasks = AsyncHandler(async(req,res)=>{
+// const getUsersTasks = AsyncHandler(async(req,res)=>{
 
-})
+// })
 
 
 export {
