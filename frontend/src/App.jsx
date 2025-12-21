@@ -14,6 +14,11 @@ import TaskDetailCard from "./components/TaskComponents/TaskDetailCard.jsx";
 import AdminPage from "./components/TaskComponents/AdminPage.jsx";
 import Group from "./components/GroupComponents/Group.jsx";
 import UserPage from "./components/UserComponents/UserPage.jsx";
+import UserAllTasks from "./components/UserComponents/UserAllTasks.jsx";
+import UserTodaysTasks from "./components/UserComponents/UserTodaysTasks.jsx";
+import UserPastDueTasks from "./components/UserComponents/UserPastDueTasks.jsx";
+import UserCompletedTasks from "./components/UserComponents/UserCompletedTasks.jsx";
+import UserInprogressTasks from "./components/UserComponents/UserInprogressTasks.jsx";
 
 function App() {
   return (
@@ -44,10 +49,18 @@ function App() {
               <Route path="/admin" element={<AdminPage />} />
             </Route>
             <Route path="/groups" element={<Group />} />
-            <Route path="/group/user/:userId" element={<UserPage />} />
+            <Route path="/group/user/:userId" element={<UserPage />} >
+            <Route index element={<UserAllTasks/>}/>
+              <Route path="all-tasks" element={<UserAllTasks/>}/>
+              <Route path="today" element={<UserTodaysTasks/>}/>
+              <Route path="past-due" element={<UserPastDueTasks/>}/>
+              <Route path="in-progress" element={<UserInprogressTasks/>}/>
+              <Route path="completed" element={<UserCompletedTasks/>}/>
+            <Route/>
 
             {/* any unmatched route */}
             <Route path="*" element={<MissingRoute />} />
+          </Route>
           </Route>
         </Routes>
       </BrowserRouter>

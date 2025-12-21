@@ -1,14 +1,17 @@
 import axios from "axios";
-import { useLocation, useParams } from "react-router";
+import { Outlet, useLocation, useParams } from "react-router";
 import { BASE_URL, getFirstLastNameLetters } from "../../utils/constant";
 import { useState } from "react";
 import LoadingScreen from "../LoadingScreen";
 import { useEffect } from "react";
 import TaskCard from "../TaskComponents/TaskCard";
+import UserTaskSectionButton from "./UserTaskSectionButton";
 
 const UserPage = () => {
   const [userTaskDetails, setUserTaskDetails] = useState(null);
   const [userAllTasks, setUserAllTasks] = useState(null);
+  const [nameLetter,setNameLetter] = useState("");
+  const [userDetail,setUserDetail] = useState(null);
 
   const location = useLocation();
   console.log(location);
@@ -35,7 +38,7 @@ const UserPage = () => {
   //     console.log("");
   //   }
   // };
-  const userNameLetter = getFirstLastNameLetters(userDetails.fullName);
+  !nameLetter && setNameLetter(getFirstLastNameLetters(userDetails.fullName));
 
   const getUserAssignedTask = async () => {
     try {
@@ -51,48 +54,72 @@ const UserPage = () => {
   };
 
   useEffect(() => {
+    !userDetail && setUserDetail(userDetails);
     !userTaskDetails && getUserTaskDetails();
     !userAllTasks && getUserAssignedTask();
   }, [userId]);
-  if (!userAllTasks) return <LoadingScreen />;
+  if (!userDetail) return <LoadingScreen />;
   return (
     <div className="bg-lime-500 flex flex-col h-full gap-4">
       <div className=" bg-red-400 flex gap-1 items-center my-2 rounded-md">
         <div className="m-1 bg-yellow-500 w-24 h-24 flex items-center justify-center rounded-full">
-          <p className="text-4xl">{userNameLetter}</p>
+          <p className="text-4xl">{nameLetter}</p>
         </div>
         <div className="bg-purple-500 flex-1 flex flex-col gap-3 p-2">
-          <p className="text-2xl">{userDetails?.fullName}</p>
-          <p>{userDetails?.email}</p>
+          <p className="text-2xl">{userDetail?.fullName}</p>
+          <p>{userDetail?.email}</p>
         </div>
       </div>
 
       <div className="sticky top-0 z-20 flex justify-between sm:justify-start gap-4 overflow-auto mr-1 bg-slate-400 p-2">
-        <button className="sm:px-5 py-1 px-2 text-nowrap text-sm font-semibold bg-white text-black rounded-md">
-          Today's Tasks
-          <span className="text-sm font-mono">{`(${userTaskDetails?.todayTasks ||0})`}</span>
-        </button>
-        <button className="sm:px-5 py-1 px-2 text-nowrap text-sm font-semibold bg-white text-black rounded-md">
-          Past Due
-          <span className="text-sm font-mono">{`(${userTaskDetails?.pastDueTasks ||0})`}</span>
-        </button>
-        <button className="sm:px-5 py-1 px-2 text-nowrap text-sm font-semibold bg-white text-black rounded-md">
-          In-progress
-          <span className="text-sm font-mono">{`(${userTaskDetails?.inProgressTasks ||0})`}</span>
-        </button>
-        <button className="sm:px-5 py-1 px-2 text-nowrap text-sm font-semibold bg-white text-black rounded-md">
-          All Tasks
-          <span className="text-sm font-mono">{`(${userTaskDetails?.totalTaskAssigned ||0})`}</span>
-        </button>
-        <button className="sm:px-5 py-1 px-2 text-nowrap text-sm font-semibold bg-white text-black rounded-md">
-          Completed
-          <span className="text-sm font-mono">{`(${userTaskDetails?.completedTasks ||0})`}</span>
-        </button>
+        <UserTaskSectionButton
+          buttonLabel={`All Tasks`}
+          NumberOfTassk={userTaskDetails?.totalTaskAssigned}
+          buttonCss={""}
+          taskNumberCss={""}
+          linkTo={'all-tasks'}
+        />
+
+        <UserTaskSectionButton
+          buttonLabel={`Today's Tasks`}
+          NumberOfTassk={userTaskDetails?.todayTasks}
+          buttonCss={""}
+          taskNumberCss={""}
+          linkTo={'today'}
+        />
+        
+        <UserTaskSectionButton
+          buttonLabel={`Past Due`}
+          NumberOfTassk={userTaskDetails?.pastDueTasks}
+          buttonCss={""}
+          taskNumberCss={"text-red-500"}
+          linkTo={'past-due'}
+        />
+
+        <UserTaskSectionButton
+          buttonLabel={`In-progress`}
+          NumberOfTassk={userTaskDetails?.inProgressTasks}
+          buttonCss={""}
+          taskNumberCss={"text-yellow-500"}
+          linkTo={'in-progress'}
+        />
+
+        <UserTaskSectionButton
+          buttonLabel={`Completed`}
+          NumberOfTassk={userTaskDetails?.completedTasks}
+          buttonCss={""}
+          taskNumberCss={"text-green-500"}
+          linkTo={'completed'}
+        />
       </div>
       <div className="bg-sky-500 flex-1 mx-1 pb-5 rounded-md">
         <div className="flex flex-col gap-4 p-1">
-          {userAllTasks &&
-            userAllTasks.map((task) => <TaskCard key={task._id} task={task} />)}
+          {/* {userAllTasks.length === 0 ? (
+            <p>No task assigned to the user.</p>
+          ) : (
+            userAllTasks.map((task) => <TaskCard key={task._id} task={task} />)
+          )} */}
+          <Outlet/>
         </div>
       </div>
     </div>
