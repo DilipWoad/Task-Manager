@@ -9,17 +9,17 @@ const UserTaskSectionButton = ({
 }) => {
   const location = useLocation();
   const link = location.pathname;
-const arr = link.split('/');
-let newLink='';
-if(arr.length===5){
-    arr[arr.length-1] = linkTo
-}else{
+  const arr = link.split("/");
+  let newLink = "";
+  if (arr.length === 5) {
+    arr[arr.length - 1] = linkTo;
+  } else {
     arr[arr.length] = linkTo;
-}
-newLink = arr.join('/')
+  }
+  newLink = arr.join("/");
 
-//   const navToPath = `${location.pathname}${linkTo}`;
-//   console.log(navToPath);
+  //   const navToPath = `${location.pathname}${linkTo}`;
+  //   console.log(navToPath);
   return (
     <Link
       to={newLink}

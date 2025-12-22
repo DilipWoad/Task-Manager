@@ -9,9 +9,8 @@ import UserTaskSectionButton from "./UserTaskSectionButton";
 
 const UserPage = () => {
   const [userTaskDetails, setUserTaskDetails] = useState(null);
-  const [userAllTasks, setUserAllTasks] = useState(null);
-  const [nameLetter,setNameLetter] = useState("");
-  const [userDetail,setUserDetail] = useState(null);
+  const [nameLetter, setNameLetter] = useState("");
+  const [userDetail, setUserDetail] = useState(null);
 
   const location = useLocation();
   console.log(location);
@@ -32,31 +31,11 @@ const UserPage = () => {
     }
   };
 
-  // const getUserDetails = async () => {
-  //   try {
-  //   } catch (error) {
-  //     console.log("");
-  //   }
-  // };
   !nameLetter && setNameLetter(getFirstLastNameLetters(userDetails.fullName));
-
-  const getUserAssignedTask = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/tasks/user/${userId}`, {
-        withCredentials: true,
-      });
-
-      console.log(res.data.data);
-      setUserAllTasks(res.data.data);
-    } catch (error) {
-      console.log("Error while getting tasks assgined to the user :: ", error);
-    }
-  };
 
   useEffect(() => {
     !userDetail && setUserDetail(userDetails);
     !userTaskDetails && getUserTaskDetails();
-    !userAllTasks && getUserAssignedTask();
   }, [userId]);
   if (!userDetail) return <LoadingScreen />;
   return (
@@ -77,7 +56,7 @@ const UserPage = () => {
           NumberOfTassk={userTaskDetails?.totalTaskAssigned}
           buttonCss={""}
           taskNumberCss={""}
-          linkTo={'all-tasks'}
+          linkTo={"all-tasks"}
         />
 
         <UserTaskSectionButton
@@ -85,15 +64,15 @@ const UserPage = () => {
           NumberOfTassk={userTaskDetails?.todayTasks}
           buttonCss={""}
           taskNumberCss={""}
-          linkTo={'today'}
+          linkTo={"today"}
         />
-        
+
         <UserTaskSectionButton
           buttonLabel={`Past Due`}
           NumberOfTassk={userTaskDetails?.pastDueTasks}
           buttonCss={""}
           taskNumberCss={"text-red-500"}
-          linkTo={'past-due'}
+          linkTo={"past-due"}
         />
 
         <UserTaskSectionButton
@@ -101,7 +80,7 @@ const UserPage = () => {
           NumberOfTassk={userTaskDetails?.inProgressTasks}
           buttonCss={""}
           taskNumberCss={"text-yellow-500"}
-          linkTo={'in-progress'}
+          linkTo={"in-progress"}
         />
 
         <UserTaskSectionButton
@@ -109,17 +88,12 @@ const UserPage = () => {
           NumberOfTassk={userTaskDetails?.completedTasks}
           buttonCss={""}
           taskNumberCss={"text-green-500"}
-          linkTo={'completed'}
+          linkTo={"completed"}
         />
       </div>
       <div className="bg-sky-500 flex-1 mx-1 pb-5 rounded-md">
         <div className="flex flex-col gap-4 p-1">
-          {/* {userAllTasks.length === 0 ? (
-            <p>No task assigned to the user.</p>
-          ) : (
-            userAllTasks.map((task) => <TaskCard key={task._id} task={task} />)
-          )} */}
-          <Outlet/>
+          <Outlet context={{ userId }} />
         </div>
       </div>
     </div>

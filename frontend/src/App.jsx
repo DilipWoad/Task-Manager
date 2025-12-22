@@ -50,7 +50,7 @@ function App() {
             </Route>
             <Route path="/groups" element={<Group />} />
             <Route path="/group/user/:userId" element={<UserPage />} >
-            <Route index element={<UserAllTasks/>}/>
+            {/* <Route index element={<UserAllTasks/>}/> */}
               <Route path="all-tasks" element={<UserAllTasks/>}/>
               <Route path="today" element={<UserTodaysTasks/>}/>
               <Route path="past-due" element={<UserPastDueTasks/>}/>

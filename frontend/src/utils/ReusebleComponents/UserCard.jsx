@@ -21,7 +21,7 @@ const UserCard = ({ user, setSelectedUser, selectedUser }) => {
       <p className="w-15 h-15 rounded-full bg-sky-500 flex items-center justify-center text-lg">
         <span>{firstLastNameLetters}</span>
       </p>
-      <Link to={`/group/user/${_id}`} state={{userDetails:user}} className="flex-1 flex h-full hover:cursor-pointer hover:bg-black/30 items-center mx-1 px-2">
+      <Link to={`/group/user/${_id}/all-tasks`} state={{userDetails:user}} className="flex-1 flex h-full hover:cursor-pointer hover:bg-black/30 items-center mx-1 px-2">
         <p className="">{fullName}</p>
       </Link>
       <div className="bg-pink-500 flex items-center">
