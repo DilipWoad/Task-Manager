@@ -230,10 +230,15 @@ const deleteTask = AsyncHandler(async (req, res) => {
 });
 
 const completedTasks = AsyncHandler(async (req, res) => {
-  const user = req.user;
-  console.log(user);
+  let targetedUserId = req.user.id;
+
+  if(req.user.role==="admin" && req.params.userId){
+    targetedUserId=req.params.userId
+  }
+
+  // console.log(user);
   const tasks = await Task.find({
-    assigned_to: user.id,
+    assigned_to: targetedUserId,
     status: "completed",
   });
 
@@ -256,9 +261,48 @@ const completedTasks = AsyncHandler(async (req, res) => {
     );
 });
 
+
+const inprogressTasks = AsyncHandler(async (req, res) => {
+  let targetedUserId = req.user.id;
+
+  if(req.user.role==="admin" && req.params.userId){
+    targetedUserId=req.params.userId
+  }
+
+  // console.log(user);
+  const tasks = await Task.find({
+    assigned_to: targetedUserId,
+    status: "in-progress",
+  });
+
+  if (tasks.length == 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "User has 0 in-progress Task"));
+  }
+  if (!tasks) {
+    throw new ApiError(
+      500,
+      "Something went wrong while getting completed tasks."
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, tasks, "Successfully fetched User completed Task")
+    );
+});
+
 const todaysUserTasks = AsyncHandler(async (req, res) => {
   //
   //get todays date
+  let targetedUserId = req.user.id;
+
+  if(req.user.role==="admin" && req.params.userId){
+    targetedUserId=req.params.userId
+  }
+
 
   let startTodayDay = new Date();
   // console.log(todaysDay.toLocaleDateString());
@@ -273,7 +317,7 @@ const todaysUserTasks = AsyncHandler(async (req, res) => {
   console.log("Searching between:", startTodayDay, "and", endTodayDay);
 
   const todaysTasks = await Task.find({
-    assigned_to: req.user.id,
+    assigned_to: targetedUserId,
     deadline: {
       $gte: startTodayDay,
       $lte: endTodayDay,
@@ -296,6 +340,11 @@ const todaysUserTasks = AsyncHandler(async (req, res) => {
 const upcomingUserTasks = AsyncHandler(async (req, res) => {
   //
   //get todays date
+  let targetedUserId = req.user.id;
+
+  if(req.user.role==="admin" && req.params.userId){
+    targetedUserId=req.params.userId
+  }
 
   let startTodayDay = new Date();
   // console.log(todaysDay.toLocaleDateString());
@@ -310,7 +359,7 @@ const upcomingUserTasks = AsyncHandler(async (req, res) => {
   console.log("Searching between:", startTodayDay, "and", endTodayDay);
 
   const upcomingTasks = await Task.find({
-    assigned_to: req.user.id,
+    assigned_to: targetedUserId,
     deadline: {
       $gt: endTodayDay,
     },
@@ -332,6 +381,11 @@ const upcomingUserTasks = AsyncHandler(async (req, res) => {
 const pastDueTasks = AsyncHandler(async (req, res) => {
   //
   //get todays date
+  let targetedUserId = req.user.id;
+
+  if(req.user.role==="admin" && req.params.userId){
+    targetedUserId=req.params.userId
+  }
 
   let todayDay = new Date();
   // console.log(todaysDay.toLocaleDateString());
@@ -346,7 +400,7 @@ const pastDueTasks = AsyncHandler(async (req, res) => {
   console.log("Searching before:", todayDay);
 
   const pastDue = await Task.find({
-    assigned_to: req.user.id,
+    assigned_to: targetedUserId,
     deadline: {
       $lt: todayDay,
     },
@@ -438,5 +492,5 @@ export {
   upcomingUserTasks,
   pastDueTasks,
   taskStats,
-  
+  inprogressTasks
 };
