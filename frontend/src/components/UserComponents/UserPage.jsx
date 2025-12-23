@@ -31,10 +31,10 @@ const UserPage = () => {
     }
   };
 
-  !nameLetter && setNameLetter(getFirstLastNameLetters(userDetails.fullName));
+  !nameLetter && setNameLetter(getFirstLastNameLetters(userDetails?.fullName));
 
   useEffect(() => {
-    !userDetail && setUserDetail(userDetails);
+    setUserDetail(userDetails);
     !userTaskDetails && getUserTaskDetails();
   }, [userId]);
   if (!userDetail) return <LoadingScreen />;
