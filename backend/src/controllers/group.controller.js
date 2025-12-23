@@ -292,8 +292,17 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
       },
     },
     {
+      $lookup:{
+        from:'users',
+        localField:'assigned_to',
+        foreignField:'_id',
+        as:'user_details'
+      }
+    },
+    {
       $group: {
         _id: null,
+        userDetails:{$first:{$arrayElemAt:["$user_details", 0]}},
         totalTaskAssigned: { $sum: 1 },
         completedTasks: {
           $sum: {
@@ -343,9 +352,13 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
         inProgressTasks: 1,
         pastDueTasks: 1,
         todayTasks: 1,
+        "userDetails.fullName":1,
+        "userDetails.email":1,
+        "userDetails._id":1
       },
     },
   ]);
+  console.log("userTaskStats :: ",userTaskStats)
   if (userTaskStats.length == 0) {
     return res
       .status(200)
