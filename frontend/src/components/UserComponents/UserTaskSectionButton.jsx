@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 
 const UserTaskSectionButton = ({
   linkTo,
@@ -20,16 +20,18 @@ const UserTaskSectionButton = ({
 
   //   const navToPath = `${location.pathname}${linkTo}`;
   //   console.log(navToPath);
+  const baseStyle =`rounded-lg transition-colors flex items-center justify-center p-2 text-nowrap font-semibold  w-full duration-300 ${buttonCss}`;
   return (
-    <Link
+    <NavLink
       to={newLink}
-      className={`sm:px-5 py-1 px-2 text-nowrap text-sm font-semibold bg-white text-black rounded-md ${buttonCss}`}
+      className={({ isActive }) =>
+          isActive ? `${baseStyle} bg-gray-800` : `${baseStyle} bg-white text-black`}
     >
       {buttonLabel}
       <span
-        className={`text-sm font-mono ${taskNumberCss}`}
+        className={` font-mono ${taskNumberCss}`}
       >{`(${NumberOfTassk})`}</span>
-    </Link>
+    </NavLink>
   );
 };
 
