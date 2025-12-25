@@ -273,7 +273,7 @@ const inprogressTasks = AsyncHandler(async (req, res) => {
   const tasks = await Task.find({
     assigned_to: targetedUserId,
     status: "in-progress",
-  });
+  }).populate({path:"assigned_to",select :"fullName email _id"});
 
   if (tasks.length == 0) {
     return res
@@ -322,7 +322,7 @@ const todaysUserTasks = AsyncHandler(async (req, res) => {
       $gte: startTodayDay,
       $lte: endTodayDay,
     },
-  });
+  }).populate({path:"assigned_to",select :"fullName email _id"});
 
   console.log(todaysTasks);
   if (todaysTasks.length == 0) {
@@ -363,7 +363,7 @@ const upcomingUserTasks = AsyncHandler(async (req, res) => {
     deadline: {
       $gt: endTodayDay,
     },
-  });
+  }).populate({path:"assigned_to",select :"fullName email _id"});
 
   console.log(upcomingTasks);
   if (upcomingTasks.length == 0) {
@@ -405,7 +405,7 @@ const pastDueTasks = AsyncHandler(async (req, res) => {
       $lt: todayDay,
     },
     status: { $ne: "completed" },
-  });
+  }).populate({path:"assigned_to",select :"fullName email _id"});
 
   console.log(pastDue);
   if (pastDue.length == 0) {
