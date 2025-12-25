@@ -1,14 +1,14 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../../utils/constant";
-import { Calendar } from "lucide-react";
+import { Calendar, EllipsisVertical } from "lucide-react";
+import EditTaskCard from "./EditTaskCard";
 
-const TaskCard = ({ task, setTasks, dueDateCss }) => {
+const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
   const [editingStatusId, setEditingStatusId] = useState(null);
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
+  const [showEditTask, setShowEditTask] = useState(false);
   console.log("Task coming :: ", task);
 
   const statusOptions = ["pending", "in-progress", "completed"];
@@ -53,24 +53,9 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
       console.log("Error while updating Status", error);
     }
   };
-
-  // useEffect(() => {
-  //   const findMousePosition = (event) => {
-  //     setMousePosition({ x: event.clientX, y: event.clientY });
-  //   };
-
-  //   window.addEventListener("mousemove", findMousePosition);
-
-  //   return () => window.removeEventListener("mousemove", findMousePosition);
-  // }, []);
   if (!task) return <div>Loading....</div>;
   return (
     <div className="relative hover:cursor-pointer group min-w-0 sm:bg-yellow-400 md:bg-orange-400 bg-white h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
-      {/* <div>
-        <h1>Mouse Position:</h1>
-        <p>X: {mousePosition.x}</p>
-        <p>Y: {mousePosition.y}</p>
-      </div> */}
       <div
         className={`flex flex-col justify-between grow pt-2 px-2 rounded-md ${
           task?.status === "completed"
@@ -78,13 +63,21 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
             : "bg-slate-300"
         }`}
       >
-        <div className=" text-xl font-bold wrap-break-word whitespace-normal leading-tight mb-2">
-          {task?.title}
+        <div className="flex justify-between items-center text-xl font-bold wrap-break-word whitespace-normal leading-tight mb-2">
+          <p className="">{task?.title}</p>
+          {editingOption && (
+            <button
+              onClick={() => setShowEditTask(true)}
+              className="hover:cursor-pointer transition-colors duration-300 rounded-md hover:bg-slate-500 p-1"
+            >
+              <EllipsisVertical />
+            </button>
+          )}
         </div>
         <div className=" text-sm py-2 wrap-break-word whitespace-normal text-gray-800">
           {task.description}
         </div>
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
+        <div className="absolute -bottom-1 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
           <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg backdrop-blur-sm">
             {task?.title}
           </div>
@@ -151,6 +144,16 @@ const TaskCard = ({ task, setTasks, dueDateCss }) => {
             Save
           </div>
         </div>
+      )}
+
+      {showEditTask && (
+        <EditTaskCard
+          setShowEditTask={setShowEditTask}
+          currentTitle={task.title}
+          currentDescription={task.description}
+          currentDate={task.deadline.split('T')[0]}
+          currentAssignedUser={task._id}
+        />
       )}
     </div>
   );

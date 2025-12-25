@@ -5,7 +5,8 @@ import MainBody from "./LayoutComponents/MainBody";
 import Sidebar from "./LayoutComponents/Sidebar";
 import useAuth from "../hooks/useAuth.js";
 import Heading from "./TaskComponents/Heading.jsx";
-import {ToastCardContextProvider} from "../Context/ToastCardContextProvider.jsx"
+import { ToastCardContextProvider } from "../Context/ToastCardContextProvider.jsx";
+import { GroupMemberContextProvider } from "../Context/GroupMembersContextProvider.jsx";
 
 const Body = () => {
   const [menuClick, setMenuClick] = useState(false);
@@ -20,7 +21,9 @@ const Body = () => {
         <div className="w-full h-full bg-yellow-400 sm:px-2 overflow-y-auto flex flex-col relative rounded-md">
           {auth?.role == "user" && <Heading />}
           <ToastCardContextProvider>
-            <MainBody />
+            <GroupMemberContextProvider>
+              <MainBody />
+            </GroupMemberContextProvider>
           </ToastCardContextProvider>
         </div>
       </div>

@@ -6,6 +6,7 @@ import UserCard from "../../utils/ReusebleComponents/UserCard";
 import EditGroupName from "./EditGroupName";
 import ListsOfUser from "./ListsOfUsers";
 import ComfirmationBox from "../../utils/ReusebleComponents/ComfirmationBox";
+import useGroupMembers from "../../hooks/useGroupMembers";
 
 const GroupUsers = ({
   selectedUser,
@@ -26,6 +27,8 @@ const GroupUsers = ({
     setShowComfirmationBox(true);
   };
 
+  const {setGroupMembers} = useGroupMembers();
+
   const handleEditClick = () => {
     setShowEditCard(true);
   };
@@ -37,6 +40,7 @@ const GroupUsers = ({
       });
       console.log(res.data.data);
       setAllUsers(res.data.data);
+      setGroupMembers(res.data.data);
       return res.data.data;
     } catch (err) {
       console.log("Error while getting all user details.", err);

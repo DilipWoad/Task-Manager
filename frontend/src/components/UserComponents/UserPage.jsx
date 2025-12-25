@@ -13,6 +13,7 @@ const UserPage = () => {
   console.log("User id ::", userId);
   const location = useLocation();
   console.log("Current url location :: ", location);
+
   useEffect(() => {
     const stateUserDetails = location.state?.userDetails;
     const sessionUserDetails = sessionStorage.getItem("userDetails");
@@ -78,6 +79,7 @@ const UserPage = () => {
 
   //Derived State for UI
   // Combine API data (priority) with Local State (fallback)
+  // cacheing the values of The FulName letter and DisplayUser info
   const displayUser = useMemo(() => {
     //either take from api res || the session userInfo ||else make it {}
     return userTaskDetails?.userDetails || userInfo || {};
