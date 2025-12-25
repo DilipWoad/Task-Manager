@@ -1,5 +1,7 @@
 import { useState } from "react";
 import useGroupMembers from "../../hooks/useGroupMembers";
+import axios from "axios";
+import { BASE_URL } from "../../utils/constant";
 
 const EditTaskCard = ({
   setShowEditTask,
@@ -7,8 +9,10 @@ const EditTaskCard = ({
   currentDescription,
   currentDate,
   currentAssignedUser,
+  taskId,
+  setTasks
 }) => {
-  const {groupMembers} = useGroupMembers();
+  const { groupMembers } = useGroupMembers();
   const [selectedUser, setSelectedUser] = useState(currentAssignedUser);
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const taskDetail = {
@@ -16,29 +20,54 @@ const EditTaskCard = ({
     description: currentDescription,
   };
   const [updateTaskDetails, setUpdateTaskDetails] = useState(taskDetail);
-  console.log("Group Members :: ",groupMembers);
- 
-  const alreadyUser = groupMembers.filter((user)=>user._id!=currentAssignedUser)[0].fullName;
+  console.log("Group Members :: ", groupMembers);
+  console.log("Selected User :: ", currentAssignedUser);
+
+
+  const alreadyUser = groupMembers.filter(
+    (user) => user._id === selectedUser
+  )[0].fullName;
+  const nonSelectedUser = groupMembers.filter(
+    (user) => user._id !== selectedUser
+  );
+  console.log("already:: ", alreadyUser);
   const handleCancelClick = () => {
     setShowEditTask(false);
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     const updatedTask = {
       ...updateTaskDetails,
       deadline: selectedDate,
-      assign_to: selectedUser,
+      assigned_to: selectedUser,
     };
+
+    try {
+      const res = await axios.patch(
+        `${BASE_URL}/tasks/${taskId}/admin`,
+         updatedTask ,
+        { withCredentials: true }
+      );
+
+      console.log(res.data.data);
+      const updatedTasks =res.data.data;
+      //update it dynamily in the task
+      // setTasks((prev)=>[updatedTasks,...prev]);
+      setShowEditTask(false);
+    } catch (error) {
+      console.log("Error while updating tasks :: ", error);
+    }
+
     console.log("Updated task details :: ", updatedTask);
   };
 
   const handleDetailChange = (e) => {
-      const { name, value } = e.target;
-      setUpdateTaskDetails((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    };
+    const { name, value } = e.target;
+    setUpdateTaskDetails((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   return (
     <div className="fixed flex flex-col justify-center items-center inset-0 bg-black/50 z-40 gap-4">
@@ -82,13 +111,15 @@ const EditTaskCard = ({
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
             >
-              <option value={currentAssignedUser}>{alreadyUser}</option>
-              {groupMembers &&
-                groupMembers.map((user) => 
-                   <option key={user._id} value={user._id}>
+              <option value={selectedUser} selected disabled hidden>
+                {alreadyUser}
+              </option>
+              {nonSelectedUser &&
+                nonSelectedUser.map((user) => (
+                  <option key={user._id} value={user._id}>
                     {user.fullName}
                   </option>
-                )}
+                ))}
             </select>
           </div>
         </div>

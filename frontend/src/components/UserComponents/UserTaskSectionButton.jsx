@@ -25,7 +25,7 @@ const UserTaskSectionButton = ({
     <NavLink
       to={newLink}
       className={({ isActive }) =>
-          isActive ? `${baseStyle} bg-gray-800` : `${baseStyle} bg-white text-black`}
+          isActive ? `${baseStyle} bg-gray-800 hover:bg-gray-700 hover:text-gray-300` : `${baseStyle} bg-white hover:bg-gray-300 hover:text-gray-700 text-black`}
     >
       {buttonLabel}
       <span

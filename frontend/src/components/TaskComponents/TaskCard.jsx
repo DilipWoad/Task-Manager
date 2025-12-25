@@ -23,6 +23,8 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
     }
   };
   const handleStatusClick = (e) => {
+    if(editingOption) return;
+    console.log("cliclrf")
     setEditingStatusId(e.target.id);
   };
   const handleCancelClick = () => {
@@ -65,7 +67,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
       >
         <div className="flex justify-between items-center text-xl font-bold wrap-break-word whitespace-normal leading-tight mb-2">
           <p className="">{task?.title}</p>
-          {editingOption && (
+          {editingOption && task.status !== "completed" && (
             <button
               onClick={() => setShowEditTask(true)}
               className="hover:cursor-pointer transition-colors duration-300 rounded-md hover:bg-slate-500 p-1"
@@ -91,12 +93,12 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
           </div>
           <div
             className={`${
-              task.status === "completed"
+              task.status === "completed" ||editingOption
                 ? "cursor-not-allowed"
                 : "cursor-pointer "
             } rounded-md shrink-0`}
           >
-            {editingStatusId === task._id ? (
+            {!editingOption && editingStatusId === task._id ? (
               <select
                 name="status"
                 defaultValue={task.status}
@@ -152,7 +154,9 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
           currentTitle={task.title}
           currentDescription={task.description}
           currentDate={task.deadline.split('T')[0]}
-          currentAssignedUser={task._id}
+          currentAssignedUser={task.assigned_to._id}
+          taskId={task._id}
+          setTasks={setTasks}
         />
       )}
     </div>
