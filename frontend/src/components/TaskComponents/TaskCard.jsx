@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { BASE_URL } from "../../utils/constant";
+import { BASE_URL, isTasksPastDue } from "../../utils/constant";
 import { Calendar, EllipsisVertical } from "lucide-react";
 import EditTaskCard from "./EditTaskCard";
 
@@ -57,40 +57,12 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
     }
   };
   if (!task) return <div>Loading....</div>;
-  const pastDueCss = () => {
-    // let deadline = `2025-12-27T00:00:00.000Z`;
 
-    const deadline = task.deadline.split("T")[0];
-    console.log(deadline);
-    const yearMonthDateArray = deadline.split("-");
-    console.log(yearMonthDateArray);
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split("T")[0];
-    console.log(formattedDate);
-    const yearMonthDate = formattedDate.split("-");
-    console.log(yearMonthDate);
-
-    //check if it has reached deadline
-    if (parseInt(yearMonthDateArray[0]) < parseInt(yearMonthDate[0])) {
-      console.log("Past Due hai year se!!");
-      task.status !=="completed" && setDeadlineCss("text-red-700 font-bold")
-    } else if (parseInt(yearMonthDateArray[1]) < parseInt(yearMonthDate[1])) {
-      console.log("Past Due hai months se!!");
-      task.status !=="completed" && setDeadlineCss("text-red-700 font-bold")
-
-    } else if (parseInt(yearMonthDateArray[2]) < parseInt(yearMonthDate[2])) {
-      console.log("Past Due hai days se!!");
-      task.status !=="completed" && setDeadlineCss("text-red-700 font-bold")
-
-    } else {
-      console.log("nahi hai Past Due bahi!!");
-      setDeadlineCss("")
-
-    }
-  };
-  useEffect(()=>{
-    pastDueCss()
-  },[])
+  useEffect(() => {
+    isTasksPastDue(task.deadline)
+      ? task.status !== "completed" && setDeadlineCss("text-red-700 font-bold")
+      : setDeadlineCss("");
+  }, []);
   return (
     <div className="relative hover:cursor-pointer group min-w-0 sm:bg-yellow-400 md:bg-orange-400 bg-white h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
       <div

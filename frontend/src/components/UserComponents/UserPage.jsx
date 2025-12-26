@@ -74,8 +74,8 @@ const UserPage = () => {
   };
 
   useEffect(() => {
-    !userTaskDetails && getUserTaskDetails();
-  }, [userId]);
+    getUserTaskDetails();
+  }, [location.pathname]);
 
   //Derived State for UI
   // Combine API data (priority) with Local State (fallback)

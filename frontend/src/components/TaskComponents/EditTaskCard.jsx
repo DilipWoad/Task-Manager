@@ -1,8 +1,10 @@
 import { useState } from "react";
 import useGroupMembers from "../../hooks/useGroupMembers";
 import axios from "axios";
-import { BASE_URL } from "../../utils/constant";
+import { BASE_URL, isTasksPastDue } from "../../utils/constant";
 import LoadingScreen from "../LoadingScreen";
+
+
 
 const EditTaskCard = ({
   setShowEditTask,
@@ -54,6 +56,18 @@ const EditTaskCard = ({
       console.log(res.data.data);
       const updatedTasks = res.data.data;
       //update it dynamily in the task
+
+      //if assigned_to user is changed then remove this task from this set of task
+      if (updatedTasks.assigned_to._id !== selectedDate) {
+        setTasks((prev) => prev.filter((task) => task._id !== taskId));
+      }
+
+      //if deadline was < current time and now new deadline/date is > current time then also remove it from the tasks
+      if (isTasksPastDue(currentDate) && !isTasksPastDue(selectedDate)) {
+        setTasks((prev) => prev.filter((task) => task._id !== taskId));
+      }
+
+      //else it just title or desc changes
       setTasks((prev) =>
         prev.map((task) => (task._id == taskId ? (task = updatedTasks) : task))
       ); //instead find the element and update wit new Details
@@ -78,7 +92,7 @@ const EditTaskCard = ({
 
   return (
     <div className="fixed flex flex-col justify-center items-center inset-0 bg-black/50 z-40 gap-4">
-      {loading && <LoadingScreen/>}
+      {loading && <LoadingScreen />}
       <div className="bg-gray-700 text-white p-4 rounded-md ">
         <label className="text-2xl">Edit Task</label>
         <div className="flex flex-col gap-7 my-4 text-lg">
@@ -118,9 +132,7 @@ const EditTaskCard = ({
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
             >
-              <option value={selectedUser} selected disabled hidden>
-                {alreadyUser}
-              </option>
+              <option value={selectedUser}>{alreadyUser}</option>
               {nonSelectedUser &&
                 nonSelectedUser.map((user) => (
                   <option key={user._id} value={user._id}>
