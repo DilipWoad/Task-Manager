@@ -19,6 +19,7 @@ import UserTodaysTasks from "./components/UserComponents/UserTodaysTasks.jsx";
 import UserPastDueTasks from "./components/UserComponents/UserPastDueTasks.jsx";
 import UserCompletedTasks from "./components/UserComponents/UserCompletedTasks.jsx";
 import UserInprogressTasks from "./components/UserComponents/UserInprogressTasks.jsx";
+import UserUpcomingTasks from "./components/UserComponents/UserUpcomingTasks.JSX";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
               <Route path="past-due" element={<UserPastDueTasks/>}/>
               <Route path="in-progress" element={<UserInprogressTasks/>}/>
               <Route path="completed" element={<UserCompletedTasks/>}/>
+              <Route path="upcoming" element={<UserUpcomingTasks/>}/>
             <Route/>
 
             {/* any unmatched route */}

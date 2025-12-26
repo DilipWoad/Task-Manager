@@ -4,11 +4,12 @@ import { BASE_URL } from "../../utils/constant";
 import { Calendar, EllipsisVertical } from "lucide-react";
 import EditTaskCard from "./EditTaskCard";
 
-const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
+const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
   const [editingStatusId, setEditingStatusId] = useState(null);
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [showEditTask, setShowEditTask] = useState(false);
+  const [deadlineCss, setDeadlineCss] = useState("");
   console.log("Task coming :: ", task);
 
   const statusOptions = ["pending", "in-progress", "completed"];
@@ -23,8 +24,8 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
     }
   };
   const handleStatusClick = (e) => {
-    if(editingOption) return;
-    console.log("cliclrf")
+    if (editingOption) return;
+    console.log("cliclrf");
     setEditingStatusId(e.target.id);
   };
   const handleCancelClick = () => {
@@ -56,6 +57,40 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
     }
   };
   if (!task) return <div>Loading....</div>;
+  const pastDueCss = () => {
+    // let deadline = `2025-12-27T00:00:00.000Z`;
+
+    const deadline = task.deadline.split("T")[0];
+    console.log(deadline);
+    const yearMonthDateArray = deadline.split("-");
+    console.log(yearMonthDateArray);
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split("T")[0];
+    console.log(formattedDate);
+    const yearMonthDate = formattedDate.split("-");
+    console.log(yearMonthDate);
+
+    //check if it has reached deadline
+    if (parseInt(yearMonthDateArray[0]) < parseInt(yearMonthDate[0])) {
+      console.log("Past Due hai year se!!");
+      task.status !=="completed" && setDeadlineCss("text-red-700 font-bold")
+    } else if (parseInt(yearMonthDateArray[1]) < parseInt(yearMonthDate[1])) {
+      console.log("Past Due hai months se!!");
+      task.status !=="completed" && setDeadlineCss("text-red-700 font-bold")
+
+    } else if (parseInt(yearMonthDateArray[2]) < parseInt(yearMonthDate[2])) {
+      console.log("Past Due hai days se!!");
+      task.status !=="completed" && setDeadlineCss("text-red-700 font-bold")
+
+    } else {
+      console.log("nahi hai Past Due bahi!!");
+      setDeadlineCss("")
+
+    }
+  };
+  useEffect(()=>{
+    pastDueCss()
+  },[])
   return (
     <div className="relative hover:cursor-pointer group min-w-0 sm:bg-yellow-400 md:bg-orange-400 bg-white h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
       <div
@@ -86,14 +121,14 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
         </div>
         <div className="flex justify-between text-sm py-3 items-center mt-auto">
           <div
-            className={`bg-slate-400 rounded-lg px-2 py-1 ${dueDateCss} flex items-center shrink-0 gap-1`}
+            className={`${deadlineCss} bg-slate-400 rounded-lg px-2 py-1 ${dueDateCss} flex items-center shrink-0 gap-1`}
           >
             <Calendar className="w-3 h-3" />
             <span>{task?.deadline?.slice(0, 10)}</span>
           </div>
           <div
             className={`${
-              task.status === "completed" ||editingOption
+              task.status === "completed" || editingOption
                 ? "cursor-not-allowed"
                 : "cursor-pointer "
             } rounded-md shrink-0`}
@@ -104,11 +139,11 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
                 defaultValue={task.status}
                 id="select-status"
                 onChange={handleStatusChange}
-                className="text-[13px]  bg-slate-200 rounded-md py-1 px-1 cursor-pointer outline-none border border-gray-400"
+                className="text-[13px] text-black  bg-slate-200 rounded-md py-1 px-1 cursor-pointer outline-none border border-gray-400"
               >
                 {/* <option disabled>Select Status</option> */}
                 {statusOptions.map((status) => (
-                  <option className="" key={status} value={status}>
+                  <option className="text-black" key={status} value={status}>
                     {status}
                   </option>
                 ))}
@@ -153,7 +188,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption = true }) => {
           setShowEditTask={setShowEditTask}
           currentTitle={task.title}
           currentDescription={task.description}
-          currentDate={task.deadline.split('T')[0]}
+          currentDate={task.deadline.split("T")[0]}
           currentAssignedUser={task.assigned_to._id}
           taskId={task._id}
           setTasks={setTasks}

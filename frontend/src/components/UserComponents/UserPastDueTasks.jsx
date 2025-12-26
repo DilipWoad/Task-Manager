@@ -30,7 +30,15 @@ const UserPastDueTasks = () => {
   return userPastDueTasks.length === 0 ? (
     <p>No due tasks.</p>
   ) : (
-    userPastDueTasks.map((task) => <TaskCard key={task._id} task={task} />)
+    userPastDueTasks.map((task) => (
+      <TaskCard
+        key={task._id}
+        task={task}
+        dueDateCss={""}
+        setTasks={setUserPastDueTasks}
+        editingOption={true}
+      />
+    ))
   );
 };
 

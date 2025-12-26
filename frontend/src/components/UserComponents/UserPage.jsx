@@ -106,11 +106,11 @@ const UserPage = () => {
 
       <div className="sticky top-0 z-20 flex justify-between sm:justify-start gap-4 overflow-auto mr-1 bg-slate-400 p-2">
         <UserTaskSectionButton
-          buttonLabel={`All Tasks`}
-          NumberOfTassk={userTaskDetails?.totalTaskAssigned}
+          buttonLabel={`Upcoming Tasks`}
+          NumberOfTassk={userTaskDetails?.upcomingTasks}
           buttonCss={""}
           taskNumberCss={""}
-          linkTo={"all-tasks"}
+          linkTo={"upcoming"}
         />
 
         <UserTaskSectionButton
@@ -143,6 +143,14 @@ const UserPage = () => {
           buttonCss={""}
           taskNumberCss={"text-green-500"}
           linkTo={"completed"}
+        />
+
+        <UserTaskSectionButton
+          buttonLabel={`All Tasks`}
+          NumberOfTassk={userTaskDetails?.totalTaskAssigned}
+          buttonCss={""}
+          taskNumberCss={""}
+          linkTo={"all-tasks"}
         />
       </div>
       <div className="bg-sky-500 flex-1 mx-1 pb-5 rounded-md">

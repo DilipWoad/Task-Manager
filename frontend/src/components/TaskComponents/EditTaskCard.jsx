@@ -2,6 +2,7 @@ import { useState } from "react";
 import useGroupMembers from "../../hooks/useGroupMembers";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constant";
+import LoadingScreen from "../LoadingScreen";
 
 const EditTaskCard = ({
   setShowEditTask,
@@ -10,11 +11,13 @@ const EditTaskCard = ({
   currentDate,
   currentAssignedUser,
   taskId,
-  setTasks
+  setTasks,
 }) => {
   const { groupMembers } = useGroupMembers();
   const [selectedUser, setSelectedUser] = useState(currentAssignedUser);
   const [selectedDate, setSelectedDate] = useState(currentDate);
+  const [loading, setLoading] = useState(false);
+
   const taskDetail = {
     title: currentTitle,
     description: currentDescription,
@@ -22,7 +25,6 @@ const EditTaskCard = ({
   const [updateTaskDetails, setUpdateTaskDetails] = useState(taskDetail);
   console.log("Group Members :: ", groupMembers);
   console.log("Selected User :: ", currentAssignedUser);
-
 
   const alreadyUser = groupMembers.filter(
     (user) => user._id === selectedUser
@@ -41,21 +43,26 @@ const EditTaskCard = ({
       deadline: selectedDate,
       assigned_to: selectedUser,
     };
-
+    setLoading(true);
     try {
       const res = await axios.patch(
         `${BASE_URL}/tasks/${taskId}/admin`,
-         updatedTask ,
+        updatedTask,
         { withCredentials: true }
       );
 
       console.log(res.data.data);
-      const updatedTasks =res.data.data;
+      const updatedTasks = res.data.data;
       //update it dynamily in the task
-      // setTasks((prev)=>[updatedTasks,...prev]);
+      setTasks((prev) =>
+        prev.map((task) => (task._id == taskId ? (task = updatedTasks) : task))
+      ); //instead find the element and update wit new Details
+      // setTasks([]);
       setShowEditTask(false);
     } catch (error) {
       console.log("Error while updating tasks :: ", error);
+    } finally {
+      setLoading(false);
     }
 
     console.log("Updated task details :: ", updatedTask);
@@ -71,7 +78,7 @@ const EditTaskCard = ({
 
   return (
     <div className="fixed flex flex-col justify-center items-center inset-0 bg-black/50 z-40 gap-4">
-      {/* {loading && <LoadingScreen/>} */}
+      {loading && <LoadingScreen/>}
       <div className="bg-gray-700 text-white p-4 rounded-md ">
         <label className="text-2xl">Edit Task</label>
         <div className="flex flex-col gap-7 my-4 text-lg">
@@ -135,7 +142,7 @@ const EditTaskCard = ({
           onClick={handleAddTask}
           className="bg-blue-700 px-7 py-1 rounded-md hover:cursor-pointer hover:bg-blue-600 transition-colors duration-300"
         >
-          Add
+          Update
         </button>
       </div>
     </div>
