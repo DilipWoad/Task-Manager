@@ -309,6 +309,19 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
             $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
           },
         },
+        upcomingTasks:{
+          $sum:{
+            //task that has not reached deadline(todays date ) and not pastDue
+            $cond:[
+              {
+                $and:[
+                  {$ne:["$status","completed"]},
+                  {$gt:["$deadline","$$NOW"]}
+                ]
+              },1,0
+            ]
+          }
+        },
         todayTasks: {
           $sum: {
             $cond: [
@@ -352,6 +365,7 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
         inProgressTasks: 1,
         pastDueTasks: 1,
         todayTasks: 1,
+        upcomingTasks:1,
         "userDetails.fullName":1,
         "userDetails.email":1,
         "userDetails._id":1
