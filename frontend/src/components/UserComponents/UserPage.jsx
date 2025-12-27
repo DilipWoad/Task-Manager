@@ -154,7 +154,7 @@ const UserPage = () => {
         />
       </div>
       <div className="bg-sky-500 flex-1 mx-1 pb-5 rounded-md">
-        <div className="flex flex-col gap-4 p-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start text-black pb-20 p-1">
           <Outlet context={{ userId }} />
         </div>
       </div>
