@@ -292,35 +292,37 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
       },
     },
     {
-      $lookup:{
-        from:'users',
-        localField:'assigned_to',
-        foreignField:'_id',
-        as:'user_details'
-      }
+      $lookup: {
+        from: "users",
+        localField: "assigned_to",
+        foreignField: "_id",
+        as: "user_details",
+      },
     },
     {
       $group: {
         _id: null,
-        userDetails:{$first:{$arrayElemAt:["$user_details", 0]}},
+        userDetails: { $first: { $arrayElemAt: ["$user_details", 0] } },
         totalTaskAssigned: { $sum: 1 },
         completedTasks: {
           $sum: {
             $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
           },
         },
-        upcomingTasks:{
-          $sum:{
+        upcomingTasks: {
+          $sum: {
             //task that has not reached deadline(todays date ) and not pastDue
-            $cond:[
+            $cond: [
               {
-                $and:[
-                  {$ne:["$status","completed"]},
-                  {$gt:["$deadline","$$NOW"]}
-                ]
-              },1,0
-            ]
-          }
+                $and: [
+                  { $ne: ["$status", "completed"] },
+                  { $gt: ["$deadline", "$$NOW"] },
+                ],
+              },
+              1,
+              0,
+            ],
+          },
         },
         todayTasks: {
           $sum: {
@@ -365,14 +367,14 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
         inProgressTasks: 1,
         pastDueTasks: 1,
         todayTasks: 1,
-        upcomingTasks:1,
-        "userDetails.fullName":1,
-        "userDetails.email":1,
-        "userDetails._id":1
+        upcomingTasks: 1,
+        "userDetails.fullName": 1,
+        "userDetails.email": 1,
+        "userDetails._id": 1,
       },
     },
   ]);
-  console.log("userTaskStats :: ",userTaskStats)
+  console.log("userTaskStats :: ", userTaskStats);
   if (userTaskStats.length == 0) {
     return res
       .status(200)
@@ -390,6 +392,90 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
     );
 });
 
+const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
+  //we will have groupId
+  const { groupId } = req.params;
+  if (!mongoose.isValidObjectId(groupId)) {
+    throw new ApiError(400, "Invalid Group Id");
+  }
+
+  const groupMemberCompletionStats = await Group.aggregate[
+    ({
+      $match: { _id: new mongoose.Types.ObjectId(groupId) },
+    },
+    {
+      $unwind: "$groupMembers",
+    },
+    //now we have a single id due to using unwind
+    //we can lookup
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "groupMembers",
+        foreginField: "assigned_to",
+        as: "memberTasks",
+      },
+    },
+    //now we have all the document with user assigned
+    {
+      $addFields: {
+        totalTasksAssigned: { $size: "$memberTasks" },
+        completedTasks: {
+          $size: {
+            $filter: {
+              input: "$memberTasks",
+              as: "task",
+              cond: { $eq: ["$$task.status", "completed"] },
+            },
+          },
+        },
+        completionPercentage: {
+          $round: [
+            {
+              $multiply: [
+                {
+                  $divide: ["$completedTasks", "$totalTasksAssigned"],
+                },
+                100,
+              ],
+            },
+            0,
+          ],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        // Push the member info + stats back into a list
+        membersStats: {
+          $push: {
+            userId: "$groupMembers",
+            totalTasks: "$totalTasks",
+            completedTasks: "$completedTasks",
+            completionPercentage: "$completionPercentage",
+          },
+        },
+      },
+    })
+  ];
+
+  console.log("groupMemberCompletionStats :: ", groupMemberCompletionStats);
+  // if (groupMemberCompletionStats.length == 0) {
+  //   throw new ApiError(404, "Group does not exists.");
+  // }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        groupMemberCompletionStats,
+        "Group Members stats fetched successfullt."
+      )
+    );
+});
+
 export {
   createGroup,
   getAdminGroups,
@@ -400,4 +486,5 @@ export {
   getAllUserFromGroup,
   getAllUsers,
   userTaskStatistic,
+  getGroupMemberCompletionStats
 };

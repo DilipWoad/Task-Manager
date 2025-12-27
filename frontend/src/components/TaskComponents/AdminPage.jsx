@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 const AdminPage = () => {
   const [taskStats, setTaskStats] = useState(null);
-  const [groupId, setGroupId] = useState(null);
+  const [groupId, setGroupId] = useState("69412f890205ad1b712bd14d");
   const [showCreateTask, setShowCreateTask] = useState(false);
 
   const { setShowToastCard, setToastCardMessage } = useToastCard();
@@ -67,9 +67,20 @@ const AdminPage = () => {
       setToastCardMessage(res);
     }
   };
+  
+
+  const groupMembersRanks =async()=>{
+    try{
+      const res = await axios.get(`${BASE_URL}/groups/${groupId}/members`,{withCredentials:true});
+      console.log(res);
+    }catch(error){
+      console.log("Error while getting group members stats :: ",error)
+    }
+  }
 
   useEffect(() => {
     !taskStats && getTaskStats();
+    groupMembersRanks();
   }, []);
   return (
     <div className="bg-amber-700 h-full">

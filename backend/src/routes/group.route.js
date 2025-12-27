@@ -10,6 +10,7 @@ import {
   removeUserFromGroup,
   getAllUsers,
   userTaskStatistic,
+  getGroupMemberCompletionStats
 } from "../controllers/group.controller.js";
 import { verifyRole } from "../middlewares/role.middleware.js";
 
@@ -28,6 +29,7 @@ router
   .patch(verifyRole(["admin"]), editGroupName)
   .get(verifyRole(["admin"]), getAllUserFromGroup);
 
+  router.route("/:groupId/members").get(verifyRole(["admin"]),getGroupMemberCompletionStats);
 router
   .route("/:groupId/add/:userId")
   .patch(verifyRole(["admin"]), addUserToGroup);
