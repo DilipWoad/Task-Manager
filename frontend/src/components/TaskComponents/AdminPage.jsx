@@ -1,5 +1,6 @@
 import useToastCard from "../../hooks/useToastCard";
 import { BASE_URL } from "../../utils/constant";
+import UserLeaderboardCard from "../../utils/ReusebleComponents/UserLeaderboardCard";
 import CreateTaskCard from "./CreateTaskCard";
 import TaskDetailCard from "./TaskDetailCard";
 import axios from "axios";
@@ -89,8 +90,9 @@ const AdminPage = () => {
           Create a Task
         </button>
       </div>
+      {/* flex flex-col items-center sm:flex-wrap sm:flex-row gap-4 p-2 */}
       {taskStats && (
-        <div className="bg-rose-500 flex flex-col items-center sm:flex-wrap sm:flex-row gap-4 p-2">
+        <div className="bg-rose-500 grid grid-cols-2 lg:grid-cols-4 gap-4 p-2">
           <TaskDetailCard
             title="Completed"
             score={taskStats.completed}
@@ -119,6 +121,14 @@ const AdminPage = () => {
           />
         </div>
       )}
+      {/* //User Members leader board */}
+      <div className="bg-orange-500 h-auto my-2">
+        User Leader board
+        <UserLeaderboardCard/>
+        <UserLeaderboardCard/>
+        <UserLeaderboardCard/>
+        <UserLeaderboardCard/>
+      </div>
     </div>
   );
 };
