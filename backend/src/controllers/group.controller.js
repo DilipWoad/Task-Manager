@@ -399,20 +399,36 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid Group Id");
   }
 
-  const groupMemberCompletionStats = await Group.aggregate[
-    ({
+  const groupMemberCompletionStats = await Group.aggregate([
+    {
       $match: { _id: new mongoose.Types.ObjectId(groupId) },
     },
     {
       $unwind: "$groupMembers",
     },
-    //now we have a single id due to using unwind
-    //we can lookup
+    // //now we have a single id due to using unwind
+    // //we can lookup
+    {
+      $lookup: {
+        from: "users",
+        localField: "groupMembers",
+        foreignField: "_id",
+        as: "memberDetails",
+      },
+    },
+    {
+      $unwind: {
+        path: "$memberDetails",
+        // Optional: use "preserveNullAndEmptyArrays: true"
+        // if you want to keep the original document even if the lookup had no match
+        preserveNullAndEmptyArrays: false,
+      },
+    },
     {
       $lookup: {
         from: "tasks",
         localField: "groupMembers",
-        foreginField: "assigned_to",
+        foreignField: "assigned_to",
         as: "memberTasks",
       },
     },
@@ -450,15 +466,37 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
         // Push the member info + stats back into a list
         membersStats: {
           $push: {
-            userId: "$groupMembers",
-            totalTasks: "$totalTasks",
+            userId: {
+              _id: "$memberDetails._id",
+              fullName: "$memberDetails.fullName",
+              email: "$memberDetails.email",
+            },
+            totalTasks: "$totalTasksAssigned",
             completedTasks: "$completedTasks",
-            completionPercentage: "$completionPercentage",
+            completionPercentage: {
+              $round: [
+                {
+                  $multiply: [
+                    {
+                      $divide: ["$completedTasks", "$totalTasksAssigned"],
+                    },
+                    100,
+                  ],
+                },
+                0,
+              ],
+            },
           },
         },
       },
-    })
-  ];
+    },
+    {
+      $project: {
+        _id: 1,
+        membersStats: 1,
+      },
+    },
+  ]);
 
   console.log("groupMemberCompletionStats :: ", groupMemberCompletionStats);
   // if (groupMemberCompletionStats.length == 0) {
@@ -486,5 +524,5 @@ export {
   getAllUserFromGroup,
   getAllUsers,
   userTaskStatistic,
-  getGroupMemberCompletionStats
+  getGroupMemberCompletionStats,
 };
