@@ -490,12 +490,6 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
         },
       },
     },
-    {
-      $project: {
-        _id: 1,
-        membersStats: 1,
-      },
-    },
   ]);
 
   console.log("groupMemberCompletionStats :: ", groupMemberCompletionStats);
