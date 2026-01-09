@@ -1,6 +1,7 @@
 import useToastCard from "../../hooks/useToastCard";
 import { BASE_URL } from "../../utils/constant";
 import UserLeaderboardCard from "../../utils/ReusebleComponents/UserLeaderboardCard";
+import LoadingScreen from "../LoadingScreen";
 import CreateTaskCard from "./CreateTaskCard";
 import TaskDetailCard from "./TaskDetailCard";
 import axios from "axios";
@@ -8,8 +9,9 @@ import { useEffect, useState } from "react";
 
 const AdminPage = () => {
   const [taskStats, setTaskStats] = useState(null);
-  const [groupId, setGroupId] = useState("69412f890205ad1b712bd14d");
+  const [groupInfo, setGroupInfo] = useState(null);
   const [showCreateTask, setShowCreateTask] = useState(false);
+  const [userRankStats, setUserRankStats] = useState(null);
 
   const { setShowToastCard, setToastCardMessage } = useToastCard();
 
@@ -25,69 +27,64 @@ const AdminPage = () => {
     }
   };
 
-  const isGroupPresentAndHasUsers = async () => {
+  const groupDetails = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/groups`, {
         withCredentials: true,
       });
       console.log("Is group present", res.data.data);
-      const groups = res.data.data;
-      if (groups.length === 0) {
-        return "No group exists,create a new group.";
-      } else if (groups[0].groupMembers.length == 0) {
-        return "No user present in the group,add user to the group.";
-      }
-      return res.data.data;
+      const group = res.data.data;
+      // setGroupId(group?._id);
+      setGroupInfo(group);
+      group?._id && groupMembersRanks(group._id);
     } catch (error) {
-      console.log(
-        "Error while checking group is created or No user is present in the group.",
-        error
-      );
+      console.log("Error while getting group details.", error);
     }
   };
 
   const handleCreateTaskClick = async () => {
     //first it will check if admin has a group created or not
-    const res = await isGroupPresentAndHasUsers();
+    let res = groupInfo;
+    if (!groupInfo) {
+      res = "No group exists,create a new group.";
+    } else if (groupInfo.groupMembers.length == 0) {
+      res = "No user present in the group,add user to the group.";
+    }
 
     console.log("Res from isGroup", res);
     const d = typeof res;
     console.log(d);
-    //if not created send admin to create a group first
-    //can also show a pop-up saying no group found
-    // navigate to '/groups'
-    //if group is created then check if atleat one user should be there
-    // no user -> show a pop-up no user present ,pls add a user
-    //if now group and user is present show a pop-up for adding task details;
     if (d == "object") {
-      setGroupId(res[0]._id);
       setShowCreateTask(true);
     } else {
       setShowToastCard(true);
       setToastCardMessage(res);
     }
   };
-  
 
-  const groupMembersRanks =async()=>{
-    try{
-      const res = await axios.get(`${BASE_URL}/groups/${groupId}/members`,{withCredentials:true});
-      console.log(res);
-    }catch(error){
-      console.log("Error while getting group members stats :: ",error)
+  const groupMembersRanks = async (groupId) => {
+    try {
+      const res = await axios.get(`${BASE_URL}/groups/${groupId}/members`, {
+        withCredentials: true,
+      });
+      console.log("sudhafduhfgfwhbhifdqfbfdbjgifh", res);
+      setUserRankStats(res.data.data.membersStats);
+    } catch (error) {
+      console.log("Error while getting group members stats :: ", error);
     }
-  }
+  };
 
   useEffect(() => {
-    !taskStats && getTaskStats();
-    groupMembersRanks();
-  }, []);
+    console.log("coming heree?");
+    !showCreateTask && groupDetails();
+    !showCreateTask && getTaskStats();
+  }, [showCreateTask]);
   return (
     <div className="bg-amber-700 h-full">
       {showCreateTask && (
         <CreateTaskCard
-          groupId={groupId}
           setShowCreateTask={setShowCreateTask}
+          groupMembers={groupInfo?.groupMembers}
         />
       )}
       <div className="bg-red-400 flex flex-col">
@@ -101,8 +98,7 @@ const AdminPage = () => {
           Create a Task
         </button>
       </div>
-      {/* flex flex-col items-center sm:flex-wrap sm:flex-row gap-4 p-2 */}
-      {taskStats && (
+      {groupInfo && taskStats && (
         <div className="bg-rose-500 grid grid-cols-2 lg:grid-cols-4 gap-4 p-2">
           <TaskDetailCard
             title="Completed"
@@ -132,14 +128,15 @@ const AdminPage = () => {
           />
         </div>
       )}
-      {/* //User Members leader board */}
-      <div className="bg-orange-500 h-auto my-2">
-        User Leader board
-        <UserLeaderboardCard/>
-        <UserLeaderboardCard/>
-        <UserLeaderboardCard/>
-        <UserLeaderboardCard/>
-      </div>
+
+      {userRankStats && (
+        <div className="bg-orange-500 h-auto my-2">
+          User Leader board
+          {userRankStats.map((user,i) => (
+            <UserLeaderboardCard key={i} index={i+1} user={user}/>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

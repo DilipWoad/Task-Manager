@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import LoadingScreen from "../LoadingScreen";
 
-const CreateTaskCard = ({ groupId, setShowCreateTask}) => {
-  const [groupUsers, setGroupUsers] = useState(null);
+const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
+  // const [groupUsers, setGroupUsers] = useState(null);
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,18 +16,19 @@ const CreateTaskCard = ({ groupId, setShowCreateTask}) => {
   };
   const [taskDetail, setTaskDetail] = useState(taskDetailStruct);
 
-  const getGroupUser = async () => {
-    console.log(groupId);
-    try {
-      const res = await axios.get(`${BASE_URL}/groups/${groupId}`, {
-        withCredentials: true,
-      });
-      console.log(res.data.data);
-      setGroupUsers(res.data.data);
-    } catch (error) {
-      console.log("Error while getting group users.", error);
-    }
-  };
+  //don;t call hee get from thr parent
+  // const getGroupUser = async () => {
+  //   console.log(groupId);
+  //   try {
+  //     const res = await axios.get(`${BASE_URL}/groups/${groupId}`, {
+  //       withCredentials: true,
+  //     });
+  //     console.log(res.data.data);
+  //     // setGroupUsers(res.data.data);
+  //   } catch (error) {
+  //     console.log("Error while getting group users.", error);
+  //   }
+  // };
   const handleDetailChange = (e) => {
     const { name, value } = e.target;
 
@@ -67,7 +68,7 @@ const CreateTaskCard = ({ groupId, setShowCreateTask}) => {
   console.log("Selected date ::", selectedDate);
   console.log("Task Details ::", taskDetail);
   useEffect(() => {
-    getGroupUser();
+    // getGroupUser();
   }, []);
   
   return (
@@ -113,8 +114,8 @@ const CreateTaskCard = ({ groupId, setShowCreateTask}) => {
               onChange={(e) => setSelectedUser(e.target.value)}
             >
               <option value="">Select User</option>
-              {groupUsers &&
-                groupUsers.map((user) => (
+              {groupMembers &&
+                groupMembers.map((user) => (
                   <option key={user._id} value={user._id}>
                     {user.fullName}
                   </option>
