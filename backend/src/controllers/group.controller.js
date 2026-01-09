@@ -54,7 +54,7 @@ const getAdminGroups = AsyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, allGroups, "All groups fetched successfully."));
+    .json(new ApiResponse(200, allGroups[0], "All groups fetched successfully."));
 });
 
 const deleteGroup = AsyncHandler(async (req, res) => {
@@ -445,35 +445,15 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
             },
           },
         },
-        completionPercentage: {
-          $round: [
-            {
-              $multiply: [
-                {
-                  $divide: ["$completedTasks", "$totalTasksAssigned"],
-                },
-                100,
-              ],
-            },
-            0,
-          ],
-        },
       },
     },
     {
-      $group: {
-        _id: "$_id",
-        // Push the member info + stats back into a list
-        membersStats: {
-          $push: {
-            userId: {
-              _id: "$memberDetails._id",
-              fullName: "$memberDetails.fullName",
-              email: "$memberDetails.email",
-            },
-            totalTasks: "$totalTasksAssigned",
-            completedTasks: "$completedTasks",
-            completionPercentage: {
+      $addFields: {
+        completionPercentage: {
+          $cond: {
+            if: { $eq: ["$totalTasksAssigned", 0] },
+            then: 0,
+            else: {
               $round: [
                 {
                   $multiply: [
@@ -490,6 +470,31 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
         },
       },
     },
+    //as of now it is unwound means not grouped in togeter
+    {
+      $sort:{
+        completionPercentage:-1
+      }
+    },
+    {
+      $group: {
+        _id: "$_id",
+        // Push the member info + stats back into a list
+        membersStats: {
+          $push: {
+            userDetails: {
+              _id: "$memberDetails._id",
+              fullName: "$memberDetails.fullName",
+              email: "$memberDetails.email",
+            },
+            totalTasks: "$totalTasksAssigned",
+            completedTasks: "$completedTasks",
+            completionPercentage: "$completionPercentage"
+          },
+        },
+      },
+    },
+    
   ]);
 
   console.log("groupMemberCompletionStats :: ", groupMemberCompletionStats);
@@ -502,7 +507,7 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        groupMemberCompletionStats,
+        groupMemberCompletionStats[0],
         "Group Members stats fetched successfullt."
       )
     );
