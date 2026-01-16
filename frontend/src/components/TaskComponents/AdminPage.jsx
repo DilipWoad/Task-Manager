@@ -1,7 +1,7 @@
+import useAuth from "../../hooks/useAuth";
 import useToastCard from "../../hooks/useToastCard";
 import { BASE_URL } from "../../utils/constant";
 import UserLeaderboardCard from "../../utils/ReusebleComponents/UserLeaderboardCard";
-import LoadingScreen from "../LoadingScreen";
 import CreateTaskCard from "./CreateTaskCard";
 import TaskDetailCard from "./TaskDetailCard";
 import axios from "axios";
@@ -15,6 +15,8 @@ const AdminPage = () => {
 
   const { setShowToastCard, setToastCardMessage } = useToastCard();
 
+  const { auth } = useAuth();
+  console.log("This is the AUTH ::", auth);
   const getTaskStats = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/tasks/stats`, {
@@ -87,13 +89,16 @@ const AdminPage = () => {
           groupMembers={groupInfo?.groupMembers}
         />
       )}
-      <div className="bg-red-400 flex flex-col">
-        <p>Hello Admin,</p> <span>Dilip Woad</span>
+      <div className="bg-red-400 flex flex-col p-2 font-mono my-2 gap-2">
+        <p className="text-xl font-semibold">Hello Admin,</p>{" "}
+        <span className="text-4xl text-gray-700 font-bold">
+          {auth.fullName}
+        </span>
       </div>
       <div className="bg-green-500 text-end my-3">
         <button
           onClick={handleCreateTaskClick}
-          className="bg-blue-700 px-4 py-2 rounded-md text-xs hover:cursor-pointer hover:bg-blue-600"
+          className="bg-blue-700 px-4 py-2 rounded-md text-lg my-2 mx-1 hover:cursor-pointer hover:bg-blue-600"
         >
           Create a Task
         </button>
@@ -130,11 +135,15 @@ const AdminPage = () => {
       )}
 
       {userRankStats && (
-        <div className="bg-orange-500 h-auto my-2">
-          User Leader board
-          {userRankStats.map((user,i) => (
-            <UserLeaderboardCard key={i} index={i+1} user={user}/>
-          ))}
+        <div className=" my-4 bg-pink-500 rounded-xl mx-1 p-1">
+          <p className="text-4xl mx-2 py-4 font-bold font-mono  w-fit">
+            User's Leaderboard
+          </p>
+          <div className="bg-orange-500 rounded-lg overflow-auto grid grid-cols-1 md:grid-cols-2 md:gap-2 ">
+            {userRankStats.map((user, i) => (
+              <UserLeaderboardCard key={i} index={i + 1} user={user} />
+            ))}
+          </div>
         </div>
       )}
     </div>

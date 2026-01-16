@@ -10,7 +10,7 @@ const GroupHeader = ({ group, setGroup }) => {
   const [groupName, setGroupName] = useState("");
 
   const { setShowToastCard, setToastCardMessage } = useToastCard();
-  
+
   const handleCreateGroupClick = () => {
     setShowCreateGroupCard(true);
   };
@@ -25,8 +25,8 @@ const GroupHeader = ({ group, setGroup }) => {
 
       console.log(res.data.data);
 
-      setToastCardMessage("Group Created Successfully!")
-      setShowToastCard(true)
+      setToastCardMessage("Group Created Successfully!");
+      setShowToastCard(true);
       setGroup([res.data.data]);
     } catch (error) {
       console.log("Error while creating group.", error);
@@ -99,13 +99,13 @@ const GroupHeader = ({ group, setGroup }) => {
           tagCss={""}
           tagName={"Create group"}
           divCss={` ${
-            group.length >= 1
+            group
               ? "cursor-not-allowed bg-blue-400 hover:bg-blue-500 hover:text-gray-300 text-gray-200"
               : "bg-blue-600 hover:bg-blue-500"
           } `}
           handleClick={handleCreateGroupClick}
           tag={"Create"}
-          isDisable={group?.length >= 1}
+          isDisable={group}
         >
           <Users width={20} />
         </GroupOperationsIcons>

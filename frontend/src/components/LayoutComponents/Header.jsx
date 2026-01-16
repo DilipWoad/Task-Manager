@@ -41,7 +41,7 @@ const Header = ({ menuClick, setMenuClick }) => {
       <div className=" flex justify-between gap-3 items-center p-1 rounded relative ">
         {auth?.fullName && (
           <>
-            <p className="px-2 text-lg font-mono">Welcome, Dilip</p>
+            <p className="px-2 text-lg font-mono">Welcome, {auth?.fullName}</p>
             <UserCircle
               onClick={handleUserIconClick}
               className={`w-8 h-8 text-black hover:cursor-pointer hover:bg-slate-200 ${

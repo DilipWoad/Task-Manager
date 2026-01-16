@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import GroupHeader from "./GroupHeader.jsx";
 import axios from "axios";
-import { BASE_URL } from "../../utils/constant";
+import { BASE_URL } from "../../utils/constant.js";
 import GroupCard from "./GroupCard.jsx";
-import useGroupMembers from "../../hooks/useGroupMembers.js";
 
 const Group = () => {
-
-
-  const [group, setGroup] = useState([]);
+  const [group, setGroup] = useState(null);
 
   const getAdminGroup = async () => {
     console.log("Is it getting call everytime.");
@@ -24,17 +21,16 @@ const Group = () => {
   };
 
   useEffect(() => {
-    getAdminGroup();
+    !group && getAdminGroup();
   }, []);
   return (
     <div className="flex flex-col">
       <GroupHeader group={group} setGroup={setGroup} />
       {/* //groupBody here */}
       <div className="bg-neutral-700 py-2 flex gap-5">
-        {group &&
-          group?.map((grp) => (
-            <GroupCard key={grp?._id} group={grp} setGroup={setGroup} />
-          ))}
+        {group && (
+          <GroupCard key={group?._id} group={group} setGroup={setGroup} />
+        )}
       </div>
     </div>
   );
