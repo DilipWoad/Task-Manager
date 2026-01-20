@@ -57,7 +57,7 @@ const ComfirmationBox = ({
       console.log(res);
       setToastCardMessage("Users removed from the group successfully.");
       setShowToastCard(true);
-      setGroup([{ ...group, groupMembers: remainingUser }]);
+      setGroup({ ...group, groupMembers: remainingUser });
     } catch (error) {
       console.log("Error while removing users :: ", error);
       setToastCardMessage(error?.response?.data?.message);

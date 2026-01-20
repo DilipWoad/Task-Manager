@@ -11,9 +11,8 @@ const ListsOfUser = ({
   setShowUserList,
   setToastCardMessage,
   setShowToastCard,
-  setLoading
+  setLoading,
 }) => {
-  
   const handleUserListCancelClick = () => {
     setSelectedUser([]);
     setShowUserList(false);
@@ -25,18 +24,20 @@ const ListsOfUser = ({
       //we have [userList] and [selectedUser]
       //what we want to do -> get the info of the selected user from userList
       // so we can filter out from the userList by seeing if they includes or not if includes return that doc
-
+      console.log("The group users before adding new user :: ", group);
+      console.log("The selected users  :: ", selectedUser);
       let newUser = allUsers.filter((user) => selectedUser.includes(user._id));
-      console.log(newUser);
+      console.log("The new user we want to add :: ", newUser);
       const addUsers = selectedUser.map(
         async (userId) =>
           await axios.patch(
             `${BASE_URL}/groups/${group._id}/add/${userId}`,
             {},
-            { withCredentials: true }
-          )
+            { withCredentials: true },
+          ),
       );
       const res = await Promise.all(addUsers);
+      setGroup({ ...group, groupMembers: [...newUser, ...group.groupMembers] });
       setShowUserList(false);
       console.log(res);
       setToastCardMessage("Users added to the group successfully.");
@@ -44,10 +45,6 @@ const ListsOfUser = ({
       //add in the array of users;
 
       // console.log(newUser);
-
-      setGroup([
-        { ...group, groupMembers: [...newUser, ...group.groupMembers] },
-      ]);
     } catch (error) {
       console.log("Error while adding users :: ", error);
       setToastCardMessage(error?.response?.data?.message);
