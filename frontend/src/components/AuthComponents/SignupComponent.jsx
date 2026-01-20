@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { validateSignupForm } from "../../utils/FormValidation/validateSignupForm.js";
-import { BASE_URL, CLOSE_EYE, OPEN_EYE } from "../../utils/constant";
+import { BASE_URL, CLOSE_EYE, OPEN_EYE, quaternaryColor, tertiaryColor } from "../../utils/constant";
 import LoadingScreen from "../LoadingScreen.jsx";
 import axios from "axios";
 const SignupComponent = () => {
@@ -79,45 +79,45 @@ const SignupComponent = () => {
   return (
     <div className="flex items-center justify-center h-full text-black shrink">
       {loading && <LoadingScreen />}
-      <div className="bg-white w-full max-w-md rounded-lg p-8 shadow-lg mx-2">
+      <div className={`bg-[${tertiaryColor}] w-full max-w-md rounded-lg p-8 shadow-lg mx-2`}>
         <label className="text-2xl font-semibold ">Sign up</label>
         <form className="mt-6" onSubmit={handleSignupUser}>
           <div className="flex  space-x-2">
             <div className="w-1/2">
-              <label className="block text-gray-600">Full Name</label>
+              <label className="block text-gray-700 font-semibold">Full Name</label>
               <input
                 type="text"
                 name="fullName"
                 placeholder="Full Name"
                 required
                 onChange={handleChange}
-                className=" bg-slate-100 w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className={` bg-[${quaternaryColor}] w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400`}
               />
             </div>
           </div>
           <div className="mt-3">
-            <label className="block text-gray-600">Email</label>
+            <label className="block text-gray-700 font-semibold">Email</label>
             <input
               type="email"
               placeholder="Enter Email"
               name="email"
               required
               onChange={handleChange}
-              className=" bg-slate-100 w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={` bg-[${quaternaryColor}]  w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400`}
             />
             <p className="text-red-500 text-sm text-wrap">
               {signupError.emailError}
             </p>
           </div>
           <div className="mt-3 relative">
-            <label className="block text-gray-600">Password</label>
+            <label className="block text-gray-700 font-semibold">Password</label>
             <input
               type={eyeOpen ? "text" : "password"}
               placeholder="Enter Password"
               required
               name="password"
               onChange={handleChange}
-              className=" bg-slate-100 w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={` bg-[${quaternaryColor}]  w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400`}
             />
             <div
               onClick={() => setEyeOpen(!eyeOpen)}

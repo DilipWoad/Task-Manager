@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router";
 // import { useDispatch } from "react-redux";
 // import { addUser } from "../../slices/userSlice";
 import { validateLoginForm } from "../../utils/FormValidation/validateFormLogin.js";
-import { BASE_URL, CLOSE_EYE, OPEN_EYE } from "../../utils/constant.js";
+import { BASE_URL, CLOSE_EYE, OPEN_EYE, quaternaryColor, secondaryColor, tertiaryColor } from "../../utils/constant.js";
 import LoadingScreen from "../LoadingScreen.jsx";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth.js";
@@ -87,11 +87,11 @@ const LoginComponent = () => {
   return (
     <div className="flex items-center justify-center text-black shrink h-full ">
       {loading && <LoadingScreen />}
-      <div className="bg-white w-full max-w-sm rounded-lg p-8 shadow-lg mx-2">
+      <div className={`bg-[${tertiaryColor}] w-full max-w-sm rounded-lg p-8 shadow-xl mx-2`}>
         <label className="text-2xl font-semibold ">Login</label>
         <form className="mt-6" onSubmit={handleLoginUser}>
           <div>
-            <label className="block text-gray-600">Email</label>
+            <label className="block text-gray-700 font-semibold">Email</label>
             <input
               type="email"
               name="email"
@@ -99,14 +99,14 @@ const LoginComponent = () => {
               value={formLogin.email}
               required
               onChange={handleChange}
-              className=" bg-slate-100 w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={` bg-[${quaternaryColor}] w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400`}
             />
             <p className="text-red-500 sm:text-nowrap text-wrap">
               {loginError.emailError}
             </p>
           </div>
           <div className="mt-5 relative">
-            <label className="block text-gray-600">Password</label>
+            <label className="block text-gray-700 font-semibold">Password</label>
             <input
               type={eyeOpen ? "text" : "password"}
               name="password"
@@ -114,7 +114,7 @@ const LoginComponent = () => {
               required
               value={formLogin.password}
               onChange={handleChange}
-              className=" bg-slate-100 w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={` bg-[${quaternaryColor}] w-full px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400`}
             />
             <div
               onClick={() => setEyeOpen(!eyeOpen)}

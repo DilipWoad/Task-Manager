@@ -1,3 +1,8 @@
+export let primaryColor ='#27374D'
+export let secondaryColor ='#526D82'
+export let tertiaryColor ='#9DB2BF'
+export let quaternaryColor ='#DDE6ED'
+
 export const CLOSE_EYE =
   "https://cdn-icons-png.flaticon.com/32/8442/8442580.png";
 export const OPEN_EYE =
@@ -5,8 +10,8 @@ export const OPEN_EYE =
 export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export const passwordRegex =
   /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/gm;
-// export const BASE_URL = "http://localhost:8080/api/v1";
-export const BASE_URL = "https://task-manager-production-c519.up.railway.app/api/v1";
+export const BASE_URL = "http://localhost:8080/api/v1";
+// export const BASE_URL = "https://task-manager-production-c519.up.railway.app/api/v1";
 
 export const getFirstLastNameLetters = (fullName) => {
   const d = fullName.split(" ");

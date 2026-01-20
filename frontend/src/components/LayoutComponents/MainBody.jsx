@@ -2,6 +2,7 @@ import { Outlet } from "react-router";
 import { useEffect } from "react";
 import useToastCard from "../../hooks/useToastCard.js";
 import ToastCard from "../../utils/ToastCard.jsx";
+import { secondaryColor, tertiaryColor } from "../../utils/constant.js";
 
 const MainBody = () => {
   const {
@@ -37,7 +38,7 @@ const MainBody = () => {
   }, [showToastCard]);
   return (
     <>
-      <main className="flex-1  bg-purple-400 rounded-r-md ">
+      <main className={`flex-1  rounded-r-md `}>
         <Outlet />
         {showToastCard && (
           <ToastCard
