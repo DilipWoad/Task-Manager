@@ -1,5 +1,4 @@
 import { NavLink } from "react-router";
-import { secondaryColor } from "../constant.js";
 
 const SidebarIcons = ({
   children,
@@ -18,7 +17,7 @@ const SidebarIcons = ({
         to={`/${pathname}`}
         onClick={() => isMobile  && setMenuClick(!menuClick)}
         className={({ isActive }) =>
-          isActive ? `${baseStyle} bg-gray-800` : `${baseStyle} bg-[${secondaryColor}]`
+          isActive ? `${baseStyle} bg-gray-800` : `${baseStyle} bg-secondaryColor`
         }
       >
         {children}

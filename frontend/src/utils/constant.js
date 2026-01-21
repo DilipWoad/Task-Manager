@@ -1,7 +1,3 @@
-export let primaryColor ='#27374D'
-export let secondaryColor ='#526D82'
-export let tertiaryColor ='#9DB2BF'
-export let quaternaryColor ='#DDE6ED'
 
 export const CLOSE_EYE =
   "https://cdn-icons-png.flaticon.com/32/8442/8442580.png";

@@ -2,7 +2,6 @@ import { Outlet } from "react-router";
 import { useEffect } from "react";
 import useToastCard from "../../hooks/useToastCard.js";
 import ToastCard from "../../utils/ToastCard.jsx";
-import { secondaryColor, tertiaryColor } from "../../utils/constant.js";
 
 const MainBody = () => {
   const {

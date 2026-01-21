@@ -3,7 +3,7 @@ import useAuth from "../../hooks/useAuth.js";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useState } from "react";
 import axios from "axios";
-import { BASE_URL, primaryColor, quaternaryColor, secondaryColor, tertiaryColor } from "../../utils/constant.js";
+import { BASE_URL } from "../../utils/constant.js";
 const Header = ({ menuClick, setMenuClick }) => {
   const { auth, setAuth } = useAuth();
   const location = useLocation();
@@ -31,7 +31,7 @@ const Header = ({ menuClick, setMenuClick }) => {
   };
 
   return (
-    <div className={`flex justify-between p-2 rounded-md items-center bg-[${primaryColor}] m-2 sticky top-2 z-60`}>
+    <div className={`flex justify-between p-2 rounded-md items-center bg-primaryColor m-2 sticky top-2 z-60`}>
       <div
         onClick={() => setMenuClick(!menuClick)}
         className=" p-1 rounded ml-1 hover:cursor-pointer hover:bg-gray-400 transition-all duration-200"
