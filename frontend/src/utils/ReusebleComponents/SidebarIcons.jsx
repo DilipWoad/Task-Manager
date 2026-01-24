@@ -17,7 +17,7 @@ const SidebarIcons = ({
         to={`/${pathname}`}
         onClick={() => isMobile  && setMenuClick(!menuClick)}
         className={({ isActive }) =>
-          isActive ? `${baseStyle} bg-gray-800` : `${baseStyle} bg-secondaryColor`
+          isActive ? `${baseStyle} bg-gray-800 border` : `${baseStyle} bg-secondaryColor hover:bg-tertiaryColor transition-colors duration-300`
         }
       >
         {children}

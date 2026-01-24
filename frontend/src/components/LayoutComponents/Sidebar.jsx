@@ -114,9 +114,9 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
               menuClick={menuClick}
               setMenuClick={setMenuClick}
               isMobile={isMobile}
-              tagCss={"text-red-700"}
+              tagCss={"text-red-400"}
             >
-              <CircleAlert className="h-5 w-5 m-2 text-red-700" />
+              <CircleAlert className="h-5 w-5 m-2 text-red-500" />
             </SidebarIcons>
           </>
         )}

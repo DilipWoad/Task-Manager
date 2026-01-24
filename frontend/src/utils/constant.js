@@ -24,27 +24,27 @@ export const isTasksPastDue = (taskDeadlineDate) => {
   // let deadline = `2025-12-27T00:00:00.000Z`;
 
   const deadline = taskDeadlineDate.split("T")[0];
-  console.log(deadline);
+
   const yearMonthDateArray = deadline.split("-");
-  console.log(yearMonthDateArray);
+
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().split("T")[0];
-  console.log(formattedDate);
+
   const yearMonthDate = formattedDate.split("-");
-  console.log(yearMonthDate);
+
 
   //check if it has reached deadline
   if (parseInt(yearMonthDateArray[0]) < parseInt(yearMonthDate[0])) {
-    console.log("Past Due hai year se!!");
+
     return true;
   } else if (parseInt(yearMonthDateArray[1]) < parseInt(yearMonthDate[1])) {
-    console.log("Past Due hai months se!!");
+
     return true;
   } else if (parseInt(yearMonthDateArray[2]) < parseInt(yearMonthDate[2])) {
-    console.log("Past Due hai days se!!");
+
     return true;
   } else {
-    console.log("nahi hai Past Due bahi!!");
+
     return false;
   }
 };

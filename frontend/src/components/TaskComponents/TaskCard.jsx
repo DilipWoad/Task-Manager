@@ -10,7 +10,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [showEditTask, setShowEditTask] = useState(false);
   const [deadlineCss, setDeadlineCss] = useState("");
-  console.log("Task coming :: ", task);
+
 
   const statusOptions = ["pending", "in-progress", "completed"];
   const handleStatusChange = (e) => {
@@ -64,12 +64,12 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
       : setDeadlineCss("");
   }, []);
   return (
-    <div className="relative hover:cursor-pointer group min-w-0 sm:bg-yellow-400 md:bg-orange-400 bg-white h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
+    <div className="relative hover:cursor-pointer group min-w-0 bg-primaryColor h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
       <div
         className={`flex flex-col justify-between grow pt-2 px-2 rounded-md ${
           task?.status === "completed"
             ? "line-through bg-slate-200 text-gray-500"
-            : "bg-slate-300"
+            : "bg-quaternaryColor"
         }`}
       >
         <div className="flex justify-between items-center text-xl font-bold wrap-break-word whitespace-normal leading-tight mb-2">
@@ -86,14 +86,14 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
         <div className=" text-sm py-2 wrap-break-word whitespace-normal text-gray-800">
           {task.description}
         </div>
-        <div className="absolute -bottom-1 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
+        {!showSaveBtn && <div className="absolute -bottom-1 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
           <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg backdrop-blur-sm">
             {task?.title}
           </div>
-        </div>
+        </div>}
         <div className="flex justify-between text-sm py-3 items-center mt-auto">
           <div
-            className={`${deadlineCss} bg-slate-400 rounded-lg px-2 py-1 ${dueDateCss} flex items-center shrink-0 gap-1`}
+            className={`${deadlineCss} bg-tertiaryColor rounded-lg px-2 py-1 ${dueDateCss} flex items-center shrink-0 gap-1`}
           >
             <Calendar className="w-3 h-3" />
             <span>{task?.deadline?.slice(0, 10)}</span>
@@ -111,7 +111,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
                 defaultValue={task.status}
                 id="select-status"
                 onChange={handleStatusChange}
-                className="text-[13px] text-black  bg-slate-200 rounded-md py-1 px-1 cursor-pointer outline-none border border-gray-400"
+                className="text-[13px] text-black  bg-tertiaryColor rounded-md py-1 px-1 cursor-pointer outline-none border border-gray-400"
               >
                 {/* <option disabled>Select Status</option> */}
                 {statusOptions.map((status) => (
@@ -139,7 +139,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
         </div>
       </div>
       {showSaveBtn && (
-        <div className="bg-gray-300 flex w-full z-20 rounded-md justify-end p-2 gap-2 text-xs animate-in fade-in slide-in-from-top-2 font-mono">
+        <div className="bg-tertiaryColor flex w-full z-20 rounded-md justify-end p-2 gap-2 text-xs animate-in fade-in slide-in-from-top-2 font-mono">
           <div
             onClick={handleCancelClick}
             className="bg-white text-gray-600 border border-gray-300 hover:bg-gray-100 px-3 py-1 rounded-md transition-colors"
