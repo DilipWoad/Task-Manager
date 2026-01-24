@@ -11,7 +11,6 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
   const [showEditTask, setShowEditTask] = useState(false);
   const [deadlineCss, setDeadlineCss] = useState("");
 
-
   const statusOptions = ["pending", "in-progress", "completed"];
   const handleStatusChange = (e) => {
     console.log(e.target.value);
@@ -24,6 +23,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
     }
   };
   const handleStatusClick = (e) => {
+    
     if (editingOption) return;
     console.log("cliclrf");
     setEditingStatusId(e.target.id);
@@ -41,13 +41,13 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
       const res = await axios.patch(
         `${BASE_URL}/tasks/${task._id}`,
         { status: selectedStatus },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       console.log(res.data.data);
       setTasks((prev) =>
         prev.map((element) =>
-          element._id === task._id ? res.data.data : element
-        )
+          element._id === task._id ? res.data.data : element,
+        ),
       );
       //once updated setShowBtn false and setEditId =null
       setEditingStatusId(null);
@@ -65,6 +65,12 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
   }, []);
   return (
     <div className="relative hover:cursor-pointer group min-w-0 bg-primaryColor h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
+      {editingStatusId !== null && (
+        <div
+          className="fixed inset-0  z-20"
+          onClick={() => setEditingStatusId(null)}
+        ></div>
+      )}
       <div
         className={`flex flex-col justify-between grow pt-2 px-2 rounded-md ${
           task?.status === "completed"
@@ -86,11 +92,13 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
         <div className=" text-sm py-2 wrap-break-word whitespace-normal text-gray-800">
           {task.description}
         </div>
-        {!showSaveBtn && <div className="absolute -bottom-1 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
-          <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg backdrop-blur-sm">
-            {task?.title}
+        {!showSaveBtn && (
+          <div className="absolute -bottom-1 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
+            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg backdrop-blur-sm">
+              {task?.title}
+            </div>
           </div>
-        </div>}
+        )}
         <div className="flex justify-between text-sm py-3 items-center mt-auto">
           <div
             className={`${deadlineCss} bg-tertiaryColor rounded-lg px-2 py-1 ${dueDateCss} flex items-center shrink-0 gap-1`}
@@ -103,7 +111,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
               task.status === "completed" || editingOption
                 ? "cursor-not-allowed"
                 : "cursor-pointer "
-            } rounded-md shrink-0`}
+            } rounded-md shrink-0 z-30`}
           >
             {!editingOption && editingStatusId === task._id ? (
               <select
@@ -130,7 +138,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
                   task.status === "completed"
                     ? "bg-green-400 pointer-events-none "
                     : "bg-slate-400"
-                }  hover:opacity-80 transition-opacity  italic text-[13px] px-3 py-1 rounded-md capitalize`}
+                }  hover:opacity-80 transition-opacity  italic text-[13px] px-3 py-1 rounded-md capitalize z-30`}
               >
                 {task.status}
               </div>
@@ -139,7 +147,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
         </div>
       </div>
       {showSaveBtn && (
-        <div className="bg-tertiaryColor flex w-full z-20 rounded-md justify-end p-2 gap-2 text-xs animate-in fade-in slide-in-from-top-2 font-mono">
+        <div className="bg-tertiaryColor flex w-full z-30 rounded-md justify-end p-2 gap-2 text-xs animate-in fade-in slide-in-from-top-2 font-mono">
           <div
             onClick={handleCancelClick}
             className="bg-white text-gray-600 border border-gray-300 hover:bg-gray-100 px-3 py-1 rounded-md transition-colors"
