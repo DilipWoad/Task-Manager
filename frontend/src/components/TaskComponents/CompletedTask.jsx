@@ -1,15 +1,17 @@
 import axios from "axios";
 import { BASE_URL } from "../../utils/constant.js";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import TaskCard from "./TaskCard.jsx";
 
 function CompletedTask() {
-    const [completedTasks,setCompletedTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
   const getUserCompletedTask = async () => {
     try {
-      const res =await axios.get(`${BASE_URL}/tasks/completed`, { withCredentials: true });
+      const res = await axios.get(`${BASE_URL}/tasks/completed`, {
+        withCredentials: true,
+      });
       console.log(res.data.data);
-      setCompletedTasks(res.data.data)
+      setCompletedTasks(res.data.data);
     } catch (error) {
       console.log("Error fetching tasks :: ", error);
     }
@@ -18,12 +20,18 @@ function CompletedTask() {
   useEffect(() => {
     getUserCompletedTask();
   }, []);
-  if (!completedTasks) return <div>Loading...</div>
-  return(
-    <div className="flex flex-col  bg-lime-500 h-full p-5 ">
-      <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
-        {completedTasks.map((task)=><TaskCard key={task._id} task={task} setTasks={setCompletedTasks} />)}
-    </div>
+  if (!completedTasks) return <div>Loading...</div>;
+  return (
+    <div className="flex flex-col   h-full p-5 ">
+      {completedTasks.length == 0 ? (
+        <div className="text-2xl sm:text-3xl">No completed tasks.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
+          {completedTasks.map((task) => (
+            <TaskCard key={task._id} task={task} setTasks={setCompletedTasks} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

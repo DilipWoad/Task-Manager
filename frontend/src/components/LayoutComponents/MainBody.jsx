@@ -12,14 +12,9 @@ const MainBody = () => {
     toastCardMessage,
     setShowToastCard,
   } = useToastCard();
-  console.log("show toast ::", showToastCard);
-  console.log("show toast msg::", toastCardMessage);
-  console.log("show toast animation::", animation);
 
   useEffect(() => {
-    console.log("Outer");
     if (showToastCard) {
-      console.log("Inside");
       setAnimation(false); // Reset animation state
       const hideTimer = setTimeout(() => {
         setAnimation(true); // Start slide-out animation

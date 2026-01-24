@@ -20,7 +20,7 @@ const Body = () => {
       {/* Right Column: Header + Main Content */}
       <div className="w-full flex flex-1 px-2 overflow-hidden ">
         <Sidebar menuClick={menuClick} setMenuClick={setMenuClick} />
-        <div className={`w-full h-full bg-secondaryColor sm:px-2 overflow-y-auto flex flex-col relative rounded-md ${isMobile ? "":"ml-2"}`}>
+        <div className={`w-full h-full bg-secondaryColor overflow-y-auto flex flex-col relative rounded-md ${isMobile ? "":"ml-2"}`}>
           {auth?.role == "user" && <Heading />}
           <ToastCardContextProvider>
             <GroupMemberContextProvider>

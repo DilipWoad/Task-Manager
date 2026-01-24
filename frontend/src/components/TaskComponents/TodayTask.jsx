@@ -22,12 +22,16 @@ const TodayTask = () => {
   }, []);
   if (!todayTasks) return <div>Loading...</div>;
   return (
-    <div className="flex flex-col  bg-lime-500 h-full p-5 ">
-      <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
-        {todayTasks.map((task) => (
-          <TaskCard key={task._id} task={task} setTasks={setTodayTasks} />
-        ))}
-      </div>
+    <div className="flex flex-col   h-full p-5 ">
+      {todayTasks.length === 0 ? (
+        <div className="text-2xl sm:text-3xl">No task ending today.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
+          {todayTasks.map((task) => (
+            <TaskCard key={task._id} task={task} setTasks={setTodayTasks} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

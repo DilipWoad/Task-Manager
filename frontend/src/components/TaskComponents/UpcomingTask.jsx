@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BASE_URL } from "../../utils/constant";
 import TaskCard from "./TaskCard";
 
@@ -22,12 +22,16 @@ const UpcomingTask = () => {
   }, []);
   if (!upcomingTasks) return <div>Loading...</div>;
   return (
-    <div className="flex flex-col  bg-lime-500 h-full p-5 ">
-      <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
-        {upcomingTasks.map((task) => (
-          <TaskCard key={task._id} task={task} setTasks={setUpcomingTasks} />
-        ))}
-      </div>
+    <div className="flex flex-col   h-full p-5 ">
+      {upcomingTasks.length == 0 ? (
+        <div className="text-2xl sm:text-3xl">No upcoming tasks.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 gap-3 text-black z-10">
+          {upcomingTasks.map((task) => (
+            <TaskCard key={task._id} task={task} setTasks={setUpcomingTasks} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

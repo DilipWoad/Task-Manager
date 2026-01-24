@@ -7,10 +7,6 @@ export const ToastCardContextProvider = ({ children }) => {
   const [toastCardMessage, setToastCardMessage] = useState("");
   const [animation, setAnimation] = useState(false);
 
-  console.log("show toast ::",showToastCard)
-  console.log("show toast msg::",toastCardMessage)
-  console.log("show toast animation::",animation)
-
   return (
     <ToastCardContext.Provider
       value={{
