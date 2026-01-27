@@ -4,9 +4,11 @@ import { BASE_URL } from "../../utils/constant";
 import LoadingScreen from "../LoadingScreen";
 
 const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
-  // const [groupUsers, setGroupUsers] = useState(null);
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().split('T')[0];
+
   const [selectedUser, setSelectedUser] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(formattedDate);
   const [loading, setLoading] = useState(false);
 
   
@@ -14,6 +16,8 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
     title: "",
     description: "",
   };
+  
+
   const [taskDetail, setTaskDetail] = useState(taskDetailStruct);
 
   //don;t call hee get from thr parent
@@ -64,9 +68,6 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
       setLoading(false);
     }
   };
-  console.log("Selected user ::", selectedUser);
-  console.log("Selected date ::", selectedDate);
-  console.log("Task Details ::", taskDetail);
   useEffect(() => {
     // getGroupUser();
   }, []);
@@ -74,8 +75,8 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
   return (
     <div className="fixed flex flex-col justify-center items-center inset-0 bg-black/50 z-40 gap-4">
       {loading && <LoadingScreen/>}
-      <div className="bg-gray-700 text-white p-4 rounded-md ">
-        <label className="text-2xl">Add Task</label>
+      <div className="bg-primaryColor border-2 border-secondaryColor text-white p-4 rounded-md ">
+        <label className="text-2xl sm:text-3xl">Add Task</label>
         <div className="flex flex-col gap-7 my-4 text-lg">
           <div>
             <label>Title :</label>
@@ -83,7 +84,7 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
               onChange={handleDetailChange}
               name="title"
               value={taskDetail.title}
-              className="bg-blue-800 rounded-md px-2 w-auto mx-2 py-1"
+              className="bg-tertiaryColor rounded-md px-2 w-auto mx-2 py-1  text-primaryColor font-semibold"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -92,13 +93,13 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
               name="description"
               onChange={handleDetailChange}
               value={taskDetail.description}
-              className="bg-blue-800 p-2 rounded-md w-auto"
+              className="bg-tertiaryColor p-2 rounded-md w-auto text-primaryColor font-semibold"
             />
           </div>
           <div className="flex gap-2 items-center">
             <label>Deadline :</label>
             <input
-              className="bg-white rounded-md text-black px-1 text-lg hover:cursor-pointer"
+              className="bg-secondaryColor text-quaternaryColor font-semibold rounded-md  px-1 text-lg hover:cursor-pointer"
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
@@ -109,7 +110,7 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
             <select
               id="user-select"
               name="group_users"
-              className="bg-white text-black rounded-md px-1 text-lg"
+              className="bg-secondaryColor text-quaternaryColor font-semibold rounded-md px-1 text-lg"
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
             >

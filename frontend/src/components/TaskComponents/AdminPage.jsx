@@ -16,13 +16,11 @@ const AdminPage = () => {
   const { setShowToastCard, setToastCardMessage } = useToastCard();
 
   const { auth } = useAuth();
-  console.log("This is the AUTH ::", auth);
   const getTaskStats = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/tasks/stats`, {
         withCredentials: true,
       });
-      console.log(res);
       setTaskStats(res.data.data);
     } catch (err) {
       console.log("Error while getting task stats.");
@@ -34,7 +32,6 @@ const AdminPage = () => {
       const res = await axios.get(`${BASE_URL}/groups`, {
         withCredentials: true,
       });
-      console.log("Is group present", res.data.data);
       const group = res.data.data;
       // setGroupId(group?._id);
       setGroupInfo(group);
@@ -52,10 +49,7 @@ const AdminPage = () => {
     } else if (groupInfo.groupMembers.length == 0) {
       res = "No user present in the group,add user to the group.";
     }
-
-    console.log("Res from isGroup", res);
     const d = typeof res;
-    console.log(d);
     if (d == "object") {
       setShowCreateTask(true);
     } else {
@@ -69,7 +63,6 @@ const AdminPage = () => {
       const res = await axios.get(`${BASE_URL}/groups/${groupId}/members`, {
         withCredentials: true,
       });
-      console.log("sudhafduhfgfwhbhifdqfbfdbjgifh", res);
       setUserRankStats(res.data.data.membersStats);
     } catch (error) {
       console.log("Error while getting group members stats :: ", error);
@@ -77,34 +70,33 @@ const AdminPage = () => {
   };
 
   useEffect(() => {
-    console.log("coming heree?");
     !showCreateTask && groupDetails();
     !showCreateTask && getTaskStats();
   }, [showCreateTask]);
   return (
-    <div className="bg-amber-700 h-full">
+    <div className="h-full">
       {showCreateTask && (
         <CreateTaskCard
           setShowCreateTask={setShowCreateTask}
           groupMembers={groupInfo?.groupMembers}
         />
       )}
-      <div className="bg-red-400 flex flex-col p-2 font-mono my-2 gap-2">
-        <p className="text-xl font-semibold">Hello Admin,</p>{" "}
-        <span className="text-4xl text-gray-700 font-bold">
+      <div className=" flex flex-col p-2 font-mono my-2 gap-2">
+        <p className="text-xl text-primaryColor font-bold">Hello Admin,</p>
+        <span className="text-4xl font-bold">
           {auth.fullName}
         </span>
       </div>
-      <div className="bg-green-500 text-end my-3">
+      <div className="bg-quaternaryColor text-end my-3 rounded-md mx-1">
         <button
           onClick={handleCreateTaskClick}
           className="bg-blue-700 px-4 py-2 rounded-md text-lg my-2 mx-1 hover:cursor-pointer hover:bg-blue-600"
         >
-          Create a Task
+          Create Task
         </button>
       </div>
       {groupInfo && taskStats && (
-        <div className="bg-rose-500 grid grid-cols-2 lg:grid-cols-4 gap-4 p-2">
+        <div className="bg-tertiaryColor mx-1 rounded-md grid grid-cols-2 lg:grid-cols-4 gap-4 p-2">
           <TaskDetailCard
             title="Completed"
             score={taskStats.completed}
@@ -135,11 +127,11 @@ const AdminPage = () => {
       )}
 
       {userRankStats && (
-        <div className=" my-4 bg-pink-500 rounded-xl mx-1 p-1">
+        <div className=" my-4 bg-primaryColor rounded-xl mx-1 p-1">
           <p className="text-4xl mx-2 py-4 font-bold font-mono  w-fit">
             User's Leaderboard
           </p>
-          <div className="bg-orange-500 rounded-lg overflow-auto grid grid-cols-1 md:grid-cols-2 md:gap-2 ">
+          <div className="bg-secondaryColor rounded-lg overflow-auto grid grid-cols-1 md:grid-cols-2 md:gap-2 ">
             {userRankStats.map((user, i) => (
               <UserLeaderboardCard key={i} index={i + 1} user={user} />
             ))}

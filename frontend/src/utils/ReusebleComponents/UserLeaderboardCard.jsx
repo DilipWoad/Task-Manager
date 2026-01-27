@@ -1,14 +1,13 @@
 import { CircleCheckBig } from "lucide-react";
 import { Link } from "react-router";
 const UserLeaderboardCard = ({ user, index }) => {
-  console.log("Leader board users ::", user);
   return (
     <Link
       to={`/group/user/${user?.userDetails?._id}/upcoming`}
-      className="bg-lime-400 flex items-center justify-between m-2 p-2 text-gray-800 
-      rounded-md text-[17px] font-semibold hover:bg-black/30 transition-colors duration-300"
+      className="bg-quaternaryColor border-2  flex items-center justify-between m-2 p-2 text-gray-800 
+      rounded-md text-[17px] font-semibold hover:bg-black/50 hover:text-quaternaryColor transition-all duration-300"
     >
-      <div className="bg-red-500 p-1 px-2 rounded-md">
+      <div className="bg-tertiaryColor border-2 p-1 px-2 rounded-md text-primaryColor">
         <p className="font-bold">{index}</p>
       </div>
       <div className="text-center  flex-1 p-1 truncate wrap-break-word hover:cursor-pointer">
