@@ -93,18 +93,18 @@ const UserPage = () => {
 
   if (!userTaskDetails && !userInfo) return <LoadingScreen />;
   return (
-    <div className="bg-lime-500 flex flex-col h-full gap-4 ">
-      <div className=" bg-red-400 flex gap-1 items-center my-2 rounded-md">
-        <div className="m-1 bg-yellow-500 w-24 h-24 flex items-center justify-center rounded-full">
+    <div className="flex flex-col h-full gap-4 ">
+      <div className=" bg-tertiaryColor flex gap-1 items-center m-1 rounded-md py-2">
+        <div className="m-1 bg-primaryColor w-24 h-24 flex items-center justify-center rounded-full">
           <p className="text-4xl">{nameLetter || "?"}</p>
         </div>
-        <div className="bg-purple-500 flex-1 flex flex-col gap-3 p-2">
-          <p className="text-2xl">{displayUser.fullName || "Unknown User"}</p>
-          <p>{displayUser.email || "No Email Provided"}</p>
+        <div className=" flex-1 flex flex-col gap-3 p-2">
+          <p className="text-2xl text-primaryColor font-bold">{displayUser.fullName || "Unknown User"}</p>
+          <p className="text-primaryColor font-medium">{displayUser.email || "No Email Provided"}</p>
         </div>
       </div>
 
-      <div className="sticky top-0 z-20 flex justify-between sm:justify-start gap-4 overflow-auto mr-1 bg-slate-400 p-2">
+      <div className="sticky top-0 z-40 flex justify-between sm:justify-start gap-4 overflow-auto mx-1 bg-tertiaryColor rounded-md p-2">
         <UserTaskSectionButton
           buttonLabel={`Upcoming Tasks`}
           NumberOfTassk={userTaskDetails?.upcomingTasks}
@@ -153,7 +153,7 @@ const UserPage = () => {
           linkTo={"all-tasks"}
         />
       </div>
-      <div className="bg-sky-500 flex-1 mx-1 pb-5 rounded-md">
+      <div className="bg-primaryColor flex-1 mx-1 pb-5 rounded-md">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start text-black pb-20 p-1">
           <Outlet context={{ userId }} />
         </div>

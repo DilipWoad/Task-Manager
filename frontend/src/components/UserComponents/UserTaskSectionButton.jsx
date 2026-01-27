@@ -20,12 +20,15 @@ const UserTaskSectionButton = ({
 
   //   const navToPath = `${location.pathname}${linkTo}`;
   //   console.log(navToPath);
-  const baseStyle =`rounded-lg transition-colors flex items-center justify-center p-2 text-nowrap font-semibold  w-full duration-300 ${buttonCss}`;
+  const baseStyle = `rounded-lg transition-colors flex items-center justify-center p-2 text-nowrap font-semibold  w-full duration-300 ${buttonCss}`;
   return (
     <NavLink
       to={newLink}
       className={({ isActive }) =>
-          isActive ? `${baseStyle} bg-gray-800 hover:bg-gray-700 hover:text-gray-300` : `${baseStyle} bg-white hover:bg-gray-300 hover:text-gray-700 text-black`}
+        isActive
+          ? `${baseStyle} bg-primaryColor hover:bg-gray-700 hover:text-gray-300`
+          : `${baseStyle} bg-quaternaryColor hover:bg-gray-300 hover:text-gray-700 text-black`
+      }
     >
       {buttonLabel}
       <span
