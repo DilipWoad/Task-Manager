@@ -8,12 +8,10 @@ const Group = () => {
   const [group, setGroup] = useState(null);
 
   const getAdminGroup = async () => {
-    console.log("Is it getting call everytime.");
     try {
       const res = await axios.get(`${BASE_URL}/groups`, {
         withCredentials: true,
       });
-      console.log("Admin group", res.data.data);
       setGroup(res.data.data);
     } catch (error) {
       console.log("Error while getting admin group.", error);
@@ -24,10 +22,10 @@ const Group = () => {
     !group && getAdminGroup();
   }, []);
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <GroupHeader group={group} setGroup={setGroup} />
       {/* //groupBody here */}
-      <div className="bg-neutral-700 py-2 flex gap-5">
+      <div className="bg-primaryColor m-1 rounded-lg flex flex-1">
         {group && (
           <GroupCard key={group?._id} group={group} setGroup={setGroup} />
         )}

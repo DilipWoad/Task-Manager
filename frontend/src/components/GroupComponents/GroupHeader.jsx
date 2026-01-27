@@ -75,7 +75,7 @@ const GroupHeader = ({ group, setGroup }) => {
           </div>
         </div>
       )}
-      <div className="flex bg-lime-500 justify-end gap-5 p-2">
+      <div className="flex  justify-end gap-5 p-2">
         {/* <GroupOperationsIcons
         tagCss={""}
         tagName={"Delete group"}

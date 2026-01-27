@@ -87,7 +87,7 @@ const ComfirmationBox = ({
   };
   return (
     <div className="bg-black/50 fixed inset-0 flex justify-center items-center z-50">
-      <div className="flex flex-col items-center bg-black/80 rounded-lg  py-6 gap-10 sm:gap-15 w-full sm:w-80 mx-10">
+      <div className="flex flex-col items-center bg-primaryColor/80 rounded-lg  py-6 gap-10 sm:gap-15 w-full sm:w-80 mx-10">
         <div className="wrap-break-word text-center sm:text-lg">
           {comfirmationBoxLabel}
         </div>

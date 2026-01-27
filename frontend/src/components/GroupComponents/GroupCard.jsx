@@ -26,21 +26,21 @@ const GroupCard = ({ group, setGroup }) => {
         ></div>
       )}
       
-      <div className="bg-pink-400 flex p-2 rounded-lg w-full sm:w-1/3 mx-1 items-center">
-        <div className="bg-yellow-500 h-20 w-20 rounded-full flex items-center justify-center">
-          <Users width={40} height={40} />
+      <div className="bg-secondaryColor border-2 border-tertiaryColor flex p-2 rounded-lg w-full sm:w-1/2 lg:w-1/3 m-2 items-center h-fit">
+        <div className="bg-tertiaryColor h-15 w-15 rounded-lg flex items-center justify-center">
+          <Users width={30} height={30} />
         </div>
         <div
           onClick={() => setShowGroup(true)}
-          className="bg-lime-500 flex h-full items-center flex-1 ml-2 p-2 rounded-l-lg text-lg wrap-break-word  hover:cursor-pointer"
+          className="flex  items-center flex-1 mx-1 sm:mx-2 p-2 text-lg wrap-break-word  hover:cursor-pointer"
         >
           <p>{group?.groupName}</p>
         </div>
-        <div className="relative p-2 rounded-r-lg z-50 h-full">
+        <div className="relative p-1 z-50 ">
           <EllipsisVertical
-            width={25}
-            height={25}
-            className="hover:cursor-pointer transition-all duration-400 hover:bg-amber-300 rounded-full"
+            width={20}
+            height={20}
+            className="hover:cursor-pointer"
             onClick={() => setShowGroupOptions(!showGroupOptions)}
           />
           {showGroupOptions && (
