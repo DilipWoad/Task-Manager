@@ -2,10 +2,14 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../../utils/constant";
 import TaskCard from "./TaskCard";
+import LoadingScreen from "../LoadingScreen.jsx";
 
 const UpcomingTask = () => {
   const [upcomingTasks, setUpcomingTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const getUserUpcomingTask = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(`${BASE_URL}/tasks/upcoming`, {
         withCredentials: true,
@@ -14,6 +18,8 @@ const UpcomingTask = () => {
       setUpcomingTasks(res.data.data);
     } catch (error) {
       console.log("Error fetching tasks :: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -23,6 +29,7 @@ const UpcomingTask = () => {
   if (!upcomingTasks) return <div>Loading...</div>;
   return (
     <div className="flex flex-col   h-full p-5 ">
+      {loading && <LoadingScreen />}
       {upcomingTasks.length == 0 ? (
         <div className="text-2xl sm:text-3xl">No upcoming tasks.</div>
       ) : (

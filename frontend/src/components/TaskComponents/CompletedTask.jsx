@@ -2,10 +2,14 @@ import axios from "axios";
 import { BASE_URL } from "../../utils/constant.js";
 import { useEffect, useState } from "react";
 import TaskCard from "./TaskCard.jsx";
+import LoadingScreen from "../LoadingScreen.jsx";
 
 function CompletedTask() {
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const getUserCompletedTask = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(`${BASE_URL}/tasks/completed`, {
         withCredentials: true,
@@ -14,6 +18,8 @@ function CompletedTask() {
       setCompletedTasks(res.data.data);
     } catch (error) {
       console.log("Error fetching tasks :: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -23,6 +29,7 @@ function CompletedTask() {
   if (!completedTasks) return <div>Loading...</div>;
   return (
     <div className="flex flex-col   h-full p-5 ">
+      {loading && <LoadingScreen />}
       {completedTasks.length == 0 ? (
         <div className="text-2xl sm:text-3xl">No completed tasks.</div>
       ) : (
