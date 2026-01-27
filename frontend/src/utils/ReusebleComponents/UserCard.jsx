@@ -17,11 +17,11 @@ const UserCard = ({ user, setSelectedUser, selectedUser }) => {
   };
 
   return (
-    <div className="bg-purple-600 flex items-center justify-between gap-1 my-1 p-1 rounded-lg w-full">
-      <p className="w-15 h-15 rounded-full bg-sky-500 flex items-center justify-center text-lg">
+    <div className="bg-primaryColor flex items-center justify-between gap-1 my-1 p-1 rounded-lg w-full">
+      <p className="w-15 h-15 rounded-lg bg-secondaryColor flex items-center justify-center text-lg">
         <span>{firstLastNameLetters}</span>
       </p>
-      <Link to={`/group/user/${_id}/upcoming`} state={{userDetails:user}} className="flex-1 flex h-full hover:cursor-pointer hover:bg-black/30 transition-colors duration-300 items-center mx-1 px-2">
+      <Link to={`/group/user/${_id}/upcoming`} state={{userDetails:user}} className="flex-1 flex h-full hover:cursor-pointer hover:bg-secondaryColor/40 transition-colors duration-300 items-center mx-1 px-2">
         <p className="">{fullName}</p>
       </Link>
       <div className="flex items-center">

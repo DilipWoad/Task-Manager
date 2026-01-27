@@ -64,8 +64,8 @@ const GroupUsers = ({
 
   if (!allUsers) return <LoadingScreen />;
   return (
-    <div className="bg-indigo-800/50 fixed inset-0 z-50 flex items-center justify-center ">
-      <div className="bg-gray-600 p-4 mx-3 rounded-lg w-full sm:w-1/2">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center ">
+      <div className="bg-primaryColor p-4 mx-3 rounded-lg w-full sm:w-1/2">
         {/* Header part */}
         <div className=" flex px-1  py-2 justify-between font-semibold">
           <button
@@ -96,11 +96,11 @@ const GroupUsers = ({
         </div>
 
         {/* User cards */}
-        <div className="bg-yellow-500 wrap-break-word p-1 mt-4  rounded-lg">
-          <div className="bg-pink-500 rounded-t-lg text-center p-2 text-lg">
+        <div className="bg-secondaryColor border-2 border-tertiaryColor wrap-break-word p-1 mt-4  rounded-lg">
+          <div className="text-center p-2 text-lg">
             {group?.groupName}
           </div>
-          <div className="flex flex-col  items-center h-40 overflow-auto mt-1 bg-gray-600 py-2 px-1 rounded-b-lg">
+          <div className="flex flex-col  items-center h-40 overflow-auto mt-1 bg-tertiaryColor py-2 px-1 rounded-lg">
             {group?.groupMembers?.length == 0 ? (
               <p className="text-lg text-center">No user added.</p>
             ) : (
