@@ -42,10 +42,10 @@ const EditGroupName = ({
 
   return (
     <div className="bg-black/40 fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-lime-500 p-2 rounded-lg flex flex-col gap-4 w-screen sm:w-auto mx-4">
+      <div className="bg-primaryColor p-2 rounded-lg flex flex-col gap-4 w-screen sm:w-auto mx-4">
         <span className="text-2xl">Edit</span>
-        <div className="bg-pink-400 p-2 rounded-lg overflow-auto">
-          <label>Group Name : </label>
+        <div className="bg-secondaryColor flex gap-2 p-2 justify-between items-center rounded-lg overflow-auto">
+          <label className="font-semibold">Group Name : </label>
           <input
             type="text"
             value={newGroupName}
@@ -53,7 +53,7 @@ const EditGroupName = ({
             required
             minLength={1}
             placeholder="Enter new group name "
-            className="bg-white text-gray-500 p-2 rounded-lg "
+            className="bg-tertiaryColor text-primaryColor font-semibold  p-2 rounded-lg "
           />
         </div>
         <div className="flex justify-evenly">

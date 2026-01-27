@@ -26,7 +26,7 @@ const UserTaskSectionButton = ({
       to={newLink}
       className={({ isActive }) =>
         isActive
-          ? `${baseStyle} bg-primaryColor hover:bg-gray-700 hover:text-gray-300`
+          ? `${baseStyle} bg-primaryColor hover:bg-gray-700 border-2 border-quaternaryColor hover:text-gray-300`
           : `${baseStyle} bg-quaternaryColor hover:bg-gray-300 hover:text-gray-700 text-black`
       }
     >

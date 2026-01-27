@@ -32,7 +32,7 @@ const GroupCard = ({ group, setGroup }) => {
         </div>
         <div
           onClick={() => setShowGroup(true)}
-          className="flex  items-center flex-1 mx-1 sm:mx-2 p-2 text-lg wrap-break-word  hover:cursor-pointer"
+          className="flex  items-center flex-1 mx-1 sm:mx-2 p-2 text-lg wrap-break-word  hover:cursor-pointer hover:bg-black/20"
         >
           <p>{group?.groupName}</p>
         </div>

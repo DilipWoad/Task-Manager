@@ -56,9 +56,9 @@ const ListsOfUser = ({
   };
   return (
     <div className="bg-black/40 fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-lime-500 p-2 rounded-lg flex flex-col gap-4 w-full sm:w-1/3 mx-5">
+      <div className="bg-primaryColor p-2 rounded-lg flex flex-col gap-4 w-full sm:w-1/3 mx-5">
         <span className="text-2xl">Users</span>
-        <div className="bg-pink-400 p-2 rounded-lg h-40 overflow-auto">
+        <div className="bg-tertiaryColor p-2 rounded-lg h-40 overflow-auto">
           {allUsers &&
             allUsers.map((user) => (
               <UserListCard

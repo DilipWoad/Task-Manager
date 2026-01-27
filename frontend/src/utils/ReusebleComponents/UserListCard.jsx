@@ -22,11 +22,11 @@ const UserListCard = ({
   const gg = groupMembers.map((grp) => grp._id);
 
   return (
-    <div className="flex justify-between gap-4 my-1 bg-yellow-400 px-4 py-2 rounded-md">
+    <div className="flex justify-between gap-4 my-1 bg-secondaryColor text-quaternaryColor px-4 py-2 rounded-md">
       <p
         className={`text-lg ${
           gg.includes(user._id)
-            ? "line-through italic text-gray-500 cursor-not-allowed"
+            ? "line-through italic  cursor-not-allowed"
             : ""
         } `}
       >

@@ -64,7 +64,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
       : setDeadlineCss("");
   }, []);
   return (
-    <div className="relative hover:cursor-pointer group min-w-0 bg-primaryColor h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300">
+    <div className={`relative hover:cursor-pointer group min-w-0 bg-primaryColor ${editingOption ? "bg-secondaryColor border-2 border-tertiaryColor " : "bg-primaryColor"} h-full rounded-md p-3  flex flex-col  font-mono gap-3 shadow-sm hover:shadow-lg transition-shadow duration-300`}>
       {editingStatusId !== null && (
         <div
           className="fixed inset-0  z-20"
@@ -72,7 +72,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
         ></div>
       )}
       <div
-        className={`flex flex-col justify-between grow pt-2 px-2 rounded-md ${
+        className={`flex flex-col justify-between grow pt-2 px-2 rounded-md border-2 border-primaryColor ${
           task?.status === "completed"
             ? "line-through bg-slate-200 text-gray-500"
             : "bg-quaternaryColor"
