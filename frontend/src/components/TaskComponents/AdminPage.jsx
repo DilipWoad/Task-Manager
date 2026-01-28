@@ -1,4 +1,5 @@
 import useAuth from "../../hooks/useAuth";
+import useGroupMembers from "../../hooks/useGroupMembers";
 import useToastCard from "../../hooks/useToastCard";
 import { BASE_URL } from "../../utils/constant";
 import UserLeaderboardCard from "../../utils/ReusebleComponents/UserLeaderboardCard";
@@ -16,6 +17,7 @@ const AdminPage = () => {
   const { setShowToastCard, setToastCardMessage } = useToastCard();
 
   const { auth } = useAuth();
+  const {setGroupMembers} = useGroupMembers();
   const getTaskStats = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/tasks/stats`, {
@@ -34,7 +36,9 @@ const AdminPage = () => {
       });
       const group = res.data.data;
       // setGroupId(group?._id);
+      console.log("Group info :: ",group)
       setGroupInfo(group);
+      setGroupMembers(group?.groupMembers);
       group?._id && groupMembersRanks(group._id);
     } catch (error) {
       console.log("Error while getting group details.", error);
