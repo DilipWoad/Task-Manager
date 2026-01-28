@@ -87,7 +87,7 @@ const AdminPage = () => {
           {auth.fullName}
         </span>
       </div>
-      <div className="bg-quaternaryColor text-end my-3 rounded-md mx-1">
+      <div className="bg-quaternaryColor border-2 border-primaryColor text-end my-3 rounded-md mx-1">
         <button
           onClick={handleCreateTaskClick}
           className="bg-blue-700 px-4 py-2 rounded-md text-lg my-2 mx-1 hover:cursor-pointer hover:bg-blue-600"

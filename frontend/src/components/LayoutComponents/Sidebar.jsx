@@ -31,12 +31,9 @@ const Sidebar = ({ menuClick, setMenuClick }) => {
         />
       )}
       <div
-        // className={` flex  ${
-        //   isOpen ? "w-36" : "w-15"
-        // }  flex-col border-r border-gray-700 ${} h-fit sm:h-full absolute sm:static z-50 rounded-br-lg top-15.5  bg-pink-500 sm:rounded-l-md transition-all duration-400`}
         className={`flex flex-col bg-primaryColor   sm:rounded-lg sm:border-gray-400 
           transition-all duration-300 ease-in-out z-50
-          fixed top-16 h-full w-40
+          fixed top-16 h-full w-40 mr-2
 
           ${menuClick ? "translate-x-0" : "-translate-x-full"}
 

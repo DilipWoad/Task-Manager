@@ -16,11 +16,7 @@ function TaskPage() {
       });
       console.log(res.data.data);
 
-      console.log("This should be seen on ALL TASK PAGE");
       setTasks(res.data.data);
-
-      // console.log("This should be seen on UPCOMING")
-      // setTasks(res.data.data.filter((task)=>task.status!=="completed"))
     } catch (error) {
       console.log("Error fetching tasks :: ", error);
     } finally {

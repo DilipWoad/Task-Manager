@@ -33,7 +33,7 @@ const UserCompletedTasks = () => {
   return userCompletedTasks.length === 0 ? (
     <p>No completed tasks.</p>
   ) : (
-    userCompletedTasks.map((task) => <TaskCard key={task._id} task={task} />)
+    userCompletedTasks.map((task) => <TaskCard key={task._id} task={task} editingOption={true} />)
   );
 };
 
