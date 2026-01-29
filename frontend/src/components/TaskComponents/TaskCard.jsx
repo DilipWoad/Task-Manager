@@ -56,6 +56,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
       console.log("Error while updating Status", error);
     }
   };
+  console.log("Task in Task Card :: ",task.assigned_to)
   if (!task) return <div>Loading....</div>;
 
   useEffect(() => {
@@ -169,7 +170,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
           currentTitle={task.title}
           currentDescription={task.description}
           currentDate={task.deadline.split("T")[0]}
-          currentAssignedUser={task.assigned_to._id}
+          currentAssignedUser={task.assigned_to._id || task.assigned_to}
           taskId={task._id}
           setTasks={setTasks}
         />

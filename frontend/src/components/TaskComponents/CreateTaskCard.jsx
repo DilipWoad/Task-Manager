@@ -2,6 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import LoadingScreen from "../LoadingScreen";
+import { useContext } from "react";
+import ToastCardContext from "../../Context/ToastCardContextProvider";
 
 const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
   const currentDate = new Date();
@@ -10,6 +12,9 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedDate, setSelectedDate] = useState(formattedDate);
   const [loading, setLoading] = useState(false);
+
+
+  const {setShowToastCard,setToastCardMessage} = useContext(ToastCardContext)
 
   
   const taskDetailStruct = {
@@ -20,19 +25,6 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
 
   const [taskDetail, setTaskDetail] = useState(taskDetailStruct);
 
-  //don;t call hee get from thr parent
-  // const getGroupUser = async () => {
-  //   console.log(groupId);
-  //   try {
-  //     const res = await axios.get(`${BASE_URL}/groups/${groupId}`, {
-  //       withCredentials: true,
-  //     });
-  //     console.log(res.data.data);
-  //     // setGroupUsers(res.data.data);
-  //   } catch (error) {
-  //     console.log("Error while getting group users.", error);
-  //   }
-  // };
   const handleDetailChange = (e) => {
     const { name, value } = e.target;
 
@@ -62,8 +54,12 @@ const CreateTaskCard = ({ groupId, setShowCreateTask,groupMembers}) => {
       console.log(res);
       setTaskDetail(taskDetailStruct)
       setShowCreateTask(false);
+      setShowToastCard(true);
+      setToastCardMessage(res.data.message);
     } catch (error) {
       console.log("Error while adding task ::", error);
+      setShowToastCard(true);
+      setToastCardMessage(error.message);
     } finally {
       setLoading(false);
     }

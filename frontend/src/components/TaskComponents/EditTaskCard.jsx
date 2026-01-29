@@ -3,9 +3,11 @@ import useGroupMembers from "../../hooks/useGroupMembers";
 import axios from "axios";
 import { BASE_URL, isTasksPastDue } from "../../utils/constant";
 import LoadingScreen from "../LoadingScreen";
+import { useContext } from "react";
+import ToastCardContext from "../../Context/ToastCardContextProvider";
 
 
-
+//fix on-refresh groupMembers becoms undefined
 const EditTaskCard = ({
   setShowEditTask,
   currentTitle,
@@ -20,21 +22,22 @@ const EditTaskCard = ({
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const [loading, setLoading] = useState(false);
 
+  const { setShowToastCard, setToastCardMessage } = useContext(ToastCardContext);
+  let prevsUser = currentAssignedUser;
   const taskDetail = {
     title: currentTitle,
     description: currentDescription,
   };
   const [updateTaskDetails, setUpdateTaskDetails] = useState(taskDetail);
-  console.log("Group Members :: ", groupMembers);
-  console.log("Selected User :: ", currentAssignedUser);
-
+  console.log("Selected :: ",selectedUser);
+  console.log("Group Members ",groupMembers)
   const alreadyUser = groupMembers.filter(
-    (user) => user._id === selectedUser
+    (user) => user._id === selectedUser,
   )[0].fullName;
+
   const nonSelectedUser = groupMembers.filter(
-    (user) => user._id !== selectedUser
+    (user) => user._id !== selectedUser,
   );
-  console.log("already:: ", alreadyUser);
   const handleCancelClick = () => {
     setShowEditTask(false);
   };
@@ -50,31 +53,35 @@ const EditTaskCard = ({
       const res = await axios.patch(
         `${BASE_URL}/tasks/${taskId}/admin`,
         updatedTask,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       console.log(res.data.data);
       const updatedTasks = res.data.data;
       //update it dynamily in the task
-
       //if assigned_to user is changed then remove this task from this set of task
-      if (updatedTasks.assigned_to._id !== selectedDate) {
+      if (updatedTasks.assigned_to !== prevsUser) {
+        console.log("updating the selected user");
         setTasks((prev) => prev.filter((task) => task._id !== taskId));
       }
-
       //if deadline was < current time and now new deadline/date is > current time then also remove it from the tasks
-      if (isTasksPastDue(currentDate) && !isTasksPastDue(selectedDate)) {
+      else if (isTasksPastDue(currentDate) && !isTasksPastDue(selectedDate)) {
+        console.log("updating the deadline")
         setTasks((prev) => prev.filter((task) => task._id !== taskId));
       }
-
       //else it just title or desc changes
-      setTasks((prev) =>
-        prev.map((task) => (task._id == taskId ? (task = updatedTasks) : task))
-      ); //instead find the element and update wit new Details
+      else {
+        console.log("updating normal")
+        setTasks((prev) => prev.map((task) => (task._id == taskId ? (task = updatedTasks) : task))); //instead find the element and update wit new Details
+      }
       // setTasks([]);
       setShowEditTask(false);
+      setShowToastCard(true);
+      setToastCardMessage(res.data.message || "Task updated Successfully.")
     } catch (error) {
       console.log("Error while updating tasks :: ", error);
+      setShowToastCard(true);
+      setToastCardMessage(error.message || "Task not updated!.")
     } finally {
       setLoading(false);
     }
@@ -90,6 +97,7 @@ const EditTaskCard = ({
     }));
   };
 
+  if(!groupMembers) setLoading(true);
   return (
     <div className="fixed flex flex-col justify-center items-center inset-0 bg-black/50 z-40 gap-4">
       {loading && <LoadingScreen />}

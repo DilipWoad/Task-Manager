@@ -25,26 +25,22 @@ export const isTasksPastDue = (taskDeadlineDate) => {
 
   const deadline = taskDeadlineDate.split("T")[0];
 
-  const yearMonthDateArray = deadline.split("-");
+  const deadlineYearMonthDate = deadline.split("-");
 
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().split("T")[0];
 
-  const yearMonthDate = formattedDate.split("-");
+  const currentYearMonthDate = formattedDate.split("-");
 
-
+  // console.log("Deadline :: ",deadlineYearMonthDate , " :: Current :: ",currentYearMonthDate)
   //check if it has reached deadline
-  if (parseInt(yearMonthDateArray[0]) < parseInt(yearMonthDate[0])) {
-
+  if (parseInt(deadlineYearMonthDate[0]) < parseInt(currentYearMonthDate[0])) {
     return true;
-  } else if (parseInt(yearMonthDateArray[1]) < parseInt(yearMonthDate[1])) {
-
+  } else if (parseInt(deadlineYearMonthDate[1]) < parseInt(currentYearMonthDate[1])) {
     return true;
-  } else if (parseInt(yearMonthDateArray[2]) < parseInt(yearMonthDate[2])) {
-
+  } else if (parseInt(deadlineYearMonthDate[2]) < parseInt(currentYearMonthDate[2]) && parseInt(deadlineYearMonthDate[1]) < parseInt(currentYearMonthDate[1])) {
     return true;
   } else {
-
     return false;
   }
 };
