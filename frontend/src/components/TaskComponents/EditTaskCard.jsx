@@ -17,7 +17,7 @@ const EditTaskCard = ({
   taskId,
   setTasks,
 }) => {
-  const { groupMembers } = useGroupMembers();
+  // const { groupMembers } = useGroupMembers();
   const [selectedUser, setSelectedUser] = useState(currentAssignedUser);
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const [loading, setLoading] = useState(false);
@@ -28,9 +28,12 @@ const EditTaskCard = ({
     title: currentTitle,
     description: currentDescription,
   };
+
+  let groupMembers = JSON.parse(localStorage.getItem("groupMembers"));
   const [updateTaskDetails, setUpdateTaskDetails] = useState(taskDetail);
   console.log("Selected :: ",selectedUser);
   console.log("Group Members ",groupMembers)
+  
   const alreadyUser = groupMembers.filter(
     (user) => user._id === selectedUser,
   )[0].fullName;

@@ -1,7 +1,7 @@
 import useAuth from "../../hooks/useAuth";
 import useGroupMembers from "../../hooks/useGroupMembers";
 import useToastCard from "../../hooks/useToastCard";
-import { BASE_URL } from "../../utils/constant";
+import { BASE_URL, localStorageForGroupMembers } from "../../utils/constant";
 import UserLeaderboardCard from "../../utils/ReusebleComponents/UserLeaderboardCard";
 import CreateTaskCard from "./CreateTaskCard";
 import TaskDetailCard from "./TaskDetailCard";
@@ -17,7 +17,7 @@ const AdminPage = () => {
   const { setShowToastCard, setToastCardMessage } = useToastCard();
 
   const { auth } = useAuth();
-  const {setGroupMembers} = useGroupMembers();
+  const { setGroupMembers } = useGroupMembers();
   const getTaskStats = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/tasks/stats`, {
@@ -36,9 +36,12 @@ const AdminPage = () => {
       });
       const group = res.data.data;
       // setGroupId(group?._id);
-      console.log("Group info :: ",group)
+      console.log("Group info :: ", group);
       setGroupInfo(group);
-      setGroupMembers(group?.groupMembers);
+
+      // here we need to do localStorage here
+      localStorageForGroupMembers(group.groupMembers,setGroupMembers);
+    
       group?._id && groupMembersRanks(group._id);
     } catch (error) {
       console.log("Error while getting group details.", error);
@@ -87,9 +90,7 @@ const AdminPage = () => {
       )}
       <div className=" flex flex-col p-2 font-mono my-2 gap-2">
         <p className="text-xl text-primaryColor font-bold">Hello Admin,</p>
-        <span className="text-4xl font-bold">
-          {auth.fullName}
-        </span>
+        <span className="text-4xl font-bold">{auth.fullName}</span>
       </div>
       <div className="bg-quaternaryColor border-2 border-primaryColor text-end my-3 rounded-md mx-1">
         <button

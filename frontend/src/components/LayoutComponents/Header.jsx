@@ -21,7 +21,8 @@ const Header = ({ menuClick, setMenuClick }) => {
         {},
         { withCredentials: true }
       );
-
+      localStorage.removeItem("groupMembers");
+      localStorage.removeItem("myList");
       setAuth(null);
       setShowLogout(false);
       navigate("/login");
