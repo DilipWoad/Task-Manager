@@ -4,9 +4,11 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 
 const verifyAuthentication = AsyncHandler(async (req, res, next) => {
   //1)cookies can be from header and can be taken from cookies
+  // console.log("The whole Req obj at jwt verification :: ",req)
   console.log("Access Token from cookies ::",req.cookies.accessToken)
-  console.log("Access Token from header ::",req.header("Authorization"))
-  let accessToken = req.cookies.accessToken || req.header("Authorization");
+  console.log("Access Token from header ::",req.header("Authorization")?.replace("Bearer ",""))
+  let accessToken =  req.cookies?.accessToken ||
+      req.header("Authorization")?.replace("Bearer ", "");
   console.log("Does not working accessToken ::",accessToken);
 
   if (!accessToken) {
