@@ -31,7 +31,9 @@ const UserAllTasks = () => {
   return userAllTasks.length === 0 ? (
     <p>No task assigned to the user.</p>
   ) : (
-    userAllTasks.map((task) => <TaskCard key={task._id} task={task} editingOption={true} />)
+    userAllTasks.map((task) => (
+      <TaskCard key={task._id} task={task} editingOption={true} />
+    ))
   );
 };
 

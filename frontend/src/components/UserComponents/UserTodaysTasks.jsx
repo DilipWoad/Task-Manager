@@ -30,7 +30,14 @@ const UserTodaysTasks = () => {
   return userTodaysTasks.length === 0 ? (
     <p>No task ends today.</p>
   ) : (
-    userTodaysTasks.map((task) => <TaskCard key={task._id} task={task} />)
+    userTodaysTasks.map((task) => (
+      <TaskCard
+        key={task._id}
+        task={task}
+        setTasks={setUserTodaysTasks}
+        editingOption={true}
+      />
+    ))
   );
 };
 

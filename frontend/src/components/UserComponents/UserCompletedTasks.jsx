@@ -16,7 +16,7 @@ const UserCompletedTasks = () => {
         `${BASE_URL}/tasks/user/${userId}/completed`,
         {
           withCredentials: true,
-        }
+        },
       );
 
       console.log(res.data.data);
@@ -33,7 +33,9 @@ const UserCompletedTasks = () => {
   return userCompletedTasks.length === 0 ? (
     <p>No completed tasks.</p>
   ) : (
-    userCompletedTasks.map((task) => <TaskCard key={task._id} task={task} editingOption={true} />)
+    userCompletedTasks.map((task) => (
+      <TaskCard key={task._id} task={task} editingOption={true} />
+    ))
   );
 };
 
