@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, Link, Navigate } from "react-router";
 // import { useDispatch } from "react-redux";
 // import { addUser } from "../../slices/userSlice";
 import { validateLoginForm } from "../../utils/FormValidation/validateFormLogin.js";
@@ -10,7 +10,7 @@ import useAuth from "../../hooks/useAuth.js";
 const LoginComponent = () => {
   // const [email, setEmail] = useState("dilip@g.com");
   // const [password, setPassword] = useState("12345678");
-  const { setAuth } = useAuth();
+  const { setAuth,auth ,isCheckingAuth} = useAuth();
   const loginErrorStruct = {
     emailError: "",
     passwordError: "",
@@ -26,7 +26,14 @@ const LoginComponent = () => {
 
   const [formLogin, setFormLogin] = useState(loginFormStructure);
   const navigate = useNavigate();
-  //   const dispatch = useDispatch();
+
+  //if already logged in so don't render this component
+  //in-between show loading
+  if(isCheckingAuth) return <LoadingScreen/>
+  if(auth){
+    const targetPath = auth.role === 'user' ? '/' : '/admin';
+    return <Navigate to={targetPath} replace />;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,8 +92,9 @@ const LoginComponent = () => {
   };
 
   return (
-    <div className="flex items-center justify-center text-black shrink h-full ">
+    <div className="flex flex-col items-center justify-center text-black shrink h-full ">
       {loading && <LoadingScreen />}
+      <div>For Admin login = dil@g.com:12345678</div>
       <div className={`bg-tertiaryColor w-full max-w-sm rounded-lg p-8 shadow-xl mx-2`}>
         <label className="text-2xl font-semibold ">Login</label>
         <form className="mt-6" onSubmit={handleLoginUser}>

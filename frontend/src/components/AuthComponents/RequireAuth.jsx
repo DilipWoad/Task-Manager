@@ -1,12 +1,13 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import useAuth from "../../hooks/useAuth";
+import LoadingScreen from "../LoadingScreen";
 
 const RequireAuth = ({ allowedRoles }) => {
   const { auth,isCheckingAuth } = useAuth();
   const location = useLocation();
-
+ 
   if(isCheckingAuth){
-    return <div className="text-center mt-20">Loading user data...</div>
+    return <LoadingScreen/>
   }
   
   return allowedRoles?.includes(auth?.role) ? (
