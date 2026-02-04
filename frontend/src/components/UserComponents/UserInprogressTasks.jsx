@@ -8,7 +8,8 @@ const UserInprogressTasks = () => {
   const [userInprogressTasks, setUserInprogressTasks] = useState(null);
 
   //   const { userId } = location.state;
-  const { userId } = useOutletContext();
+    const { userId,setUserTaskDetails} = useOutletContext();
+
 
   const getUserInprogressTask = async () => {
     try {
@@ -39,6 +40,7 @@ const UserInprogressTasks = () => {
         task={task}
         setTasks={setUserInprogressTasks}
         editingOption={true}
+        setUserTaskDetails={setUserTaskDetails}
       />
     ))
   );

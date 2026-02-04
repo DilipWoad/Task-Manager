@@ -9,7 +9,7 @@ const UserUpcomingTasks = () => {
   const [userUpcomingTasks, setUserUpcomingTasks] = useState(null);
 
   //   const { userId } = location.state;
-  const { userId } = useOutletContext();
+  const { userId,setUserTaskDetails} = useOutletContext();
 
   const getUserUpcomingTask = async () => {
     try {
@@ -37,6 +37,7 @@ const UserUpcomingTasks = () => {
         task={task}
         setTasks={setUserUpcomingTasks}
         editingOption={true}
+        setUserTaskDetails={setUserTaskDetails}
       />
     ))
   );

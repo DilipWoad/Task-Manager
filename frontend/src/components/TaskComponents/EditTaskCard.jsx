@@ -6,7 +6,6 @@ import LoadingScreen from "../LoadingScreen";
 import { useContext } from "react";
 import ToastCardContext from "../../Context/ToastCardContextProvider";
 
-
 //fix on-refresh groupMembers becoms undefined
 const EditTaskCard = ({
   setShowEditTask,
@@ -16,13 +15,15 @@ const EditTaskCard = ({
   currentAssignedUser,
   taskId,
   setTasks,
+  setUserTaskDetails,
 }) => {
   // const { groupMembers } = useGroupMembers();
   const [selectedUser, setSelectedUser] = useState(currentAssignedUser);
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const [loading, setLoading] = useState(false);
 
-  const { setShowToastCard, setToastCardMessage } = useContext(ToastCardContext);
+  const { setShowToastCard, setToastCardMessage } =
+    useContext(ToastCardContext);
   let prevsUser = currentAssignedUser;
   const taskDetail = {
     title: currentTitle,
@@ -31,9 +32,9 @@ const EditTaskCard = ({
 
   let groupMembers = JSON.parse(localStorage.getItem("groupMembers"));
   const [updateTaskDetails, setUpdateTaskDetails] = useState(taskDetail);
-  console.log("Selected :: ",selectedUser);
-  console.log("Group Members ",groupMembers)
-  
+  console.log("Selected :: ", selectedUser);
+  console.log("Group Members ", groupMembers);
+
   const alreadyUser = groupMembers.filter(
     (user) => user._id === selectedUser,
   )[0].fullName;
@@ -45,7 +46,7 @@ const EditTaskCard = ({
     setShowEditTask(false);
   };
 
-  const handleAddTask = async () => {
+  const handleUpdateTask = async () => {
     const updatedTask = {
       ...updateTaskDetails,
       deadline: selectedDate,
@@ -65,26 +66,84 @@ const EditTaskCard = ({
       //if assigned_to user is changed then remove this task from this set of task
       if (updatedTasks.assigned_to !== prevsUser) {
         console.log("updating the selected user");
+        //that means remove 1 from each upcoming,today,in-progress,pastdue,complete and all-task
+        setUserTaskDetails((prev) => ({
+          ...prev,
+          completedTasks:
+            prev.completedTasks === 0 ? 0 : parseInt(prev.completedTasks) - 1,
+          inProgressTasks:
+            prev.inProgressTasks === 0 ? 0 : parseInt(prev.inProgressTasks) - 1,
+          pastDueTasks:
+            prev.pastDueTasks === 0 ? 0 : parseInt(prev.pastDueTasks) - 1,
+          todayTasks: prev.todayTasks === 0 ? 0 : parseInt(prev.todayTasks) - 1,
+          totalTaskAssigned:
+            prev.totalTaskAssigned === 0
+              ? 0
+              : parseInt(prev.totalTaskAssigned) - 1,
+          upcomingTasks:
+            prev.upcomingTasks === 0 ? 0 : parseInt(prev.upcomingTasks) - 1,
+        }));
+        // // //
         setTasks((prev) => prev.filter((task) => task._id !== taskId));
       }
       //if deadline was < current time and now new deadline/date is > current time then also remove it from the tasks
       else if (isTasksPastDue(currentDate) && !isTasksPastDue(selectedDate)) {
-        console.log("updating the deadline")
+        //currentDate is comming from the task and selectedDate is the update one
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().split("T")[0];
+        console.log(formattedDate);
+
+        const currentDateInArray = formattedDate.split("-");
+        const selectedDateInArray = selectedDate.split("-");
+        console.log(currentDateInArray);
+        console.log(selectedDateInArray);
+        console.log("updating the deadline");
+        //here we have increase the deadline from the pastDue
+        // // //2 case
+        //1) if the new assigned task deadline is today from the pastDue
+        if (
+          //month and date are same means assigned it today
+          selectedDateInArray[1] === currentDateInArray[1] &&
+          selectedDateInArray[2] === currentDateInArray[2]
+        ) {
+          // remove -1 count from the pastDue and add +1 to the todayTask
+          setUserTaskDetails((prev) => ({
+            ...prev,
+            pastDueTasks:
+              prev.pastDueTasks === 0 ? 0 : parseInt(prev.pastDueTasks) - 1,
+            todayTasks: prev.todayTasks + 1,
+          }));
+        } else {
+          //i am assumning u will always increase the past due
+
+          //2) if the new assigned task deadline if greater then todays date
+          // remove -1 from pastDue and add +1 to the upcomingTask
+          setUserTaskDetails((prev) => ({
+            ...prev,
+            pastDueTasks:
+              prev.pastDueTasks === 0 ? 0 : parseInt(prev.pastDueTasks) - 1,
+            upcomingTasks: prev.upcomingTasks + 1,
+          }));
+        }
         setTasks((prev) => prev.filter((task) => task._id !== taskId));
       }
       //else it just title or desc changes
       else {
-        console.log("updating normal")
-        setTasks((prev) => prev.map((task) => (task._id == taskId ? (task = updatedTasks) : task))); //instead find the element and update wit new Details
+        console.log("updating normal");
+        setTasks((prev) =>
+          prev.map((task) =>
+            task._id == taskId ? (task = updatedTasks) : task,
+          ),
+        ); //instead find the element and update wit new Details
       }
       // setTasks([]);
       setShowEditTask(false);
       setShowToastCard(true);
-      setToastCardMessage(res.data.message || "Task updated Successfully.")
+      setToastCardMessage(res.data.message || "Task updated Successfully.");
     } catch (error) {
       console.log("Error while updating tasks :: ", error);
       setShowToastCard(true);
-      setToastCardMessage(error.message || "Task not updated!.")
+      setToastCardMessage(error.message || "Task not updated!.");
     } finally {
       setLoading(false);
     }
@@ -100,7 +159,7 @@ const EditTaskCard = ({
     }));
   };
 
-  if(!groupMembers) setLoading(true);
+  if (!groupMembers) setLoading(true);
   return (
     <div className="fixed flex flex-col justify-center items-center inset-0 bg-black/50 z-40 gap-4">
       {loading && <LoadingScreen />}
@@ -162,7 +221,7 @@ const EditTaskCard = ({
           Cancel
         </button>
         <button
-          onClick={handleAddTask}
+          onClick={handleUpdateTask}
           className="bg-blue-700 px-7 py-1 rounded-md hover:cursor-pointer hover:bg-blue-600 transition-colors duration-300"
         >
           Update

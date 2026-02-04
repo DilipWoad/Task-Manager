@@ -4,7 +4,7 @@ import { BASE_URL, isTasksPastDue } from "../../utils/constant";
 import { Calendar, EllipsisVertical } from "lucide-react";
 import EditTaskCard from "./EditTaskCard";
 
-const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
+const TaskCard = ({ task, setTasks, dueDateCss, editingOption,setUserTaskDetails }) => {
   const [editingStatusId, setEditingStatusId] = useState(null);
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -173,6 +173,7 @@ const TaskCard = ({ task, setTasks, dueDateCss, editingOption }) => {
           currentAssignedUser={task.assigned_to._id || task.assigned_to}
           taskId={task._id}
           setTasks={setTasks}
+          setUserTaskDetails={setUserTaskDetails}
         />
       )}
     </div>

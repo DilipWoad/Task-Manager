@@ -9,7 +9,7 @@ const UserAllTasks = () => {
   const [userAllTasks, setUserAllTasks] = useState(null);
 
   //   const { userId } = location.state;
-  const { userId } = useOutletContext();
+  const { userId, setUserTaskDetails } = useOutletContext();
 
   const getUserAssignedTask = async () => {
     try {
@@ -32,7 +32,12 @@ const UserAllTasks = () => {
     <p>No task assigned to the user.</p>
   ) : (
     userAllTasks.map((task) => (
-      <TaskCard key={task._id} task={task} editingOption={true} />
+      <TaskCard
+        key={task._id}
+        task={task}
+        editingOption={true}
+        setUserTaskDetails={setUserTaskDetails}
+      />
     ))
   );
 };

@@ -8,7 +8,8 @@ const UserPastDueTasks = () => {
   const [userPastDueTasks, setUserPastDueTasks] = useState(null);
 
   //   const { userId } = location.state;
-  const { userId } = useOutletContext();
+  const { userId,setUserTaskDetails} = useOutletContext();
+
 
   const getUserPastDueTask = async () => {
     try {
@@ -37,6 +38,7 @@ const UserPastDueTasks = () => {
         dueDateCss={""}
         setTasks={setUserPastDueTasks}
         editingOption={true}
+        setUserTaskDetails={setUserTaskDetails}
       />
     ))
   );

@@ -8,7 +8,7 @@ const UserTodaysTasks = () => {
   const [userTodaysTasks, setUserTodaysTasks] = useState(null);
 
   //   const { userId } = location.state;
-  const { userId } = useOutletContext();
+  const { userId, setUserTaskDetails } = useOutletContext();
 
   const getUserTodaysTask = async () => {
     try {
@@ -36,6 +36,7 @@ const UserTodaysTasks = () => {
         task={task}
         setTasks={setUserTodaysTasks}
         editingOption={true}
+        setUserTaskDetails={setUserTaskDetails}
       />
     ))
   );
