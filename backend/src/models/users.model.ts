@@ -1,4 +1,4 @@
-import mongoose, { CallbackError } from "mongoose";
+import mongoose, { CallbackError, Document, Schema, Model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
@@ -6,121 +6,41 @@ import {
   REFRESH_TOKEN_SECRET_KEY,
 } from "../config.js";
 
-export interface UserProperties {
+export interface IUser {
   fullName: string;
   email: string;
   password: string;
-  role: string;
-  refreshToken: string;
+  role: "user" | "admin";
+  refreshToken?: string;
 }
-export interface UserMethods {
+export interface IUserMethods {
   isCorrectPassword: (password: string) => Promise<boolean>;
-  generateAccessToken: () => Promise<string>;
-  generateRefreshToken: () => Promise<string>;
+  generateAccessToken: () => string;
+  generateRefreshToken: () => string;
 }
 
-type UserModel = mongoose.Model<UserProperties, {}, UserMethods>;
+//Document is for _id and timestamp
+export interface IUserDocuments extends IUser, Document, IUserMethods {
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-const useSchema = new mongoose.Schema<UserProperties, UserModel, UserMethods>(
+type UserModel = Model<IUserDocuments, {}, IUserMethods>;
+
+const userSchema = new Schema<IUserDocuments, UserModel, IUserMethods>(
   {
     fullName: {
       type: String,
       required: true,
+      trim: true,
+      index: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-    },
-    password: {
-      type: String,
-      required: [true, "Password is Required"],
-    },
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user",
-    },
-    refreshToken: {
-      type: String,
-    },
-  },
-  { timestamps: true },
-);
-
-useSchema.pre("save", async function (next) {
-  //check is password is modified or not
-  //if not then don't do anything
-  if (!this.isModified("password")) {
-    return next();
-  }
-
-  //if password is modified we will update it and hashed it then save it
-  try {
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-  } catch (error) {
-    console.log("Error while hashing the password :: ", error);
-    next(error as CallbackError);
-  }
-});
-
-useSchema.methods.isCorrectPassword = async function (
-  password: string,
-): Promise<boolean> {
-  try {
-    return await bcrypt.compare(password, this.password);
-  } catch (error) {
-    console.log("Error while comparing the password :: ", error);
-    return false;
-  }
-};
-//creating jwt
-useSchema.methods.generateAccessToken = async function (): Promise<string> {
-  return jwt.sign(
-    {
-      id: this._id,
-      email: this.email,
-      fullName: this.fullName,
-      role: this.role,
-    },
-    ACCESS_TOKEN_SECRET_KEY,
-    {
-      expiresIn: "16m",
-    },
-  );
-};
-
-useSchema.methods.generateRefreshToken = async function (): Promise<string> {
-  return jwt.sign(
-    {
-      id: this._id,
-      email: this.email,
-      fullName: this.fullName,
-    },
-    REFRESH_TOKEN_SECRET_KEY,
-    {
-      expiresIn: "7d",
-    },
-  );
-};
-
-export const Users: UserModel = mongoose.model<UserProperties, UserModel>(
-  "Users",
-  useSchema,
-);
-
-////////////////////////////////////////////////////////////////////////////////
-const userSchema = new mongoose.Schema(
-  {
-    fullName: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
+      trim: true,
+      lowerCase: true,
     },
     password: {
       type: String,
@@ -155,7 +75,6 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-//also adding methods to the userSchema for comapring password
 userSchema.methods.isCorrectPassword = async function (
   password: string,
 ): Promise<boolean> {
@@ -167,22 +86,23 @@ userSchema.methods.isCorrectPassword = async function (
   }
 };
 //creating jwt
-userSchema.methods.generateAccessToken = async function (): Promise<string> {
+userSchema.methods.generateAccessToken = function (): string {
+  const user = this as IUserDocuments
   return jwt.sign(
     {
-      id: this._id,
-      email: this.email,
-      fullName: this.fullName,
-      role: this.role,
+      id: user._id,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role,
     },
     ACCESS_TOKEN_SECRET_KEY,
     {
-      expiresIn: "16m",
+      expiresIn: "15m",
     },
   );
 };
 
-userSchema.methods.generateRefreshToken = async function (): Promise<string> {
+userSchema.methods.generateRefreshToken = function (): string {
   return jwt.sign(
     {
       id: this._id,
@@ -196,4 +116,105 @@ userSchema.methods.generateRefreshToken = async function (): Promise<string> {
   );
 };
 
-export const User = mongoose.model("User", userSchema);
+//a method that is an "intance method" which is create after a document is created(i.e object of the model)
+//the things happen does not get stored in the mongodb it is on the document level
+//like making a fullName method that will take the name and lastname and return a fullName ,this nothing to do with DB
+userSchema.methods.toJSON = function(){
+  const userObject = this.toObject();
+  delete userObject.password;
+  delete userObject.refreshToken;
+  return userObject;
+}
+
+export const User: UserModel = mongoose.model<IUserDocuments, UserModel>(
+  "User",
+  userSchema,
+);
+
+////////////////////////////////////////////////////////////////////////////////
+// const userSchema = new mongoose.Schema(
+//   {
+//     fullName: {
+//       type: String,
+//       required: true,
+//     },
+//     email: {
+//       type: String,
+//       required: true,
+//       unique: true,
+//     },
+//     password: {
+//       type: String,
+//       required: [true, "Password is Required"],
+//     },
+//     role: {
+//       type: String,
+//       enum: ["user", "admin"],
+//       default: "user",
+//     },
+//     refreshToken: {
+//       type: String,
+//     },
+//   },
+//   { timestamps: true },
+// );
+
+// userSchema.pre("save", async function (next) {
+//   //check is password is modified or not
+//   //if not then don't do anything
+//   if (!this.isModified("password")) {
+//     return next();
+//   }
+
+//   //if password is modified we will update it and hashed it then save it
+//   try {
+//     this.password = await bcrypt.hash(this.password, 10);
+//     next();
+//   } catch (error) {
+//     console.log("Error while hashing the password :: ", error);
+//     next(error as CallbackError);
+//   }
+// });
+
+// //also adding methods to the userSchema for comapring password
+// userSchema.methods.isCorrectPassword = async function (
+//   password: string,
+// ): Promise<boolean> {
+//   try {
+//     return await bcrypt.compare(password, this.password);
+//   } catch (error) {
+//     console.log("Error while comparing the password :: ", error);
+//     return false;
+//   }
+// };
+// //creating jwt
+// userSchema.methods.generateAccessToken = async function (): Promise<string> {
+//   return jwt.sign(
+//     {
+//       id: this._id,
+//       email: this.email,
+//       fullName: this.fullName,
+//       role: this.role,
+//     },
+//     ACCESS_TOKEN_SECRET_KEY,
+//     {
+//       expiresIn: "16m",
+//     },
+//   );
+// };
+
+// userSchema.methods.generateRefreshToken = async function (): Promise<string> {
+//   return jwt.sign(
+//     {
+//       id: this._id,
+//       email: this.email,
+//       fullName: this.fullName,
+//     },
+//     REFRESH_TOKEN_SECRET_KEY,
+//     {
+//       expiresIn: "7d",
+//     },
+//   );
+// };
+
+// export const User = mongoose.model("User", userSchema);
