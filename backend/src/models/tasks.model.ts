@@ -10,8 +10,8 @@ interface ITask {
 }
 
 interface ITaskDocument extends ITask, Document {
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 type TaskModel = Model<ITaskDocument>;
 const taskSchema = new Schema<ITaskDocument, TaskModel>(

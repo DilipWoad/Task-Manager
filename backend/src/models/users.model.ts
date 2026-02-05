@@ -40,7 +40,7 @@ const userSchema = new Schema<IUserDocument, UserModel, IUserMethods>(
       required: true,
       unique: true,
       trim: true,
-      lowerCase: true,
+      lowercase: true,
     },
     password: {
       type: String,

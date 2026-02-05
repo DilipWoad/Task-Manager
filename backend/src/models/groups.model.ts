@@ -7,8 +7,8 @@ interface IGroup {
 }
 
 interface IGroupDocument extends IGroup, Document {
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 type GroupModel = Model<IGroupDocument>;
