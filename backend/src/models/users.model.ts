@@ -20,14 +20,14 @@ export interface IUserMethods {
 }
 
 //Document is for _id and timestamp
-export interface IUserDocuments extends IUser, Document, IUserMethods {
+export interface IUserDocument extends IUser, Document, IUserMethods {
   createdAt: Date;
   updatedAt: Date;
 }
 
-type UserModel = Model<IUserDocuments, {}, IUserMethods>;
+type UserModel = Model<IUserDocument, {}, IUserMethods>;
 
-const userSchema = new Schema<IUserDocuments, UserModel, IUserMethods>(
+const userSchema = new Schema<IUserDocument, UserModel, IUserMethods>(
   {
     fullName: {
       type: String,
@@ -87,7 +87,7 @@ userSchema.methods.isCorrectPassword = async function (
 };
 //creating jwt
 userSchema.methods.generateAccessToken = function (): string {
-  const user = this as IUserDocuments
+  const user = this as IUserDocument
   return jwt.sign(
     {
       id: user._id,
@@ -126,7 +126,7 @@ userSchema.methods.toJSON = function(){
   return userObject;
 }
 
-export const User: UserModel = mongoose.model<IUserDocuments, UserModel>(
+export const User: UserModel = mongoose.model<IUserDocument, UserModel>(
   "User",
   userSchema,
 );
