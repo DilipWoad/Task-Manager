@@ -1,16 +1,14 @@
+import { Request, Response } from "express";
 import { User } from "../models/users.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import * as z from "zod";
-import {
-  AccessTokenOptions,
-  RefreshTokenOptions,
-} from "../utils/cookieOptions.js";
+import { AccessTokenOptions, RefreshTokenOptions } from "../utils/cookieOptions.js";
 import { generateAccessRefreshToken } from "../utils/GenerateTokens.js";
 
-const registerUser = AsyncHandler(async (req, res) => {
+const registerUser = AsyncHandler(async (req: Request, res: Response) => {
   //so values will come from body
   const registerSchema = z.object({
     fullName: z.string().min(1, "Full name is required."),
@@ -23,7 +21,7 @@ const registerUser = AsyncHandler(async (req, res) => {
   if (!result.success) {
     const zodErrorMessage = result.error;
     // console.log("Zod Error Message :: ", zodErrorMessage.errors[0].message);
-    throw new ApiError(401, "Invalid Credintials", zodErrorMessage.message);
+    throw new ApiError(401, "Invalid Credintials", zodErrorMessage.issues);
   }
   //now we have parsed data here with all validation check
   const { fullName, email, password } = result.data;
@@ -54,7 +52,7 @@ const registerUser = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(201, {}, "User Registed Successfully!!"));
 });
 
-const loginUser = AsyncHandler(async (req, res) => {
+const loginUser = AsyncHandler(async (req: Request, res: Response) => {
   //is empty or not
   //
   const loginSchema = z.object({
@@ -67,7 +65,7 @@ const loginUser = AsyncHandler(async (req, res) => {
   if (!result.success) {
     const zodErrorMessage = result.error;
     // console.log("Zod Error Message :: ", zodErrorMessage.errors[0].message);
-    throw new ApiError(401, "Invalid Credintials", zodErrorMessage.message);
+    throw new ApiError(401, "Invalid Credintials", zodErrorMessage.issues);
   }
   //now we have parsed data here with all validation check
   const { email, password } = result.data;
@@ -109,7 +107,7 @@ const loginUser = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(200, loginUser, "User Login Successfully"));
 });
 
-const logoutUser = AsyncHandler(async (req, res) => {
+const logoutUser = AsyncHandler(async (req: Request, res: Response) => {
   const user = req.user;
   if (!user) {
     throw new ApiError(401, "Invalid Request Call");
@@ -124,7 +122,7 @@ const logoutUser = AsyncHandler(async (req, res) => {
     },
     {
       new: true,
-    }
+    },
   );
 
   if (!currentUser) {
@@ -143,7 +141,7 @@ const logoutUser = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User Logout Successfully!"));
 });
 
-const refreshTokens = AsyncHandler(async (req, res) => {
+const refreshTokens = AsyncHandler(async (req: Request, res: Response) => {
   const receviedRefreshToken =
     req.cookies?.refreshToken || req.body?.refreshToken;
 
@@ -159,7 +157,7 @@ const refreshTokens = AsyncHandler(async (req, res) => {
   //  await jwt.verify(tokenInDb,process.env.REFRESH_TOKEN_SECRECT_KEY);
   const payload = jwt.verify(
     receviedRefreshToken,
-    process.env.REFRESH_TOKEN_SECRET_KEY
+    process.env.REFRESH_TOKEN_SECRET_KEY,
   );
   if (!payload) {
     throw new ApiError(400, "Invalid Refresh Token!");
@@ -181,7 +179,7 @@ const refreshTokens = AsyncHandler(async (req, res) => {
   if (!(refreshToken && accessToken)) {
     throw new ApiError(
       500,
-      "Failed while generating Refresh and Access Token."
+      "Failed while generating Refresh and Access Token.",
     );
   }
 
@@ -192,22 +190,30 @@ const refreshTokens = AsyncHandler(async (req, res) => {
     .json(new ApiResponse(201, {}, "User Tokens Refreshed Successfully!"));
 });
 
-const userAuthenticated = AsyncHandler(async(req,res)=>{
+const userAuthenticated = AsyncHandler(async (req: Request, res: Response) => {
   //if user access token is there that mean user data is there in req.user
   const user = req.user;
-  if(!user){
-    throw new ApiError(404,"User info not found")
+  if (!user) {
+    throw new ApiError(404, "User info not found");
   }
 
   const authUser = await User.findOne({
-    _id:user.id
-  }).select("-password -refreshToken -__v")
+    _id: user.id,
+  }).select("-password -refreshToken -__v");
 
-  if(!authUser){
-    throw new ApiError(404,"User not found")
+  if (!authUser) {
+    throw new ApiError(404, "User not found");
   }
 
-  return res.status(200).json(new ApiResponse(200,authUser,"User is Authenticated."))
-})
+  return res
+    .status(200)
+    .json(new ApiResponse(200, authUser, "User is Authenticated."));
+});
 
-export { registerUser, loginUser, logoutUser, refreshTokens,userAuthenticated };
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshTokens,
+  userAuthenticated,
+};
