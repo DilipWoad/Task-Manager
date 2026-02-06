@@ -3,18 +3,28 @@ import { User } from "../models/users.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import * as z from "zod";
-import { AccessTokenOptions, RefreshTokenOptions } from "../utils/cookieOptions.js";
+import {
+  AccessTokenOptions,
+  RefreshTokenOptions,
+} from "../utils/cookieOptions.js";
 import { generateAccessRefreshToken } from "../utils/GenerateTokens.js";
+import { REFRESH_TOKEN_SECRET_KEY } from "../config.js";
+
+const registerSchema = z.object({
+  fullName: z.string().min(1, "Full name is required."),
+  email: z.email("Invalid email format."),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const loginSchema = z.object({
+  email: z.email("Invalid email format."),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 const registerUser = AsyncHandler(async (req: Request, res: Response) => {
   //so values will come from body
-  const registerSchema = z.object({
-    fullName: z.string().min(1, "Full name is required."),
-    email: z.email("Invalid email format."),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-  });
 
   const result = registerSchema.safeParse(req.body);
   //   const { fullName, email, password } = req.body;
@@ -55,11 +65,6 @@ const registerUser = AsyncHandler(async (req: Request, res: Response) => {
 const loginUser = AsyncHandler(async (req: Request, res: Response) => {
   //is empty or not
   //
-  const loginSchema = z.object({
-    email: z.email("Invalid email format."),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-  });
-
   const result = loginSchema.safeParse(req.body);
   //   const { fullName, email, password } = req.body;
   if (!result.success) {
@@ -87,8 +92,8 @@ const loginUser = AsyncHandler(async (req: Request, res: Response) => {
   }
 
   //if exist generate access and refresh token
-  const accessToken = await userExists.generateAccessToken();
-  const refreshToken = await userExists.generateRefreshToken();
+  const accessToken = userExists.generateAccessToken();
+  const refreshToken = userExists.generateRefreshToken();
 
   // add refreshToken to the user document
   const loginUser = await User.findByIdAndUpdate(userExists._id, {
@@ -129,15 +134,10 @@ const logoutUser = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(500, "Failed while updating refreshtoken");
   }
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
   res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", AccessTokenOptions)
+    .clearCookie("refreshToken", RefreshTokenOptions)
     .json(new ApiResponse(200, {}, "User Logout Successfully!"));
 });
 
@@ -157,13 +157,13 @@ const refreshTokens = AsyncHandler(async (req: Request, res: Response) => {
   //  await jwt.verify(tokenInDb,process.env.REFRESH_TOKEN_SECRECT_KEY);
   const payload = jwt.verify(
     receviedRefreshToken,
-    process.env.REFRESH_TOKEN_SECRET_KEY,
-  );
+    REFRESH_TOKEN_SECRET_KEY,
+  ) as JwtPayload;
   if (!payload) {
     throw new ApiError(400, "Invalid Refresh Token!");
   }
 
-  const user = await User.findById(payload.id);
+  const user = await User.findById(payload.id as string);
   if (!user) {
     throw new ApiError(404, "User not found");
   }
@@ -184,10 +184,10 @@ const refreshTokens = AsyncHandler(async (req: Request, res: Response) => {
   }
 
   return res
-    .status(201)
-    .cookie("refreshToken", refreshToken, AccessTokenOptions)
-    .cookie("accessToken", accessToken, RefreshTokenOptions)
-    .json(new ApiResponse(201, {}, "User Tokens Refreshed Successfully!"));
+    .status(200)
+    .cookie("refreshToken", refreshToken, RefreshTokenOptions)
+    .cookie("accessToken", accessToken, AccessTokenOptions)
+    .json(new ApiResponse(200, {}, "User Tokens Refreshed Successfully!"));
 });
 
 const userAuthenticated = AsyncHandler(async (req: Request, res: Response) => {
