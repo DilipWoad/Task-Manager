@@ -26,7 +26,7 @@ app.use(cookieParser());
 
 //Routes
 
-import authRoute from "./routes/auth.route.js";
+import authRoute from "./routes/auth.route.js"
 import taskRoute from "./routes/task.route.js";
 import groupRoute from "./routes/group.route.js";
 import userRoute from "./routes/user.route.js";

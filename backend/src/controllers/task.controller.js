@@ -60,7 +60,7 @@ const createTask = AsyncHandler(async (req, res) => {
 });
 
 const getUserAssignTasks = AsyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user._id);
   if (!user) {
     throw new ApiError(404, "User not found");
   }
@@ -93,7 +93,7 @@ const getUserAssignTasksAdmin = AsyncHandler(async (req, res) => {
   //get all the document in task where userId matched with current loginUser id
   const tasks = await Task.find({
     assigned_to: user._id,
-  }).populate({path:"assigned_to",select :"fullName email _id"});
+  }).populate({ path: "assigned_to", select: "fullName email _id" });
 
   console.log("Tasks :: ", tasks);
   if (!tasks) {
@@ -133,8 +133,8 @@ const updateTaskStatus = AsyncHandler(async (req, res) => {
   if (!task) {
     throw new ApiError(404, "Task does not exists");
   }
-  //5)check the task->assigned_to ==req.user.id
-  if (!(task.assigned_to.toString() === req.user.id.toString())) {
+  //5)check the task->assigned_to ==req.user._id
+  if (!(task.assigned_to.toString() === req.user._id.toString())) {
     throw new ApiError(403, "You don't have permission.");
   }
   //6)update the details
@@ -171,7 +171,7 @@ const updateTaskDetails = AsyncHandler(async (req, res) => {
         },
         {
           message: "Invalid MongoDB Object ID", // Custom error message
-        }
+        },
       ),
   });
 
@@ -194,7 +194,7 @@ const updateTaskDetails = AsyncHandler(async (req, res) => {
     {
       new: true,
       runValidators: true, //  Runs Mongoose Schema validations again like have for enums for status
-    }
+    },
   );
 
   if (!updatedTask) {
@@ -204,7 +204,7 @@ const updateTaskDetails = AsyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedTask, "Task details updated successfully.")
+      new ApiResponse(200, updatedTask, "Task details updated successfully."),
     );
 });
 //delete a task only by the admin
@@ -230,10 +230,10 @@ const deleteTask = AsyncHandler(async (req, res) => {
 });
 
 const completedTasks = AsyncHandler(async (req, res) => {
-  let targetedUserId = req.user.id;
+  let targetedUserId = req.user._id;
 
-  if(req.user.role==="admin" && req.params.userId){
-    targetedUserId=req.params.userId
+  if (req.user.role === "admin" && req.params.userId) {
+    targetedUserId = req.params.userId;
   }
 
   // console.log(user);
@@ -250,30 +250,29 @@ const completedTasks = AsyncHandler(async (req, res) => {
   if (!tasks) {
     throw new ApiError(
       500,
-      "Something went wrong while getting completed tasks."
+      "Something went wrong while getting completed tasks.",
     );
   }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, tasks, "Successfully fetched User completed Task")
+      new ApiResponse(200, tasks, "Successfully fetched User completed Task"),
     );
 });
 
-
 const inprogressTasks = AsyncHandler(async (req, res) => {
-  let targetedUserId = req.user.id;
+  let targetedUserId = req.user._id;
 
-  if(req.user.role==="admin" && req.params.userId){
-    targetedUserId=req.params.userId
+  if (req.user.role === "admin" && req.params.userId) {
+    targetedUserId = req.params.userId;
   }
 
   // console.log(user);
   const tasks = await Task.find({
     assigned_to: targetedUserId,
     status: "in-progress",
-  }).populate({path:"assigned_to",select :"fullName email _id"});
+  }).populate({ path: "assigned_to", select: "fullName email _id" });
 
   if (tasks.length == 0) {
     return res
@@ -283,26 +282,25 @@ const inprogressTasks = AsyncHandler(async (req, res) => {
   if (!tasks) {
     throw new ApiError(
       500,
-      "Something went wrong while getting completed tasks."
+      "Something went wrong while getting completed tasks.",
     );
   }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, tasks, "Successfully fetched User completed Task")
+      new ApiResponse(200, tasks, "Successfully fetched User completed Task"),
     );
 });
 
 const todaysUserTasks = AsyncHandler(async (req, res) => {
   //
   //get todays date
-  let targetedUserId = req.user.id;
+  let targetedUserId = req.user._id;
 
-  if(req.user.role==="admin" && req.params.userId){
-    targetedUserId=req.params.userId
+  if (req.user.role === "admin" && req.params.userId) {
+    targetedUserId = req.params.userId;
   }
-
 
   let startTodayDay = new Date();
   // console.log(todaysDay.toLocaleDateString());
@@ -322,7 +320,7 @@ const todaysUserTasks = AsyncHandler(async (req, res) => {
       $gte: startTodayDay,
       $lte: endTodayDay,
     },
-  }).populate({path:"assigned_to",select :"fullName email _id"});
+  }).populate({ path: "assigned_to", select: "fullName email _id" });
 
   console.log(todaysTasks);
   if (todaysTasks.length == 0) {
@@ -333,17 +331,17 @@ const todaysUserTasks = AsyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, todaysTasks, "Successfully fetched today's task.")
+      new ApiResponse(200, todaysTasks, "Successfully fetched today's task."),
     );
 });
 
 const upcomingUserTasks = AsyncHandler(async (req, res) => {
   //
   //get todays date
-  let targetedUserId = req.user.id;
+  let targetedUserId = req.user._id;
 
-  if(req.user.role==="admin" && req.params.userId){
-    targetedUserId=req.params.userId
+  if (req.user.role === "admin" && req.params.userId) {
+    targetedUserId = req.params.userId;
   }
 
   let startTodayDay = new Date();
@@ -363,7 +361,7 @@ const upcomingUserTasks = AsyncHandler(async (req, res) => {
     deadline: {
       $gt: endTodayDay,
     },
-  }).populate({path:"assigned_to",select :"fullName email _id"});
+  }).populate({ path: "assigned_to", select: "fullName email _id" });
 
   console.log(upcomingTasks);
   if (upcomingTasks.length == 0) {
@@ -374,17 +372,17 @@ const upcomingUserTasks = AsyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, upcomingTasks, "Successfully fetched today's task.")
+      new ApiResponse(200, upcomingTasks, "Successfully fetched today's task."),
     );
 });
 
 const pastDueTasks = AsyncHandler(async (req, res) => {
   //
   //get todays date
-  let targetedUserId = req.user.id;
+  let targetedUserId = req.user._id;
 
-  if(req.user.role==="admin" && req.params.userId){
-    targetedUserId=req.params.userId
+  if (req.user.role === "admin" && req.params.userId) {
+    targetedUserId = req.params.userId;
   }
 
   let todayDay = new Date();
@@ -405,7 +403,7 @@ const pastDueTasks = AsyncHandler(async (req, res) => {
       $lt: todayDay,
     },
     status: { $ne: "completed" },
-  }).populate({path:"assigned_to",select :"fullName email _id"});
+  }).populate({ path: "assigned_to", select: "fullName email _id" });
 
   console.log(pastDue);
   if (pastDue.length == 0) {
@@ -470,15 +468,17 @@ const taskStats = AsyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, taskDetails[0], "Task deatils fetched successfully.")
+      new ApiResponse(
+        200,
+        taskDetails[0],
+        "Task deatils fetched successfully.",
+      ),
     );
 });
-
 
 // const getUsersTasks = AsyncHandler(async(req,res)=>{
 
 // })
-
 
 export {
   createTask,
@@ -492,5 +492,5 @@ export {
   upcomingUserTasks,
   pastDueTasks,
   taskStats,
-  inprogressTasks
+  inprogressTasks,
 };

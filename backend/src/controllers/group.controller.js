@@ -23,7 +23,7 @@ const createGroup = AsyncHandler(async (req, res) => {
 
   let group = await Group.create({
     groupName,
-    groupAdmin: req.user.id,
+    groupAdmin: req.user._id,
   });
   group = await group.populate({
     path: "groupAdmin",
@@ -42,7 +42,7 @@ const createGroup = AsyncHandler(async (req, res) => {
 const getAdminGroups = AsyncHandler(async (req, res) => {
   //
   const allGroups = await Group.find({
-    groupAdmin: req.user.id,
+    groupAdmin: req.user._id,
   }).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
@@ -54,7 +54,9 @@ const getAdminGroups = AsyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, allGroups[0], "All groups fetched successfully."));
+    .json(
+      new ApiResponse(200, allGroups[0], "All groups fetched successfully."),
+    );
 });
 
 const deleteGroup = AsyncHandler(async (req, res) => {
@@ -67,13 +69,13 @@ const deleteGroup = AsyncHandler(async (req, res) => {
 
   const group = await Group.deleteOne({
     _id: groupId,
-    groupAdmin: req.user.id,
+    groupAdmin: req.user._id,
   });
 
   if (!group) {
     throw new ApiError(
       404,
-      "Group not found or u don't have right to perform this action."
+      "Group not found or u don't have right to perform this action.",
     );
   }
 
@@ -98,14 +100,14 @@ const editGroupName = AsyncHandler(async (req, res) => {
   const updatedGroup = await Group.findOneAndUpdate(
     {
       _id: groupId,
-      groupAdmin: req.user.id,
+      groupAdmin: req.user._id,
     },
     {
       $set: { groupName },
     },
     {
       returnDocument: "after",
-    }
+    },
   ).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
@@ -114,14 +116,14 @@ const editGroupName = AsyncHandler(async (req, res) => {
   if (!updatedGroup) {
     throw new ApiError(
       404,
-      "Group not found or u don't have right to perform this action."
+      "Group not found or u don't have right to perform this action.",
     );
   }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedGroup, "Group name uodated successfully")
+      new ApiResponse(200, updatedGroup, "Group name uodated successfully"),
     );
 });
 
@@ -151,7 +153,7 @@ const addUserToGroup = AsyncHandler(async (req, res) => {
     },
     {
       new: true, // Return the updated document
-    }
+    },
   ).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
@@ -190,7 +192,7 @@ const removeUserFromGroup = AsyncHandler(async (req, res) => {
     },
     {
       new: true, // Return the updated document after the change
-    }
+    },
   ).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
@@ -203,7 +205,7 @@ const removeUserFromGroup = AsyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, group, "User removed from the group successfully.")
+      new ApiResponse(200, group, "User removed from the group successfully."),
     );
 });
 
@@ -219,7 +221,7 @@ const getAllUserFromGroup = AsyncHandler(async (req, res) => {
   //findOne where groupId and goupAdmin is req.user
   const group = await Group.findOne({
     _id: groupId,
-    groupAdmin: req.user.id,
+    groupAdmin: req.user._id,
   }).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
@@ -242,8 +244,8 @@ const getAllUserFromGroup = AsyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         group.groupMembers,
-        "Group members fetch successfully."
-      )
+        "Group members fetch successfully.",
+      ),
     );
 });
 
@@ -387,8 +389,8 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         userTaskStats[0],
-        "User Task deatils fetched successfully."
-      )
+        "User Task deatils fetched successfully.",
+      ),
     );
 });
 
@@ -472,9 +474,9 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
     },
     //as of now it is unwound means not grouped in togeter
     {
-      $sort:{
-        completionPercentage:-1
-      }
+      $sort: {
+        completionPercentage: -1,
+      },
     },
     {
       $group: {
@@ -489,12 +491,11 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
             },
             totalTasks: "$totalTasksAssigned",
             completedTasks: "$completedTasks",
-            completionPercentage: "$completionPercentage"
+            completionPercentage: "$completionPercentage",
           },
         },
       },
     },
-    
   ]);
 
   console.log("groupMemberCompletionStats :: ", groupMemberCompletionStats);
@@ -508,8 +509,8 @@ const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         groupMemberCompletionStats[0],
-        "Group Members stats fetched successfullt."
-      )
+        "Group Members stats fetched successfullt.",
+      ),
     );
 });
 
