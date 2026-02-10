@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import * as z from "zod";
 import { ApiError } from "../utils/ApiError.js";
-import { User } from "../models/users.model.js";
-import { Task } from "../models/tasks.model.js";
+import { IUserDocument, User } from "../models/users.model.js";
+import { ITaskDocument, Task } from "../models/tasks.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 //Zod schemas here
@@ -70,7 +70,7 @@ const createTask = AsyncHandler(async (req, res): Promise<void> => {
     );
   }
 
-  const user = await User.findById(userId);
+  const user: IUserDocument | null = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User does not exists.");
   }
@@ -79,14 +79,14 @@ const createTask = AsyncHandler(async (req, res): Promise<void> => {
 
   //6) create the document
   //   const date = new Date();
-  const task = await Task.create({
+  const task: ITaskDocument = await Task.create({
     title,
     description,
     deadline,
     assigned_to: userId,
   });
   if (!task) {
-    throw new ApiError(500, "Falied to create task.");
+    throw new ApiError(500, "Failed to create task.");
   }
 
   res
@@ -103,7 +103,7 @@ const getUserAssignTasks = AsyncHandler(async (req, res): Promise<void> => {
   // const user = await User.findById(req.user._id);
   //user there
   //get all the document in task where userId matched with current loginUser id
-  const tasks = await Task.find({
+  const tasks: ITaskDocument[] | [] = await Task.find({
     assigned_to: req.user._id,
   });
 
@@ -122,13 +122,13 @@ const getUserAssignTasksAdmin = AsyncHandler(
 
     //hey gemini this comment is for you : do i really check for user here or
     // i just let the task give me the error is user does not exsits
-    const user = await User.findById(userId);
+    const user: IUserDocument | null = await User.findById(userId);
     if (!user) {
       throw new ApiError(404, "User does not exists.");
     }
     //user there
     //get all the document in task where userId matched with current loginUser id
-    const tasks = await Task.find({
+    const tasks: ITaskDocument[] | [] = await Task.find({
       assigned_to: user._id,
     }).populate({ path: "assigned_to", select: "fullName email _id" });
 
@@ -159,7 +159,7 @@ const updateTaskStatus = AsyncHandler(async (req, res): Promise<void> => {
     throw new ApiError(400, "Invalid task id.");
   }
   //4)check is task exists
-  const task = await Task.findById(taskId);
+  const task: ITaskDocument | null = await Task.findById(taskId);
   if (!task) {
     throw new ApiError(404, "Task does not exists");
   }
@@ -182,6 +182,9 @@ const updateTaskStatus = AsyncHandler(async (req, res): Promise<void> => {
 
 //update for admin ->
 // // title,description,deadline,status,assigned_to
+interface IUserExists {
+  _id: mongoose.Types.ObjectId;
+}
 const updateTaskDetails = AsyncHandler(async (req, res): Promise<void> => {
   //1)verify the auth
   //2)check the authorization(role as user)
@@ -200,7 +203,9 @@ const updateTaskDetails = AsyncHandler(async (req, res): Promise<void> => {
   }
 
   if (data.assigned_to) {
-    const userExists = await User.exists({ _id: data.assigned_to });
+    const userExists: IUserExists | null = await User.exists({
+      _id: data.assigned_to,
+    });
     if (!userExists) {
       throw new ApiError(
         404,
@@ -210,7 +215,7 @@ const updateTaskDetails = AsyncHandler(async (req, res): Promise<void> => {
   }
 
   //4)check is task exists and update the task in  one go
-  const updatedTask = await Task.findByIdAndUpdate(
+  const updatedTask: ITaskDocument | null = await Task.findByIdAndUpdate(
     taskId,
     {
       $set: data,
@@ -234,12 +239,12 @@ const updateTaskDetails = AsyncHandler(async (req, res): Promise<void> => {
 });
 //delete a task only by the admin
 
-const deleteTask = AsyncHandler(async (req, res) => {
+const deleteTask = AsyncHandler(async (req, res): Promise<void> => {
   const { taskId } = req.params;
 
   //3)check is valid task id
   if (!mongoose.isValidObjectId(taskId)) {
-    throw new ApiError(401, "Invalid task id.");
+    throw new ApiError(400, "Invalid task id.");
   }
 
   //4)check is task exists and update the task in  one go
@@ -249,97 +254,93 @@ const deleteTask = AsyncHandler(async (req, res) => {
     throw new ApiError(404, "Task not found");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, [], "Task deleted successfully."));
+  res.status(200).json(new ApiResponse(200, [], "Task deleted successfully."));
+  return;
 });
 
-const completedTasks = AsyncHandler(async (req, res) => {
-  let targetedUserId = req.user._id;
+const completedTasks = AsyncHandler(async (req, res): Promise<void> => {
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access");
+  }
+  let targetedUserId: string = req.user._id.toString();
 
   if (req.user.role === "admin" && req.params.userId) {
-    targetedUserId = req.params.userId;
+    //validate userId
+    if (!mongoose.isValidObjectId(req.params.userId)) {
+      throw new ApiError(400, "Invalid User ID format.");
+    }
+    targetedUserId = req.params.userId as string;
   }
-
   // console.log(user);
-  const tasks = await Task.find({
+  const tasks: ITaskDocument[] | [] = await Task.find({
     assigned_to: targetedUserId,
     status: "completed",
   });
 
-  if (tasks.length == 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "User has 0 completed Task"));
-  }
-  if (!tasks) {
-    throw new ApiError(
-      500,
-      "Something went wrong while getting completed tasks.",
-    );
-  }
-
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(200, tasks, "Successfully fetched User completed Task"),
     );
+  return;
 });
 
-const inprogressTasks = AsyncHandler(async (req, res) => {
-  let targetedUserId = req.user._id;
+const inprogressTasks = AsyncHandler(async (req, res): Promise<void> => {
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access");
+  }
+
+  let targetedUserId: string = req.user._id.toString();
 
   if (req.user.role === "admin" && req.params.userId) {
-    targetedUserId = req.params.userId;
+    //validate userId
+    if (!mongoose.isValidObjectId(req.params.userId)) {
+      throw new ApiError(400, "Invalid User ID format.");
+    }
+    targetedUserId = req.params.userId as string;
   }
 
   // console.log(user);
-  const tasks = await Task.find({
+  const tasks: ITaskDocument[] | [] = await Task.find({
     assigned_to: targetedUserId,
     status: "in-progress",
   }).populate({ path: "assigned_to", select: "fullName email _id" });
 
-  if (tasks.length == 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "User has 0 in-progress Task"));
-  }
-  if (!tasks) {
-    throw new ApiError(
-      500,
-      "Something went wrong while getting completed tasks.",
-    );
-  }
-
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(200, tasks, "Successfully fetched User completed Task"),
     );
+  return;
 });
 
-const todaysUserTasks = AsyncHandler(async (req, res) => {
+const todaysUserTasks = AsyncHandler(async (req, res): Promise<void> => {
   //
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access");
+  }
   //get todays date
-  let targetedUserId = req.user._id;
+  let targetedUserId: string = req.user._id.toString();
 
   if (req.user.role === "admin" && req.params.userId) {
-    targetedUserId = req.params.userId;
+    //validate userId
+    if (!mongoose.isValidObjectId(req.params.userId)) {
+      throw new ApiError(400, "Invalid User ID format.");
+    }
+    targetedUserId = req.params.userId as string;
   }
 
-  let startTodayDay = new Date();
+  let startTodayDay: Date = new Date();
   // console.log(todaysDay.toLocaleDateString());
   startTodayDay.setHours(0, 0, 0, 0);
-  console.log(startTodayDay);
 
-  let endTodayDay = new Date();
+  let endTodayDay: Date = new Date();
   // console.log(todaysDay.toLocaleDateString());
   endTodayDay.setHours(23, 59, 59, 999);
-  console.log(endTodayDay);
 
   console.log("Searching between:", startTodayDay, "and", endTodayDay);
 
-  const todaysTasks = await Task.find({
+  const todaysTasks: ITaskDocument[] | [] = await Task.find({
     assigned_to: targetedUserId,
     deadline: {
       $gte: startTodayDay,
@@ -347,73 +348,75 @@ const todaysUserTasks = AsyncHandler(async (req, res) => {
     },
   }).populate({ path: "assigned_to", select: "fullName email _id" });
 
-  console.log(todaysTasks);
-  if (todaysTasks.length == 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "There is no task for today."));
-  }
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(200, todaysTasks, "Successfully fetched today's task."),
     );
+  return;
 });
 
-const upcomingUserTasks = AsyncHandler(async (req, res) => {
+const upcomingUserTasks = AsyncHandler(async (req, res): Promise<void> => {
   //
   //get todays date
-  let targetedUserId = req.user._id;
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access");
+  }
+  let targetedUserId: string = req.user._id.toString();
 
   if (req.user.role === "admin" && req.params.userId) {
-    targetedUserId = req.params.userId;
+    //validate userId
+    if (!mongoose.isValidObjectId(req.params.userId)) {
+      throw new ApiError(400, "Invalid User ID format.");
+    }
+    targetedUserId = req.params.userId as string;
   }
 
-  let startTodayDay = new Date();
+  let startTodayDay: Date = new Date();
   // console.log(todaysDay.toLocaleDateString());
   startTodayDay.setHours(0, 0, 0, 0);
-  console.log(startTodayDay);
 
-  let endTodayDay = new Date();
+  let endTodayDay: Date = new Date();
   // console.log(todaysDay.toLocaleDateString());
   endTodayDay.setHours(23, 59, 59, 999);
-  console.log(endTodayDay);
 
   console.log("Searching between:", startTodayDay, "and", endTodayDay);
 
-  const upcomingTasks = await Task.find({
+  const upcomingTasks: ITaskDocument[] | [] = await Task.find({
     assigned_to: targetedUserId,
     deadline: {
       $gt: endTodayDay,
     },
   }).populate({ path: "assigned_to", select: "fullName email _id" });
 
-  console.log(upcomingTasks);
-  if (upcomingTasks.length == 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "There is no task for today."));
-  }
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(200, upcomingTasks, "Successfully fetched today's task."),
     );
+  return;
 });
 
-const pastDueTasks = AsyncHandler(async (req, res) => {
+const pastDueTasks = AsyncHandler(async (req, res): Promise<void> => {
   //
   //get todays date
-  let targetedUserId = req.user._id;
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access");
+  }
+
+  let targetedUserId: string = req.user._id.toString();
 
   if (req.user.role === "admin" && req.params.userId) {
-    targetedUserId = req.params.userId;
+    //validate userId
+    if (!mongoose.isValidObjectId(req.params.userId)) {
+      throw new ApiError(400, "Invalid User ID format.");
+    }
+    targetedUserId = req.params.userId as string;
   }
 
   let todayDay = new Date();
   // console.log(todaysDay.toLocaleDateString());
   todayDay.setHours(0, 0, 0, 0);
-  console.log(todayDay);
 
   // let endTodayDay = new Date();
   // // console.log(todaysDay.toLocaleDateString());
@@ -422,7 +425,7 @@ const pastDueTasks = AsyncHandler(async (req, res) => {
 
   console.log("Searching before:", todayDay);
 
-  const pastDue = await Task.find({
+  const pastDue: ITaskDocument[] | [] = await Task.find({
     assigned_to: targetedUserId,
     deadline: {
       $lt: todayDay,
@@ -430,21 +433,22 @@ const pastDueTasks = AsyncHandler(async (req, res) => {
     status: { $ne: "completed" },
   }).populate({ path: "assigned_to", select: "fullName email _id" });
 
-  console.log(pastDue);
-  if (pastDue.length == 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "There is no due task."));
-  }
-  return res
+  res
     .status(200)
     .json(new ApiResponse(200, pastDue, "Successfully fetched due tasks."));
+  return;
 });
 
 //admin related routes
+interface ITaskStats {
+  totalTasks: number;
+  completed: number;
+  inProgress: number;
+  pastDue: number;
+}
 const taskStats = AsyncHandler(async (req, res) => {
   //so here will be doing aggregation or pipeline
-  const taskDetails = await Task.aggregate([
+  const taskDetails: ITaskStats[] = await Task.aggregate([
     {
       $group: {
         _id: null,
@@ -485,25 +489,22 @@ const taskStats = AsyncHandler(async (req, res) => {
       },
     },
   ]);
-
-  if (taskDetails.length == 0) {
-    return res.status(200).json(new ApiResponse(200, [], "No task created."));
-  }
+  const responseData =
+    taskDetails.length > 0
+      ? taskDetails[0]
+      : {
+          totalTasks: 0,
+          completed: 0,
+          inProgress: 0,
+          pastDue: 0,
+        };
 
   return res
     .status(200)
     .json(
-      new ApiResponse(
-        200,
-        taskDetails[0],
-        "Task deatils fetched successfully.",
-      ),
+      new ApiResponse(200, responseData, "Task deatils fetched successfully."),
     );
 });
-
-// const getUsersTasks = AsyncHandler(async(req,res)=>{
-
-// })
 
 export {
   createTask,

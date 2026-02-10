@@ -1,6 +1,6 @@
 import mongoose, { Document, Model, Types, Schema } from "mongoose";
 
-interface ITask {
+export interface ITask {
   status: string;
   title: string;
   description: string;
@@ -9,7 +9,7 @@ interface ITask {
   complete_status_note: string;
 }
 
-interface ITaskDocument extends ITask, Document {
+export interface ITaskDocument extends ITask, Document {
   createdAt: Date;
   updatedAt: Date;
 }
