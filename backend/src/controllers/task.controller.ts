@@ -6,7 +6,48 @@ import { User } from "../models/users.model.js";
 import { Task } from "../models/tasks.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-const createTask = AsyncHandler(async (req, res) => {
+//Zod schemas here
+const taskSchema = z.object({
+  title: z.string().min(1, "Title can't be empty."),
+  description: z.string().min(1, "Description can't be empty."),
+  deadline: z.coerce.date().refine((date) => date > new Date(), {
+    message: "Deadline must be in future.",
+  }),
+});
+
+const updateTaskSchema = z.object({
+  status: z.enum(["in-progress", "completed"]),
+  complete_note: z.string().min(1, "Note can't be empty.").optional(),
+});
+
+const updateTaskDetailSchema = z.object({
+  title: z.string().min(1, "Title can't be empty.").optional(),
+  description: z.string().min(1, "Description can't be empty.").optional(),
+  deadline: z.coerce
+    .date()
+    .refine((date) => date > new Date())
+    .optional(),
+  status: z.enum(["in-progress", "completed"]).optional(),
+  assigned_to: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
+        // 1. If value is undefined (optional), let it pass
+        if (!val) return true;
+
+        // 2. Otherwise, use Mongoose's native checker
+        return mongoose.isValidObjectId(val);
+      },
+      {
+        message: "Invalid MongoDB Object ID", // Custom error message
+      },
+    ),
+});
+
+//
+
+const createTask = AsyncHandler(async (req, res): Promise<void> => {
   //1)verify authentication (is session going on)
   //2)should be access by Admin only
   // // false -> throw 403 not have permission to access
@@ -14,23 +55,19 @@ const createTask = AsyncHandler(async (req, res) => {
   //4) check if the user existsof the given id(also is valid mongooseId)
 
   if (!mongoose.isValidObjectId(userId)) {
-    throw new ApiError(401, "Invalid user Id.");
+    throw new ApiError(400, "Invalid user Id.");
   }
 
-  console.log(req.body);
-  const taskSchema = z.object({
-    title: z.string().min(1, "Title can't be empty."),
-    description: z.string().min(1, "Description can't be empty."),
-    deadline: z.string().date(),
-  });
   //3) verify all the req.body -> through zod
-  console.log(taskSchema);
   const result = taskSchema.safeParse(req.body);
-  console.log(result);
   if (!result.success) {
     const zodErrorMessage = result.error;
     // console.log("Zod Error Message :: ", zodErrorMessage.errors[0].message);
-    throw new ApiError(401, "Invalid Credintials", zodErrorMessage.message);
+    throw new ApiError(
+      400,
+      zodErrorMessage.issues[0].message,
+      zodErrorMessage.issues,
+    );
   }
 
   const user = await User.findById(userId);
@@ -49,84 +86,77 @@ const createTask = AsyncHandler(async (req, res) => {
     assigned_to: userId,
   });
   if (!task) {
-    throw new ApiError(500, "Something went wrong while creating the task.");
+    throw new ApiError(500, "Falied to create task.");
   }
 
-  console.log("Task :: ", task);
-
-  return res
+  res
     .status(201)
     .json(new ApiResponse(201, task, "Task created successfully."));
+  return;
 });
 
-const getUserAssignTasks = AsyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (!user) {
-    throw new ApiError(404, "User not found");
+const getUserAssignTasks = AsyncHandler(async (req, res): Promise<void> => {
+  //first validate if req.user is present or not in-order to safe guard from undefined error
+  if (!req?.user?._id) {
+    throw new ApiError(401, "Unauthorized request.");
   }
+  // const user = await User.findById(req.user._id);
   //user there
   //get all the document in task where userId matched with current loginUser id
   const tasks = await Task.find({
-    assigned_to: user._id,
+    assigned_to: req.user._id,
   });
 
-  console.log("Tasks :: ", tasks);
-  if (!tasks) {
-    throw new ApiError(500, "Something went wrong while fetching user tasks.");
-  }
-
-  return res
+  res
     .status(200)
     .json(new ApiResponse(200, tasks, "User tasks fetched successfully."));
+  return;
 });
 
-const getUserAssignTasksAdmin = AsyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  if (!mongoose.isValidObjectId(userId)) {
-    throw new ApiError(401, "Invalid user id");
-  }
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new ApiError(404, "User does not exists.");
-  }
-  //user there
-  //get all the document in task where userId matched with current loginUser id
-  const tasks = await Task.find({
-    assigned_to: user._id,
-  }).populate({ path: "assigned_to", select: "fullName email _id" });
+const getUserAssignTasksAdmin = AsyncHandler(
+  async (req, res): Promise<void> => {
+    const { userId } = req.params;
+    if (!mongoose.isValidObjectId(userId)) {
+      throw new ApiError(400, "Invalid user id");
+    }
 
-  console.log("Tasks :: ", tasks);
-  if (!tasks) {
-    throw new ApiError(500, "Something went wrong while fetching user tasks.");
-  }
+    //hey gemini this comment is for you : do i really check for user here or
+    // i just let the task give me the error is user does not exsits
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User does not exists.");
+    }
+    //user there
+    //get all the document in task where userId matched with current loginUser id
+    const tasks = await Task.find({
+      assigned_to: user._id,
+    }).populate({ path: "assigned_to", select: "fullName email _id" });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, tasks, "User tasks fetched successfully."));
-});
+    res
+      .status(200)
+      .json(new ApiResponse(200, tasks, "User tasks fetched successfully."));
+    return;
+  },
+);
 
 //user update for task ->
 // //status(for ->in-progress and completed) and when status is set to complete
 // // //->ask for a completion note.
-const updateTaskStatus = AsyncHandler(async (req, res) => {
+const updateTaskStatus = AsyncHandler(async (req, res): Promise<void> => {
   //1)verify the auth
   //2)check the authorization(role as user)
   const { taskId } = req.params;
   //3)validated schema for req.body through zod
-  const taskSchema = z.object({
-    status: z.enum(["in-progress", "completed"]),
-    complete_note: z.string().min(1, "Note can't be empty.").optional(),
-  });
 
-  const result = taskSchema.safeParse(req.body);
+  const result = updateTaskSchema.safeParse(req.body);
   if (!result.success) {
-    throw new ApiError(401, "Invalid status.", result.error.message);
+    throw new ApiError(400, "Select a valid status.", result.error.issues);
   }
 
-  const { status } = result.data;
+  const { status, complete_note } = result.data;
   //3)check is valid task id
   if (!mongoose.isValidObjectId(taskId)) {
-    throw new ApiError(401, "Invalid task id.");
+    throw new ApiError(400, "Invalid task id.");
   }
   //4)check is task exists
   const task = await Task.findById(taskId);
@@ -134,62 +164,56 @@ const updateTaskStatus = AsyncHandler(async (req, res) => {
     throw new ApiError(404, "Task does not exists");
   }
   //5)check the task->assigned_to ==req.user._id
-  if (!(task.assigned_to.toString() === req.user._id.toString())) {
+  if (!(task.assigned_to.toString() === req?.user?._id.toString())) {
     throw new ApiError(403, "You don't have permission.");
   }
   //6)update the details
   task.status = status;
-  task.save();
+  if (complete_note) {
+    task.complete_status_note = complete_note;
+  }
+  await task.save();
 
-  return res
+  res
     .status(200)
     .json(new ApiResponse(200, task, "Task status updated successfully."));
+  return;
 });
 
 //update for admin ->
 // // title,description,deadline,status,assigned_to
-const updateTaskDetails = AsyncHandler(async (req, res) => {
+const updateTaskDetails = AsyncHandler(async (req, res): Promise<void> => {
   //1)verify the auth
   //2)check the authorization(role as user)
   const { taskId } = req.params;
   //3)validated schema for req.body through zod
-  const taskSchema = z.object({
-    title: z.string().min(1, "Title can't be empty.").optional(),
-    description: z.string().min(1, "Description can't be empty.").optional(),
-    deadline: z.string().date().optional(),
-    status: z.enum(["in-progress", "completed"]).optional(),
-    assigned_to: z
-      .string()
-      .optional()
-      .refine(
-        (val) => {
-          // 1. If value is undefined (optional), let it pass
-          if (!val) return true;
-
-          // 2. Otherwise, use Mongoose's native checker
-          return mongoose.isValidObjectId(val);
-        },
-        {
-          message: "Invalid MongoDB Object ID", // Custom error message
-        },
-      ),
-  });
-
-  const result = taskSchema.safeParse(req.body);
+  const result = updateTaskDetailSchema.safeParse(req.body);
   if (!result.success) {
-    throw new ApiError(401, "Invalid status.", result.error.message);
+    throw new ApiError(400, "Invalid status.", result.error.issues);
   }
+
+  const data = result.data;
 
   //3)check is valid task id
   if (!mongoose.isValidObjectId(taskId)) {
-    throw new ApiError(401, "Invalid task id.");
+    throw new ApiError(400, "Invalid task id.");
+  }
+
+  if (data.assigned_to) {
+    const userExists = await User.exists({ _id: data.assigned_to });
+    if (!userExists) {
+      throw new ApiError(
+        404,
+        "The user you are trying to assign does not exist.",
+      );
+    }
   }
 
   //4)check is task exists and update the task in  one go
   const updatedTask = await Task.findByIdAndUpdate(
     taskId,
     {
-      $set: req.body,
+      $set: data,
     },
     {
       new: true,
@@ -198,14 +222,15 @@ const updateTaskDetails = AsyncHandler(async (req, res) => {
   );
 
   if (!updatedTask) {
-    throw new ApiError(404, "Task not found");
+    throw new ApiError(404, "Task not found.");
   }
 
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(200, updatedTask, "Task details updated successfully."),
     );
+  return;
 });
 //delete a task only by the admin
 
