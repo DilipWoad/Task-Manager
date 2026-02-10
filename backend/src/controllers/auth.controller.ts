@@ -32,7 +32,7 @@ const registerUser = AsyncHandler(
     if (!result.success) {
       const zodErrorMessage = result.error;
       // console.log("Zod Error Message :: ", zodErrorMessage.errors[0].message);
-      throw new ApiError(401, "Invalid Credintials", zodErrorMessage.issues);
+      throw new ApiError(400, zodErrorMessage.issues[0].message, zodErrorMessage.issues);
     }
     //now we have parsed data here with all validation check
     const { fullName, email, password } = result.data;
@@ -74,7 +74,7 @@ const loginUser = AsyncHandler(
     if (!result.success) {
       const zodErrorMessage = result.error;
       // console.log("Zod Error Message :: ", zodErrorMessage.errors[0].message);
-      throw new ApiError(401, "Invalid Credintials", zodErrorMessage.issues);
+      throw new ApiError(400, zodErrorMessage.issues[0].message, zodErrorMessage.issues);
     }
     //now we have parsed data here with all validation check
     const { email, password } = result.data;
