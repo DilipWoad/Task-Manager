@@ -1,12 +1,12 @@
 import mongoose, { Schema, Document, Types, Model } from "mongoose";
 
-interface IGroup {
+export interface IGroup {
   groupName: string;
   groupAdmin: Types.ObjectId;
   groupMembers: Types.ObjectId[];
 }
 
-interface IGroupDocument extends IGroup, Document {
+export interface IGroupDocument extends IGroup, Document {
   createdAt: Date;
   updatedAt: Date;
 }

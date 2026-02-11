@@ -1,27 +1,29 @@
 import mongoose from "mongoose";
 import { ApiError } from "../utils/ApiError.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
-import { User } from "../models/users.model.js";
-import { Group } from "../models/groups.model.js";
+import { IUserDocument, User } from "../models/users.model.js";
+import { Group, IGroupDocument } from "../models/groups.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Task } from "../models/tasks.model.js";
 
-const createGroup = AsyncHandler(async (req, res) => {
+const createGroup = AsyncHandler(async (req, res): Promise<void> => {
   //verify jwt
   //admin
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access.");
+  }
   if (req.user.role !== "admin") {
-    throw new ApiError(401, "You aren't admin dwag.");
+    throw new ApiError(400, "You aren't admin dwag.");
   }
   const { groupName } = req.body;
 
-  console.log(groupName);
   if (groupName.trim() === "") {
     throw new ApiError(400, "Group name can't be empty.");
   }
 
   //just create a grp
 
-  let group = await Group.create({
+  let group: IGroupDocument = await Group.create({
     groupName,
     groupAdmin: req.user._id,
   });
@@ -34,39 +36,40 @@ const createGroup = AsyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while creating a group.");
   }
 
-  return res
+  res
     .status(201)
     .json(new ApiResponse(201, group, "Group created successfully."));
+  return;
 });
 
-const getAdminGroups = AsyncHandler(async (req, res) => {
+const getAdminGroups = AsyncHandler(async (req, res): Promise<void> => {
   //
-  const allGroups = await Group.find({
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access.");
+  }
+  const allGroups: IGroupDocument[] | [] = await Group.find({
     groupAdmin: req.user._id,
   }).populate([
     { path: "groupAdmin", select: "fullName email _id" },
     { path: "groupMembers", select: "fullName email _id" },
   ]);
 
-  if (allGroups.length == 0) {
-    return res.status(200).json(new ApiResponse(200, [], "No group Created"));
-  }
-
-  return res
+  res
     .status(200)
-    .json(
-      new ApiResponse(200, allGroups[0], "All groups fetched successfully."),
-    );
+    .json(new ApiResponse(200, allGroups, "All groups fetched successfully."));
+  return;
 });
 
-const deleteGroup = AsyncHandler(async (req, res) => {
+const deleteGroup = AsyncHandler(async (req, res): Promise<void> => {
   const { groupId } = req.params;
   if (!mongoose.isValidObjectId(groupId)) {
     throw new ApiError(403, "Invalid group id.");
   }
 
   //now chck if group exists
-
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access.");
+  }
   const group = await Group.deleteOne({
     _id: groupId,
     groupAdmin: req.user._id,
@@ -79,12 +82,11 @@ const deleteGroup = AsyncHandler(async (req, res) => {
     );
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, [], "Group deleted successfully"));
+  res.status(200).json(new ApiResponse(200, [], "Group deleted successfully"));
+  return;
 });
 
-const editGroupName = AsyncHandler(async (req, res) => {
+const editGroupName = AsyncHandler(async (req, res): Promise<void> => {
   const { groupId } = req.params;
   const { groupName } = req.body;
 
@@ -92,12 +94,15 @@ const editGroupName = AsyncHandler(async (req, res) => {
     throw new ApiError(403, "Group name can't be empty.");
   }
   if (!mongoose.isValidObjectId(groupId)) {
-    throw new ApiError(403, "Invalid group id.");
+    throw new ApiError(400, "Invalid group id.");
   }
 
   //now chck if group exists
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access.");
+  }
 
-  const updatedGroup = await Group.findOneAndUpdate(
+  const updatedGroup: IGroupDocument | null = await Group.findOneAndUpdate(
     {
       _id: groupId,
       groupAdmin: req.user._id,
@@ -120,14 +125,15 @@ const editGroupName = AsyncHandler(async (req, res) => {
     );
   }
 
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(200, updatedGroup, "Group name uodated successfully"),
     );
+  return;
 });
 
-const addUserToGroup = AsyncHandler(async (req, res) => {
+const addUserToGroup = AsyncHandler(async (req, res): Promise<void> => {
   //verify jwt
   //admin access only
   //we get ids (group and userid) from params
@@ -141,12 +147,12 @@ const addUserToGroup = AsyncHandler(async (req, res) => {
   }
 
   //check if user exists
-  const user = await User.findById(userId);
+  const user: IUserDocument | null = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User does not exists.");
   }
   //check if the user is already exists in it or not
-  const group = await Group.findByIdAndUpdate(
+  const group: IGroupDocument | null = await Group.findByIdAndUpdate(
     groupId,
     {
       $addToSet: { groupMembers: userId },
@@ -163,13 +169,13 @@ const addUserToGroup = AsyncHandler(async (req, res) => {
     throw new ApiError(404, "Group does not exists.");
   }
 
-  console.log(group);
-  return res
+  res
     .status(200)
     .json(new ApiResponse(200, group, "User added to the group successfully."));
+  return;
 });
 
-const removeUserFromGroup = AsyncHandler(async (req, res) => {
+const removeUserFromGroup = AsyncHandler(async (req, res): Promise<void> => {
   //verify jwt
   //admin access only
   //we get ids (group and userid) from params
@@ -185,7 +191,7 @@ const removeUserFromGroup = AsyncHandler(async (req, res) => {
   //check if group exists
   //check if user exists
   //check if the user is already exists in it or not
-  const group = await Group.findByIdAndUpdate(
+  const group: IGroupDocument | null = await Group.findByIdAndUpdate(
     groupId,
     {
       $pull: { groupMembers: userId }, // Removes userId from the array
@@ -202,24 +208,28 @@ const removeUserFromGroup = AsyncHandler(async (req, res) => {
     throw new ApiError(404, "Group not found.");
   }
 
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(200, group, "User removed from the group successfully."),
     );
+  return;
 });
 
-const getAllUserFromGroup = AsyncHandler(async (req, res) => {
+const getAllUserFromGroup = AsyncHandler(async (req, res): Promise<void> => {
   //verify jwt
   //access by admin
   //get groupId and adminId(from req.user)
   const { groupId } = req.params;
   //validate the groupId
   if (!mongoose.isValidObjectId(groupId)) {
-    throw new ApiError(403, "Invalid group Id");
+    throw new ApiError(400, "Invalid group Id");
   }
   //findOne where groupId and goupAdmin is req.user
-  const group = await Group.findOne({
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access.");
+  }
+  const group: IGroupDocument | null = await Group.findOne({
     _id: groupId,
     groupAdmin: req.user._id,
   }).populate([
@@ -233,12 +243,11 @@ const getAllUserFromGroup = AsyncHandler(async (req, res) => {
   //   console.log(popu);
   //res with the array of userID
   if (group?.groupMembers?.length == 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "No user in the group"));
+    res.status(200).json(new ApiResponse(200, [], "No user in the group"));
+    return;
   }
 
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(
@@ -247,24 +256,39 @@ const getAllUserFromGroup = AsyncHandler(async (req, res) => {
         "Group members fetch successfully.",
       ),
     );
+  return;
 });
 
-const getAllUsers = AsyncHandler(async (req, res) => {
+const getAllUsers = AsyncHandler(async (req, res): Promise<void> => {
   //allUsers but not present in the group
   //as we don't need the user which are already present in a group
-  const allUsers = await User.find({
+  const allUsers: IUserDocument[] | [] = await User.find({
     role: "user",
   }).select("-password -refreshToken -role -__v");
   if (allUsers.length == 0) {
-    return res.status(200).json(new ApiResponse(200, [], "No user Present."));
+    res.status(200).json(new ApiResponse(200, [], "No user Present."));
+    return;
   }
 
-  return res
+  res
     .status(200)
     .json(new ApiResponse(200, allUsers, "All user fetched successfully."));
+  return;
 });
 
-const userTaskStatistic = AsyncHandler(async (req, res) => {
+interface IUserTaskStats {
+  totalTaskAssigned: number;
+  completedTasks: number;
+  inProgressTasks: number;
+  pastDueTasks: number;
+  todayTasks: number;
+  upcomingTasks: number;
+  fullName: string;
+  email: string;
+  _id: mongoose.Types.ObjectId;
+}
+
+const userTaskStatistic = AsyncHandler(async (req, res): Promise<void> => {
   //1)verify jwt
   //2)access by as of now only admin
   //3)get userId from params
@@ -274,23 +298,21 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
   //then sum up the task assign to it ,the completed task by the user etc
   const { userId } = req.params;
   if (!mongoose.isValidObjectId(userId)) {
-    throw new ApiError(401, "Invalid user Id.");
+    throw new ApiError(400, "Invalid user Id.");
   }
 
   let startTodayDay = new Date();
   // console.log(todaysDay.toLocaleDateString());
   startTodayDay.setHours(0, 0, 0, 0);
-  console.log(startTodayDay);
 
   let endTodayDay = new Date();
   // console.log(todaysDay.toLocaleDateString());
   endTodayDay.setHours(23, 59, 59, 999);
-  console.log(endTodayDay);
 
-  const userTaskStats = await Task.aggregate([
+  const userTaskStats: IUserTaskStats[] = await Task.aggregate([
     {
       $match: {
-        assigned_to: new mongoose.Types.ObjectId(userId),
+        assigned_to: new mongoose.Types.ObjectId(userId as string),
       },
     },
     {
@@ -378,12 +400,13 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
   ]);
   console.log("userTaskStats :: ", userTaskStats);
   if (userTaskStats.length == 0) {
-    return res
+    res
       .status(200)
       .json(new ApiResponse(200, [], "No task assigned to the user."));
+    return;
   }
 
-  return res
+  res
     .status(200)
     .json(
       new ApiResponse(
@@ -392,127 +415,143 @@ const userTaskStatistic = AsyncHandler(async (req, res) => {
         "User Task deatils fetched successfully.",
       ),
     );
+  return;
 });
 
-const getGroupMemberCompletionStats = AsyncHandler(async (req, res) => {
-  //we will have groupId
-  const { groupId } = req.params;
-  if (!mongoose.isValidObjectId(groupId)) {
-    throw new ApiError(400, "Invalid Group Id");
-  }
+const getGroupMemberCompletionStats = AsyncHandler(
+  async (req, res): Promise<void> => {
+    //we will have groupId
+    const { groupId } = req.params;
+    if (!mongoose.isValidObjectId(groupId)) {
+      throw new ApiError(400, "Invalid Group Id");
+    }
 
-  const groupMemberCompletionStats = await Group.aggregate([
-    {
-      $match: { _id: new mongoose.Types.ObjectId(groupId) },
-    },
-    {
-      $unwind: "$groupMembers",
-    },
-    // //now we have a single id due to using unwind
-    // //we can lookup
-    {
-      $lookup: {
-        from: "users",
-        localField: "groupMembers",
-        foreignField: "_id",
-        as: "memberDetails",
-      },
-    },
-    {
-      $unwind: {
-        path: "$memberDetails",
-        // Optional: use "preserveNullAndEmptyArrays: true"
-        // if you want to keep the original document even if the lookup had no match
-        preserveNullAndEmptyArrays: false,
-      },
-    },
-    {
-      $lookup: {
-        from: "tasks",
-        localField: "groupMembers",
-        foreignField: "assigned_to",
-        as: "memberTasks",
-      },
-    },
-    //now we have all the document with user assigned
-    {
-      $addFields: {
-        totalTasksAssigned: { $size: "$memberTasks" },
-        completedTasks: {
-          $size: {
-            $filter: {
-              input: "$memberTasks",
-              as: "task",
-              cond: { $eq: ["$$task.status", "completed"] },
+    interface IUserDetails {
+      _id: mongoose.Types.ObjectId;
+      fullName: string;
+      email: string;
+    }
+    interface IMemberStats {
+      userDetails: IUserDetails;
+      totalTasks: number;
+      completedTasks: number;
+      completionPercentage: number;
+    }
+    interface IGroupMemberCompletionStats {
+      _id: mongoose.Types.ObjectId;
+      // Push the member info + stats back into a list
+      membersStats: IMemberStats[];
+    }
+
+    const groupMemberCompletionStats: IGroupMemberCompletionStats[] =
+      await Group.aggregate([
+        {
+          $match: { _id: new mongoose.Types.ObjectId(groupId as string) },
+        },
+        {
+          $unwind: "$groupMembers",
+        },
+        // //now we have a single id due to using unwind
+        // //we can lookup
+        {
+          $lookup: {
+            from: "users",
+            localField: "groupMembers",
+            foreignField: "_id",
+            as: "memberDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$memberDetails",
+            // Optional: use "preserveNullAndEmptyArrays: true"
+            // if you want to keep the original document even if the lookup had no match
+            preserveNullAndEmptyArrays: false,
+          },
+        },
+        {
+          $lookup: {
+            from: "tasks",
+            localField: "groupMembers",
+            foreignField: "assigned_to",
+            as: "memberTasks",
+          },
+        },
+        //now we have all the document with user assigned
+        {
+          $addFields: {
+            totalTasksAssigned: { $size: "$memberTasks" },
+            completedTasks: {
+              $size: {
+                $filter: {
+                  input: "$memberTasks",
+                  as: "task",
+                  cond: { $eq: ["$$task.status", "completed"] },
+                },
+              },
             },
           },
         },
-      },
-    },
-    {
-      $addFields: {
-        completionPercentage: {
-          $cond: {
-            if: { $eq: ["$totalTasksAssigned", 0] },
-            then: 0,
-            else: {
-              $round: [
-                {
-                  $multiply: [
+        {
+          $addFields: {
+            completionPercentage: {
+              $cond: {
+                if: { $eq: ["$totalTasksAssigned", 0] },
+                then: 0,
+                else: {
+                  $round: [
                     {
-                      $divide: ["$completedTasks", "$totalTasksAssigned"],
+                      $multiply: [
+                        {
+                          $divide: ["$completedTasks", "$totalTasksAssigned"],
+                        },
+                        100,
+                      ],
                     },
-                    100,
+                    0,
                   ],
                 },
-                0,
-              ],
+              },
             },
           },
         },
-      },
-    },
-    //as of now it is unwound means not grouped in togeter
-    {
-      $sort: {
-        completionPercentage: -1,
-      },
-    },
-    {
-      $group: {
-        _id: "$_id",
-        // Push the member info + stats back into a list
-        membersStats: {
-          $push: {
-            userDetails: {
-              _id: "$memberDetails._id",
-              fullName: "$memberDetails.fullName",
-              email: "$memberDetails.email",
-            },
-            totalTasks: "$totalTasksAssigned",
-            completedTasks: "$completedTasks",
-            completionPercentage: "$completionPercentage",
+        //as of now it is unwound means not grouped in togeter
+        {
+          $sort: {
+            completionPercentage: -1,
           },
         },
-      },
-    },
-  ]);
-
-  console.log("groupMemberCompletionStats :: ", groupMemberCompletionStats);
-  // if (groupMemberCompletionStats.length == 0) {
-  //   throw new ApiError(404, "Group does not exists.");
-  // }
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        groupMemberCompletionStats[0],
-        "Group Members stats fetched successfullt.",
-      ),
-    );
-});
+        {
+          $group: {
+            _id: "$_id",
+            // Push the member info + stats back into a list
+            membersStats: {
+              $push: {
+                userDetails: {
+                  _id: "$memberDetails._id",
+                  fullName: "$memberDetails.fullName",
+                  email: "$memberDetails.email",
+                },
+                totalTasks: "$totalTasksAssigned",
+                completedTasks: "$completedTasks",
+                completionPercentage: "$completionPercentage",
+              },
+            },
+          },
+        },
+      ]);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          groupMemberCompletionStats[0],
+          "Group Members stats fetched successfullt.",
+        ),
+      );
+    return;
+  },
+);
 
 export {
   createGroup,
