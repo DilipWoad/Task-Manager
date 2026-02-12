@@ -62,7 +62,7 @@ app.use("/api/v1/groups", groupRoute);
 app.use("/api/v1/users", userRoute);
 
 //route not-found error
-app.use("*", (req, res) => {
+app.use("/{*any}", (req, res) => {
   res.status(404).json({
     success: false,
     message: `Route ${req.originalUrl} not found`,
