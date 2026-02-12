@@ -128,7 +128,7 @@ const editGroupName = AsyncHandler(async (req, res): Promise<void> => {
   res
     .status(200)
     .json(
-      new ApiResponse(200, updatedGroup, "Group name uodated successfully"),
+      new ApiResponse(200, updatedGroup, "Group name updated successfully"),
     );
   return;
 });
@@ -137,6 +137,9 @@ const addUserToGroup = AsyncHandler(async (req, res): Promise<void> => {
   //verify jwt
   //admin access only
   //we get ids (group and userid) from params
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access.");
+  }
   const { groupId, userId } = req.params;
   //validate both the ids
   if (!mongoose.isValidObjectId(groupId)) {
@@ -153,7 +156,7 @@ const addUserToGroup = AsyncHandler(async (req, res): Promise<void> => {
   }
   //check if the user is already exists in it or not
   const group: IGroupDocument | null = await Group.findByIdAndUpdate(
-    groupId,
+    { _id: groupId, groupAdmin: req.user._id },
     {
       $addToSet: { groupMembers: userId },
     },
@@ -179,6 +182,9 @@ const removeUserFromGroup = AsyncHandler(async (req, res): Promise<void> => {
   //verify jwt
   //admin access only
   //we get ids (group and userid) from params
+  if (!req.user) {
+    throw new ApiError(400, "Invalid access.");
+  }
   const { groupId, userId } = req.params;
   //validate both the ids
   if (!mongoose.isValidObjectId(groupId)) {
@@ -192,7 +198,7 @@ const removeUserFromGroup = AsyncHandler(async (req, res): Promise<void> => {
   //check if user exists
   //check if the user is already exists in it or not
   const group: IGroupDocument | null = await Group.findByIdAndUpdate(
-    groupId,
+    { _id: groupId, groupAdmin: req.user._id },
     {
       $pull: { groupMembers: userId }, // Removes userId from the array
     },
@@ -540,13 +546,18 @@ const getGroupMemberCompletionStats = AsyncHandler(
           },
         },
       ]);
+    // Handle Empty State (Group has no members)
+    const responseData =
+      groupMemberCompletionStats.length > 0
+        ? groupMemberCompletionStats[0]
+        : { membersStats: [] };
     res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          groupMemberCompletionStats[0],
-          "Group Members stats fetched successfullt.",
+          responseData,
+          "Group Members stats fetched successfully.",
         ),
       );
     return;
