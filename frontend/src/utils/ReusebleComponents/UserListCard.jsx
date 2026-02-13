@@ -22,19 +22,17 @@ const UserListCard = ({
   const gg = groupMembers.map((grp) => grp._id);
 
   return (
-    <div className="flex justify-between gap-4 my-1 bg-secondaryColor text-quaternaryColor px-4 py-2 rounded-md">
+    <div className="flex justify-between  my-1 bg-secondaryColor text-quaternaryColor px-4 py-2 rounded-md ">
       <p
-        className={`text-lg ${
-          gg.includes(user._id)
-            ? "line-through italic  cursor-not-allowed"
-            : ""
+        className={`text-lg text-nowrap flex flex-col text-primaryColor font-bold ${
+          gg.includes(user._id) ? "line-through italic text-tertiaryColor  cursor-not-allowed" : ""
         } `}
       >
         {user?.fullName}
-        <span className="text-base font-semibold italic">{`(${user?.email})`}</span>
+        <span className="text-sm font-semibold italic">{`(${user?.email})`}</span>
       </p>
       <input
-        className={`${
+        className={` ${
           gg.includes(user._id) ? "cursor-not-allowed" : "cursor-pointer"
         }`}
         disabled={gg.includes(user._id)}

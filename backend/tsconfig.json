@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    /* Base Options */
+    "target": "ES2022" /* Modern Node.js supports new JS features */,
+    "module": "NodeNext" /* Best for modern Node with type: module */,
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist" /* Where compiled .js files will go */,
+    "rootDir": "./src" /* Where your .ts source files live */,
+
+    /* Strictness (The "No-Nonsense" Zone) */
+    "strict": true /* Enables all strict type checking options */,
+    "noImplicitAny": true /* Errors if you don't define a type */,
+    "strictNullChecks": true /* Forces you to handle null/undefined */,
+    "allowJs":false,
+    // "allowImportingTsExtensions":true,
+
+    /* Interop Constraints */
+    "esModuleInterop": true /* Allows importing CommonJS modules cleanly */,
+    "forceConsistentCasingInFileNames": true /* Prevents file naming issues on Linux vs Windows */,
+    "skipLibCheck": true /* Skips checking types inside node_modules (speeds up build) */
+  },
+  "include": ["src/**/*"] /* Only compile files in src */,
+  "exclude": ["node_modules"]
+}

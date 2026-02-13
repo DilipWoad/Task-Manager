@@ -12,7 +12,8 @@ const Group = () => {
       const res = await axios.get(`${BASE_URL}/groups`, {
         withCredentials: true,
       });
-      setGroup(res.data.data);
+      setGroup(res.data.data[0]);
+
     } catch (error) {
       console.log("Error while getting admin group.", error);
     }
