@@ -34,7 +34,7 @@ const AdminPage = () => {
       const res = await axios.get(`${BASE_URL}/groups`, {
         withCredentials: true,
       });
-      const group = res.data.data;
+      const group = res.data.data[0];
       // setGroupId(group?._id);
       console.log("Group info :: ", group);
       setGroupInfo(group);

@@ -427,6 +427,7 @@ const userTaskStatistic = AsyncHandler(async (req, res): Promise<void> => {
 const getGroupMemberCompletionStats = AsyncHandler(
   async (req, res): Promise<void> => {
     //we will have groupId
+    console.log("The api hit was came here")
     const { groupId } = req.params;
     if (!mongoose.isValidObjectId(groupId)) {
       throw new ApiError(400, "Invalid Group Id");
@@ -547,6 +548,8 @@ const getGroupMemberCompletionStats = AsyncHandler(
         },
       ]);
     // Handle Empty State (Group has no members)
+    console.log("User leaderboard :: ",groupMemberCompletionStats)
+
     const responseData =
       groupMemberCompletionStats.length > 0
         ? groupMemberCompletionStats[0]

@@ -47,41 +47,24 @@ export const isTasksPastDue = (taskDeadlineDate) => {
 
 export const localStorageForGroupMembers=(apiGroupMemberData,setGroupMembers)=>{
    //here we need to do localStorage here
-      const isMembersExits = localStorage.getItem("groupMembers");
-      if (isMembersExits === null) {
+      let isMembersExists = localStorage.getItem("groupMembers");
+      if (isMembersExists===undefined ||isMembersExists===null) {
         // create a localStorage
         console.log("Creating localStorage as storage not exists ::");
         localStorage.setItem(
           "groupMembers",
           JSON.stringify(apiGroupMemberData),
         );
-        console.log(
-          "localStorage created successfully as it was not exists ::",
-        );
       } else {
         //check if size has changed or not
-        const fromStorage = JSON.parse(isMembersExits);
-        console.log(
-          "Local len exists here is the data :: ",
-          fromStorage.length,
-        );
-        console.log("Api len data :: ", apiGroupMemberData.length);
+        const fromStorage = JSON.parse(isMembersExists);
         if (fromStorage.length !== apiGroupMemberData.length) {
           //update the localStorage
           //rewrite the localStorage with new data
-          console.log("Local len and Api len diff :: ");
-          console.log(
-            "So updating the local by rewriting it with api data :: ",
-          );
-
           localStorage.setItem(
             "groupMembers",
             JSON.stringify(apiGroupMemberData),
           );
-          console.log("Rewriting of local completed :: ");
-        } else {
-          console.log("Nothing to change use the api one:: ");
-          
         }
         setGroupMembers(apiGroupMemberData);
       }
